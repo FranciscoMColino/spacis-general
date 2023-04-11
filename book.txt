@@ -1,0 +1,21 @@
+Commands:
+
+
+Turn fans on and off - enables override automatically
+set fan speed?
+Disable telemetry override
+
+OPTIONAL:
+    Change the periods for certain data collection
+
+gondola-rpi functions:
+- Receive the raw data from the arduino
+- Read and log the GNSS data
+- Transmit the GNSS data
+
+gcs-computer functions:
+- Enable/Disable telemetry monitoring
+- Receive the raw data from the audio sensors
+
+
+
