@@ -9,13 +9,13 @@ websocket = None
 
 async def other_task():
     while True:
-        print("Performing other task...")
+        print("TASK: other task...")
         await asyncio.sleep(5)
 
 async def websocket_spammer():
     while True:
         if websocket:
-            print("Spamming now...")
+            print("TASK: Spamming now...")
             await websocket.send("spam")
         await asyncio.sleep(5)
 
@@ -24,9 +24,12 @@ async def periodic_data_transfer():
     while True:
         await asyncio.sleep(1/1600)
         if websocket and signal_management.lock.acquire(False) and signal_management.recorded_signals:
-            print("Sending data...")
-            await websocket.send(json.dumps(signal_management.recorded_signals))
-            print("Data sent: " + str(len(signal_management.recorded_signals)))
+            # TODO replace prints with a proper logger
+            print("SENDING: Sensor data")
+            message = {}
+            message["type"] = "sensor_data"
+            message["data"] = signal_management.recorded_signals
+            await websocket.send(json.dumps(message))
             signal_management.recorded_signals = [] # this is the 2nd cache
             signal_management.lock.release()
             await asyncio.sleep(1/10)
@@ -37,7 +40,7 @@ async def websocket_client():
     #connect to the server and keep open
     global websocket
     async with websockets.connect('ws://localhost:8080') as websocket:  
-        print("WebSocket client started.")
+        print("CLIENT STARTED")
         #send a message to the server
         await websocket.send("client-connect")
         #handle messages from the server
@@ -45,7 +48,7 @@ async def websocket_client():
         while True:
             try:
                 message = await websocket.recv()
-                print(f'Received: {message}')
+                print(f'RECEIVED: {message}')
                 # Handle messages accordingly
 
             except websockets.exceptions.ConnectionClosed:

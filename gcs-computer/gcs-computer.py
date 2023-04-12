@@ -1,21 +1,42 @@
 import asyncio
+import json
 
 import websockets
 
 client_websocket = None
 
+# TODO reply to messages from the client
+def received_message_handler(message):
+    # convert message to json
+    try:
+        message = json.loads(message)
+
+        # switch case for message type
+        if message["type"] == "sensor_data":
+            print(f"RECEIVED: sensor data with {len(message['data'])} samples")
+            # TODO save sensor data to a file
+            # TODO update sensor data buffer for the correlation analysis
+        else:
+            print("RECEIVED: invalid type")
+    except json.decoder.JSONDecodeError:
+        print("RECEIVED: invalid message format (not JSON)")
+        
+
 # Define a coroutine that handles incoming WebSocket messages
 async def websocket_handler(websocket, path):
     async for message in websocket:
-        # Process the incoming message
-        print(f"Received: {message}")
-        if len(message) > 200:
-            await websocket.send("You said: Message too long.")
-        else:
-            await websocket.send(f"You said: {message}")
+
+        # TODO better way to handle this
+        # confirm connection to client and save the websocket
         if message == "client-connect":
             global client_websocket
             client_websocket = websocket
+            print("RECEIVED: {message}")
+            continue
+        
+        # Handle messages accordingly
+        received_message_handler(message)
+        
 
 # Define a coroutine that performs other tasks concurrently
 async def other_task():
