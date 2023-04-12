@@ -1,1 +1,0 @@
-TEMPERATURE = 60

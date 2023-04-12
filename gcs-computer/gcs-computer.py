@@ -8,6 +8,7 @@ client_websocket = None
 async def websocket_handler(websocket, path):
     async for message in websocket:
         # Process the incoming message
+        print(f"Received: {message}")
         await websocket.send(f"You said: {message}")
         if message == "client-connect":
             global client_websocket
