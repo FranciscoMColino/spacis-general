@@ -1,0 +1,7 @@
+backlog:
+- send json with structure instead of just list in gondola-rpi
+- handler for gcs-computer to understand structure and deal accordingly
+
+in progress:
+
+done:

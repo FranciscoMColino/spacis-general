@@ -9,7 +9,10 @@ async def websocket_handler(websocket, path):
     async for message in websocket:
         # Process the incoming message
         print(f"Received: {message}")
-        await websocket.send(f"You said: {message}")
+        if len(message) > 200:
+            await websocket.send("You said: Message too long.")
+        else:
+            await websocket.send(f"You said: {message}")
         if message == "client-connect":
             global client_websocket
             client_websocket = websocket
