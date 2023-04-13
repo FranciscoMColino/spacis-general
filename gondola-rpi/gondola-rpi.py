@@ -35,7 +35,6 @@ async def periodic_data_transfer():
             signal_management.recorded_signals = [] # this is the 2nd cache
             signal_management.lock.release()
             await asyncio.sleep(1/10)
-        
 
 # deprecated
 async def websocket_client():
