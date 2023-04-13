@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+import spacis_utils
 import websockets
 
 client_websocket = None
@@ -13,7 +14,8 @@ def received_message_handler(message):
 
         # switch case for message type
         if message["type"] == "sensor_data":
-            print(f"RECEIVED: sensor data with {len(message['data'])} samples")
+            unpacked_data = spacis_utils.unpack_sequence(message['data'])
+            print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
             # TODO save sensor data to a file
             # TODO update sensor data buffer for the correlation analysis
         else:

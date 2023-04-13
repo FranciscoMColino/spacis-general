@@ -5,6 +5,7 @@ import sys
 import threading
 
 import signal_management
+import spacis_utils
 import websockets
 
 websocket = None
@@ -27,10 +28,10 @@ async def periodic_data_transfer():
         await asyncio.sleep(1/1600)
         if websocket and signal_management.lock.acquire(False) and signal_management.recorded_signals:
             # TODO replace prints with a proper logger
-            print("SENDING: Sensor data")
+            print(f"SENDING: Sensor data w/ {len(signal_management.recorded_signals)} samples")
             message = {}
             message["type"] = "sensor_data"
-            message["data"] = signal_management.recorded_signals
+            message["data"] = spacis_utils.pack_sequence(signal_management.recorded_signals)
             await websocket.send(json.dumps(message))
             signal_management.recorded_signals = [] # this is the 2nd cache
             signal_management.lock.release()
