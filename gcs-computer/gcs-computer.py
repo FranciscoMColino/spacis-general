@@ -14,7 +14,7 @@ def received_message_handler(message):
 
         # switch case for message type
         if message["type"] == "sensor_data":
-            unpacked_data = spacis_utils.unpack_sequence(message['data'])
+            unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
             print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
             # TODO save sensor data to a file
             # TODO update sensor data buffer for the correlation analysis
