@@ -1,5 +1,7 @@
 import asyncio
 import json
+import signal
+import sys
 import threading
 
 import signal_management
@@ -55,27 +57,30 @@ async def websocket_client():
                 print('WebSocket connection closed by the server')
                 break
 
+# Define a handler function for KeyboardInterrupt
+def interrupt_handler(signal, frame):
+    print("KeyboardInterrupt caught. Exiting gracefully...")
+    signal_management.kill_signal_generator()
+    signal_management_thread.join()
+    sys.exit(0)
+
 async def main():
-    #start a websockets client that connects to a server
+    # Register the handler for KeyboardInterrupt
+    signal.signal(signal.SIGINT, interrupt_handler)
 
     #start thread running signal generator
     signal_management.serial_reading = True
+    global signal_management_thread
     signal_management_thread = threading.Thread(target=signal_management.signal_generator)
     signal_management_thread.start()
 
     asyncio.ensure_future(websocket_client())
-    asyncio.create_task(other_task())  # Run other_task concurrently
+    test = asyncio.create_task(other_task())  # Run other_task concurrently
     asyncio.create_task(websocket_spammer())
     asyncio.create_task(periodic_data_transfer())
 
     while True:
-        try:
-            await asyncio.sleep(1)
-        except KeyboardInterrupt:
-            break
-
-    signal_management.kill_signal_generator()
-    signal_management_thread.join()
+        await asyncio.sleep(1)
         
 
 asyncio.run(main())
