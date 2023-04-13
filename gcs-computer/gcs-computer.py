@@ -1,8 +1,11 @@
 import asyncio
 import json
 
+import data_recording
 import spacis_utils
 import websockets
+
+# TODO this should probably be a class to avoid globals and what not
 
 client_websocket = None
 
@@ -16,7 +19,8 @@ def received_message_handler(message):
         if message["type"] == "sensor_data":
             unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
             print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
-            # TODO save sensor data to a file
+            data_recorder.record_data(unpacked_data) # TODO better saves
+            
             # TODO update sensor data buffer for the correlation analysis
         else:
             print("RECEIVED: invalid type")
@@ -70,6 +74,10 @@ async def terminal_input():
 
 # Run the event loop
 async def main():
+
+    global data_recorder
+    data_recorder = data_recording.DataRecorder()
+
     server = await start_server()
     other_task_handle = asyncio.create_task(terminal_input())  # Run other_task concurrently
 
