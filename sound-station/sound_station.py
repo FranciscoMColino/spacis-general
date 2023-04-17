@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import sequence_generation as sg
 import signals.signal_manipulation as signal_manipulation
+from signals.captured_signal import CapturedSignal
 from signals.single_sequence import SingleGenaratedSequence
 
     ##
@@ -69,7 +70,27 @@ def sequence_viz():
     signal_manipulation.default_view(new_seq)
     plt.show()
 
+def capture_viz():
+    capture_seq = CapturedSignal('./data/captures/records_11.csv')
+    #capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
+    capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
+
+    sequence_sig_1 = signal_manipulation.signal_trim(capture_seq, 0.0, 0.13)
+    sequence_sig_2 = signal_manipulation.signal_trim(capture_seq, 0.14, 0.28)
+    sequence_sig_3 = signal_manipulation.signal_trim(capture_seq, 0.27, 0.42)
+    sequence_sig_4 = signal_manipulation.signal_trim(capture_seq, 0.42, 0.56)
+    sequence_sig_5 = signal_manipulation.signal_trim(capture_seq, 0.58, 0.70)
+    sequence_sig_6 = signal_manipulation.signal_trim(capture_seq, 0.70, 0.84)
+    sequence_sig_7 = signal_manipulation.signal_trim(capture_seq, 0.86, 0.99)
+
+    sequence_signals = [sequence_sig_1, sequence_sig_2, sequence_sig_3, sequence_sig_4, sequence_sig_5, sequence_sig_6, sequence_sig_7]
+
+    for i in range(0, 7):
+        capture_seq.signal = sequence_signals[i]
+        signal_manipulation.default_view(capture_seq)
+
+    plt.show()
+
 ## Main
 
-sequence_gen()
-sequence_viz()
+capture_viz()
