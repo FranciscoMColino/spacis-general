@@ -105,7 +105,7 @@ def sequence_plot():
 def correlation_capture():
     capture_seq = CapturedSignal('./data/captures/records_11.csv')
     #capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
-    capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
+    #capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
 
     sequence_sig_1 = signal_manipulation.signal_trim(capture_seq, 0.0, 0.13)
     sequence_sig_2 = signal_manipulation.signal_trim(capture_seq, 0.14, 0.28)
@@ -122,7 +122,7 @@ def correlation_capture():
     polynomial_array_2 = [12, 11, 8, 5, 4, 2]
     polynomial_array_3 = [12, 10, 9, 3]
 
-    polynomial_array = polynomial_array_1
+    polynomial_array = polynomial_array_3
     preliminary_sequence = sg.preliminary_pseudorandom_binary_sequence(polynomial_array, 12)
     pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
     signal_i, signal_g = pre_corr_sequence
@@ -136,12 +136,76 @@ def correlation_capture():
 
         corr_i = np.correlate(capture_seq.signal, signal_i, 'full')
         corr_g = np.correlate(capture_seq.signal, signal_g, 'full')
-        corr_x = np.sqrt(np.power(2, corr_i) + np.power(2, corr_g))
+        corr_x = np.sqrt(np.power(corr_i, 2) + np.power(corr_g, 2))
 
         ax[i][0].plot(corr_i)
         ax[i][1].plot(corr_g)
         ax[i][2].plot(corr_x)
         
+    plt.show()
+
+def correlate_1_capture_all_gen():
+    capture_seq = CapturedSignal('./data/captures/records_11.csv')
+    #capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
+    #capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
+
+    sequence_sig_1 = signal_manipulation.signal_trim(capture_seq, 0.0, 0.13)
+    sequence_sig_2 = signal_manipulation.signal_trim(capture_seq, 0.14, 0.28)
+    sequence_sig_3 = signal_manipulation.signal_trim(capture_seq, 0.27, 0.42)
+    sequence_sig_4 = signal_manipulation.signal_trim(capture_seq, 0.42, 0.56)
+    sequence_sig_5 = signal_manipulation.signal_trim(capture_seq, 0.58, 0.70)
+    sequence_sig_6 = signal_manipulation.signal_trim(capture_seq, 0.70, 0.84)
+    sequence_sig_7 = signal_manipulation.signal_trim(capture_seq, 0.86, 0.99)
+
+    capture_seq.signal = sequence_sig_7
+
+    polynomial_array_0 = [12, 8, 5, 1]
+    polynomial_array_1 = [12, 10, 8, 7, 4, 1]
+    polynomial_array_2 = [12, 11, 8, 5, 4, 2]
+    polynomial_array_3 = [12, 10, 9, 3]
+
+    polynomial_arrays = [polynomial_array_0, polynomial_array_1, polynomial_array_2, polynomial_array_3]
+
+    fx, ax = plt.subplots(len(polynomial_arrays), 3, figsize=(10, 10))
+    for i in range(0, len(polynomial_arrays)):
+        polynomial_array = polynomial_arrays[i]
+        preliminary_sequence = sg.preliminary_pseudorandom_binary_sequence(polynomial_array, 12)
+        pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
+        signal_i, signal_g = pre_corr_sequence
+
+        corr_i = np.correlate(capture_seq.signal, signal_i, 'full')
+        corr_g = np.correlate(capture_seq.signal, signal_g, 'full')
+        corr_x = np.sqrt(np.power(corr_i, 2) + np.power(corr_g, 2))
+
+        ax[i][0].plot(corr_i)
+        ax[i][1].plot(corr_g)
+        ax[i][2].plot(corr_x)
+
+    plt.show()
+
+def correlate_gen_with_treament():
+    new_seq = SingleGenaratedSequence('./data/new_gens/sequence_0.csv')
+    new_seq.signal = signal_manipulation.filter_signal(new_seq, 10, 50)
+
+    polynomial_array_0 = [12, 8, 5, 1]
+    polynomial_array_1 = [12, 10, 8, 7, 4, 1]
+    polynomial_array_2 = [12, 11, 8, 5, 4, 2]
+    polynomial_array_3 = [12, 10, 9, 3]
+
+    polynomial_array = polynomial_array_1
+    preliminary_sequence = sg.preliminary_pseudorandom_binary_sequence(polynomial_array, 12)
+    pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
+    signal_i, signal_g = pre_corr_sequence
+
+    corr_i = np.correlate(new_seq.signal, signal_i, 'full')
+    corr_g = np.correlate(new_seq.signal, signal_g, 'full')
+    corr_x = np.sqrt(np.power(corr_i, 2) + np.power(corr_g, 2))
+
+    fx, ax = plt.subplots(1, 3, figsize=(10, 5))
+    ax[0].plot(corr_i)
+    ax[1].plot(corr_g)
+    ax[2].plot(corr_x)
+
     plt.show()
 
 ## Main
