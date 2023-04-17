@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import sequence_generation as sg
-import signal_analysis.signal_manipulation as signal_manipulation
-from signal_analysis.single_sequence import SingleSequence
+import signals.signal_manipulation as signal_manipulation
+from signals.single_sequence import SingleGenaratedSequence
 
     ##
     #    Sequences:
@@ -60,11 +60,11 @@ def sequence_gen():
     return 0
 
 def sequence_viz():
-    old_seq = SingleSequence('./data/old_gens_fix/sequence_1.csv')
+    old_seq = SingleGenaratedSequence('./data/old_gens_fix/sequence_1.csv')
     old_seq.signal = signal_manipulation.filter_signal(old_seq, 10, 50)
     signal_manipulation.default_view(old_seq)
 
-    new_seq = SingleSequence('./data/new_gens/sequence_1.csv')
+    new_seq = SingleGenaratedSequence('./data/new_gens/sequence_1.csv')
     new_seq.signal = signal_manipulation.filter_signal(new_seq, 10, 50)
     signal_manipulation.default_view(new_seq)
     plt.show()

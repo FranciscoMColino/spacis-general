@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-class SingleSequence:
+class SingleGenaratedSequence:
     def __init__(self, file_path):
         self.sample_freq = 1600
         self.signal = (np.array([0]).repeat(100) + np.array([1]).repeat(100)).repeat(6)
