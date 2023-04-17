@@ -29,28 +29,28 @@ def sequence_gen():
     transformed_sequence_3 = sg.transform_sequence(preliminary_sequence_3, 12)
 
     # open csv file to write to
-    with open('new_gens/sequence_0.csv', 'w') as f:
+    with open('data/new_gens/sequence_0.csv', 'w') as f:
         f.write('values\n')
         for i in range(0, 128):
             for j in range(0, 32):
                 f.write(f'{transformed_sequence_0[i] >> j & 1}\n')
                 continue
 
-    with open('new_gens/sequence_1.csv', 'w') as f:
+    with open('data/new_gens/sequence_1.csv', 'w') as f:
         f.write('values\n')
         for i in range(0, 128):
             for j in range(0, 32):
                 f.write(f'{transformed_sequence_1[i] >> j & 1}\n')
                 continue
     
-    with open('new_gens/sequence_2.csv', 'w') as f:
+    with open('data/new_gens/sequence_2.csv', 'w') as f:
         f.write('values\n')
         for i in range(0, 128):
             for j in range(0, 32):
                 f.write(f'{transformed_sequence_2[i] >> j & 1}\n')
                 continue
     
-    with open('new_gens/sequence_3.csv', 'w') as f:
+    with open('data/new_gens/sequence_3.csv', 'w') as f:
         f.write('values\n')
         for i in range(0, 128):
             for j in range(0, 32):
@@ -60,11 +60,11 @@ def sequence_gen():
     return 0
 
 def sequence_viz():
-    old_seq = SingleSequence('./old_gens_fix/sequence_1.csv')
+    old_seq = SingleSequence('./data/old_gens_fix/sequence_1.csv')
     old_seq.signal = signal_manipulation.filter_signal(old_seq, 10, 50)
     signal_manipulation.default_view(old_seq)
 
-    new_seq = SingleSequence('./new_gens/sequence_1.csv')
+    new_seq = SingleSequence('./data/new_gens/sequence_1.csv')
     new_seq.signal = signal_manipulation.filter_signal(new_seq, 10, 50)
     signal_manipulation.default_view(new_seq)
     plt.show()
