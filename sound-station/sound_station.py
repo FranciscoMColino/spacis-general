@@ -213,7 +213,7 @@ def correlate_gen_with_treament():
 
 def correlate_full_capture():
     capture_seq = CapturedSignal('./data/captures/records_11.csv')
-    capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
+    #capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
     #capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
 
     polynomial_array_0 = [12, 8, 5, 1]
