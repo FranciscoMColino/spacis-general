@@ -91,6 +91,29 @@ def capture_viz():
 
     plt.show()
 
+def sequence_plot():
+    polynomial_array_0 = [12, 8, 5, 1]
+    preliminary_sequence_0 = sg.preliminary_pseudorandom_binary_sequence(polynomial_array_0, 12)
+    pre_corr_sequence_0 = sg.pre_corr_processing(preliminary_sequence_0, 12)
+
+    plt.plot(pre_corr_sequence_0[2])
+    plt.show()
+
+def correlation_capture():
+    capture_seq = CapturedSignal('./data/captures/records_11.csv')
+    #capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
+    capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
+
+    sequence_sig_1 = signal_manipulation.signal_trim(capture_seq, 0.0, 0.13)
+    sequence_sig_2 = signal_manipulation.signal_trim(capture_seq, 0.14, 0.28)
+    sequence_sig_3 = signal_manipulation.signal_trim(capture_seq, 0.27, 0.42)
+    sequence_sig_4 = signal_manipulation.signal_trim(capture_seq, 0.42, 0.56)
+    sequence_sig_5 = signal_manipulation.signal_trim(capture_seq, 0.58, 0.70)
+    sequence_sig_6 = signal_manipulation.signal_trim(capture_seq, 0.70, 0.84)
+    sequence_sig_7 = signal_manipulation.signal_trim(capture_seq, 0.86, 0.99)
+
+    capture_seq.signal = sequence_sig_1
+
 ## Main
 
-capture_viz()
+sequence_plot()

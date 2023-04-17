@@ -47,3 +47,28 @@ def transform_sequence(preliminary_sequence, sequence_resolution):
         result[array_place] |= (new_bit << element_place)
 
     return result
+
+def pre_corr_processing(sequence, sequence_resolution = 12):
+    sequence_size = pow(2, sequence_resolution) - 1
+
+    result_i = np.zeros(sequence_size)
+    result_g = np.zeros(sequence_size)
+
+    acc = 0
+    array_place = 0
+    element_place = 0
+    bit = 0
+    new_bit = 0
+
+    for i in range(0, sequence_size):
+        array_place = math.floor(i/32)
+        element_place = i%32
+        bit = ((sequence[array_place] >> element_place) & 1) << element_place
+        acc += 3 if bit else 1
+        new_bit = (acc//16) * math.pi
+        result_i[i] = math.cos(new_bit)
+        result_g[i] = math.sin(new_bit)
+    
+    result_x = np.sqrt(np.power(2, result_i) + np.power(2, result_g))
+
+    return (result_i, result_g, result_x)
