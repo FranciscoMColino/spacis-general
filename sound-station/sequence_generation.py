@@ -6,7 +6,7 @@ import numpy as np
 def preliminary_pseudorandom_binary_sequence(polynomial_array, generator_resolution):
     cur = pow(2, generator_resolution) - 1
     sequence_size = pow(2, generator_resolution) - 1
-    result = np.zeros(sequence_size)
+    result = np.zeros(sequence_size, dtype=np.uint32)
     
     for i in range(0, sequence_size):
         prbs_res = 0
@@ -35,14 +35,14 @@ def transform_sequence(preliminary_sequence, sequence_resolution):
     bit = 0
     new_bit = 0
 
-    result = np.zeros(ps_size)
+    result = np.zeros(ps_size, dtype=np.uint32)
 
     for i in range(0, sequence_size):
         array_place = i//32
         element_place = i%32
         bit = ((preliminary_sequence[array_place] >> element_place) & 1) << element_place
         acc += 3 if bit else 1
-        new_bit = (acc/16) % 2
+        new_bit = (acc//16) % 2
         result[array_place] &= ~(1 << element_place)
         result[array_place] |= (new_bit << element_place)
 
