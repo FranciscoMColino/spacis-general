@@ -2,6 +2,7 @@ import math
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.signal
 import sequence_generation as sg
 import signals.signal_manipulation as signal_manipulation
 from signals.captured_signal import CapturedSignal
@@ -157,7 +158,7 @@ def correlate_1_capture_all_gen():
     sequence_sig_6 = signal_manipulation.signal_trim(capture_seq, 0.70, 0.84)
     sequence_sig_7 = signal_manipulation.signal_trim(capture_seq, 0.86, 0.99)
 
-    capture_seq.signal = sequence_sig_7
+    capture_seq.signal = sequence_sig_3
 
     polynomial_array_0 = [12, 8, 5, 1]
     polynomial_array_1 = [12, 10, 8, 7, 4, 1]
@@ -173,8 +174,10 @@ def correlate_1_capture_all_gen():
         pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
         signal_i, signal_g = pre_corr_sequence
 
-        corr_i = np.correlate(capture_seq.signal, signal_i, 'full')
-        corr_g = np.correlate(capture_seq.signal, signal_g, 'full')
+        corr_i = np.correlate(a=capture_seq.signal, v=signal_i)
+        corr_i /= (len(capture_seq.signal) * np.std(capture_seq.signal) * np.std(signal_i))
+        corr_g = np.correlate(a=capture_seq.signal, v=signal_g)
+        corr_g /= (len(capture_seq.signal) * np.std(capture_seq.signal) * np.std(signal_g))
         corr_x = np.sqrt(np.power(corr_i, 2) + np.power(corr_g, 2))
 
         ax[i][0].plot(corr_i)
@@ -208,6 +211,37 @@ def correlate_gen_with_treament():
 
     plt.show()
 
+def correlate_full_capture():
+    capture_seq = CapturedSignal('./data/captures/records_11.csv')
+    capture_seq.signal = signal_manipulation.correct_offset(capture_seq)
+    #capture_seq.signal = signal_manipulation.filter_signal(capture_seq, 10, 50)
+
+    polynomial_array_0 = [12, 8, 5, 1]
+    polynomial_array_1 = [12, 10, 8, 7, 4, 1]
+    polynomial_array_2 = [12, 11, 8, 5, 4, 2]
+    polynomial_array_3 = [12, 10, 9, 3]
+
+    polynomial_arrays = [polynomial_array_0, polynomial_array_1, polynomial_array_2, polynomial_array_3]
+
+    fx, ax = plt.subplots(len(polynomial_arrays), 3, figsize=(10, 10))
+    for i in range(0, len(polynomial_arrays)):
+        polynomial_array = polynomial_arrays[i]
+        preliminary_sequence = sg.preliminary_pseudorandom_binary_sequence(polynomial_array, 12)
+        pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
+        signal_i, signal_g = pre_corr_sequence
+
+        corr_i = np.correlate(a=capture_seq.signal, v=signal_i)
+        corr_i /= (len(capture_seq.signal) * np.std(capture_seq.signal) * np.std(signal_i))
+        corr_g = np.correlate(capture_seq.signal, signal_g)
+        corr_g /= (len(capture_seq.signal) * np.std(capture_seq.signal) * np.std(signal_g))
+        corr_x = np.sqrt(np.power(corr_i, 2) + np.power(corr_g, 2))
+        corr_x = np.power(corr_x, 10)
+
+        ax[i][0].plot(corr_i)
+        ax[i][1].plot(corr_g)
+        ax[i][2].plot(corr_x)
+    plt.show()
+
 ## Main
 
-correlation_capture()
+correlate_full_capture()
