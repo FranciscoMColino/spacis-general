@@ -69,6 +69,6 @@ def pre_corr_processing(sequence, sequence_resolution = 12):
         result_i[i] = math.cos(new_bit)
         result_g[i] = math.sin(new_bit)
     
-    result_x = np.sqrt(np.power(2, result_i) + np.power(2, result_g))
+    #result_x = np.sqrt(np.power(2, result_i) + np.power(2, result_g))
 
-    return (result_i, result_g, result_x)
+    return (result_i, result_g)

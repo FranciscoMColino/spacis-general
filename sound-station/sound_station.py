@@ -1,4 +1,7 @@
+import math
+
 import matplotlib.pyplot as plt
+import numpy as np
 import sequence_generation as sg
 import signals.signal_manipulation as signal_manipulation
 from signals.captured_signal import CapturedSignal
@@ -96,7 +99,7 @@ def sequence_plot():
     preliminary_sequence_0 = sg.preliminary_pseudorandom_binary_sequence(polynomial_array_0, 12)
     pre_corr_sequence_0 = sg.pre_corr_processing(preliminary_sequence_0, 12)
 
-    plt.plot(pre_corr_sequence_0[2])
+    plt.plot(pre_corr_sequence_0)
     plt.show()
 
 def correlation_capture():
@@ -112,8 +115,35 @@ def correlation_capture():
     sequence_sig_6 = signal_manipulation.signal_trim(capture_seq, 0.70, 0.84)
     sequence_sig_7 = signal_manipulation.signal_trim(capture_seq, 0.86, 0.99)
 
-    capture_seq.signal = sequence_sig_1
+    sequence_sigs = [sequence_sig_1, sequence_sig_2, sequence_sig_3, sequence_sig_4, sequence_sig_5, sequence_sig_6, sequence_sig_7]
+
+    polynomial_array_0 = [12, 8, 5, 1]
+    polynomial_array_1 = [12, 10, 8, 7, 4, 1]
+    polynomial_array_2 = [12, 11, 8, 5, 4, 2]
+    polynomial_array_3 = [12, 10, 9, 3]
+
+    polynomial_array = polynomial_array_1
+    preliminary_sequence = sg.preliminary_pseudorandom_binary_sequence(polynomial_array, 12)
+    pre_corr_sequence = sg.pre_corr_processing(preliminary_sequence, 12)
+    signal_i, signal_g = pre_corr_sequence
+
+    fx, ax = plt.subplots(len(sequence_sigs), 3, figsize=(10, 10))
+
+
+    # do for all sequences
+    for i in range(0, len(sequence_sigs)):
+        capture_seq.signal = sequence_sigs[i]
+
+        corr_i = np.correlate(capture_seq.signal, signal_i, 'full')
+        corr_g = np.correlate(capture_seq.signal, signal_g, 'full')
+        corr_x = np.sqrt(np.power(2, corr_i) + np.power(2, corr_g))
+
+        ax[i][0].plot(corr_i)
+        ax[i][1].plot(corr_g)
+        ax[i][2].plot(corr_x)
+        
+    plt.show()
 
 ## Main
 
-sequence_plot()
+correlation_capture()
