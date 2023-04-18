@@ -49,7 +49,7 @@ class GRPISerial():
         self.ser  = serial.Serial(arduino_ports[0], self.baundrate)
         
         if self.ser:
-            print("Connected successfully to the arduino")
+            print("Connected successfully to the arduino", arduino_ports[0])
             return True
         else:
             print("Failed to connect to the arduino")
@@ -63,14 +63,23 @@ class GRPISerial():
         global recorded_signals
 
         while serial_reading:
-
+            
             while ser.in_waiting > 0:
                 msg = ser.readline().decode('utf-8').rstrip().split(',')
-                msg = [int(i) for i in msg[:4] if i != '']
-                recorded_signals_local_cache.append(msg)
+                try:
+                    msg = [int(i) for i in msg[:4] if i != '']
+                    recorded_signals_local_cache.append(msg)
+                except ValueError:
+                    print("ERROR: Could not convert string to int")
+                    print(msg)
 
-            if lock.acquire(False) and recorded_signals_local_cache:
+            lock_aquired = lock.acquire(False)
+
+            if lock_aquired and recorded_signals_local_cache:
                 #transfer recorded_signals_local_cache to recorded_signals
                 recorded_signals.extend(recorded_signals_local_cache)
                 recorded_signals_local_cache = []
                 lock.release()
+            elif lock_aquired:
+                lock.release()
+

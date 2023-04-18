@@ -112,7 +112,7 @@ class GCSApp:
         self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-5, vmax=30)
         #self.spectogram_ax.ylabel('Frequency (Hz)')
         #self.spectogram_ax.xlabel('Sample number')
-        #self.spectogram_ax.ylim(0, 100)
+        self.spectogram_ax.set_ylim([0, 100])
         #self.spectogram_ax.colorbar()
         self.spectogram_window.draw()
 

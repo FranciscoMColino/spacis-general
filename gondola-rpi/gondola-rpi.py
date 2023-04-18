@@ -26,19 +26,22 @@ async def websocket_spammer():
 # TODO exception handling
 async def periodic_data_transfer():
     while True:
-        await asyncio.sleep(1/1600)
+        await asyncio.sleep(1/400)
         lock_aquired = serial_signal.lock.acquire(False)
         if websocket and lock_aquired and serial_signal.recorded_signals:
+            print("ACQUIRED: lock")
             # TODO replace prints with a proper logger
             print(f"SENDING: Sensor data w/ {len(serial_signal.recorded_signals)} samples")
             message = {}
             message["type"] = "sensor_data"
             message["data"] = spacis_utils.pack_sensor_data(serial_signal.recorded_signals)
-            await websocket.send(json.dumps(message))
             serial_signal.recorded_signals = [] # this is the 2nd cache
             serial_signal.lock.release()
+            print("RELEASED: lock")
+            await websocket.send(json.dumps(message))
             await asyncio.sleep(1/10)
-        serial_signal.lock.release()
+        elif lock_aquired:
+            serial_signal.lock.release()
 
 
 # deprecated
