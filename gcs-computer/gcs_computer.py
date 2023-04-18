@@ -12,7 +12,7 @@ async def main():
     root = tk.Tk()
     root.geometry("600x400")
 
-    data_recorder = data_recording.DataRecorder()
+    data_recorder = data_recording.DataManager()
 
     app = GCSApp(root)
     server = GCSServer(app, data_recorder)
