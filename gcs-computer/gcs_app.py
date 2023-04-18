@@ -126,7 +126,11 @@ class GCSApp:
         # Function to update raw data label
         self.raw_data_label.config(text=data)
         self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
-        self.draw_spectogram()
+
+    async def update_spectogram_task(self):
+        while True:
+            self.draw_spectogram()
+            await asyncio.sleep(1)
 
     async def update_task(self):
         while True:

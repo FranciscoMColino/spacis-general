@@ -20,6 +20,7 @@ async def main():
     await server.start()
     asyncio.create_task(app.run())
     asyncio.create_task(app.update_task())
+    asyncio.create_task(app.update_spectogram_task())
 
     while True:
         try:
