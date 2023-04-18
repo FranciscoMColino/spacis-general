@@ -8,9 +8,8 @@ async def test_task():
         print("Performing test task...")
         await asyncio.sleep(1)
 
-class App:
-    def __init__(self, root, loop):
-        self.loop = loop
+class GCSApp:
+    def __init__(self, root):
         self.root = root
         self.root.title("Fan Control Panel")
         self.create_widgets()
@@ -63,7 +62,7 @@ class App:
 async def main():
     root = tk.Tk()
     root.geometry("400x400")
-    app = App(root ,asyncio.get_event_loop())
+    app = GCSApp(root)
 
     asyncio.create_task(app.run())
     asyncio.create_task(app.update_task())
