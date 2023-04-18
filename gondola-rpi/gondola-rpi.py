@@ -4,9 +4,10 @@ import signal
 import sys
 import threading
 
-import signal_management
+import serial_signal
 import spacis_utils
 import websockets
+from serial_signal import GRPISerial, kill_signal_generator
 
 websocket = None
 
@@ -26,16 +27,19 @@ async def websocket_spammer():
 async def periodic_data_transfer():
     while True:
         await asyncio.sleep(1/1600)
-        if websocket and signal_management.lock.acquire(False) and signal_management.recorded_signals:
+        lock_aquired = serial_signal.lock.acquire(False)
+        if websocket and lock_aquired and serial_signal.recorded_signals:
             # TODO replace prints with a proper logger
-            print(f"SENDING: Sensor data w/ {len(signal_management.recorded_signals)} samples")
+            print(f"SENDING: Sensor data w/ {len(serial_signal.recorded_signals)} samples")
             message = {}
             message["type"] = "sensor_data"
-            message["data"] = spacis_utils.pack_sensor_data(signal_management.recorded_signals)
+            message["data"] = spacis_utils.pack_sensor_data(serial_signal.recorded_signals)
             await websocket.send(json.dumps(message))
-            signal_management.recorded_signals = [] # this is the 2nd cache
-            signal_management.lock.release()
+            serial_signal.recorded_signals = [] # this is the 2nd cache
+            serial_signal.lock.release()
             await asyncio.sleep(1/10)
+        serial_signal.lock.release()
+
 
 # deprecated
 async def websocket_client():
@@ -60,7 +64,7 @@ async def websocket_client():
 # Define a handler function for KeyboardInterrupt
 def interrupt_handler(signal, frame):
     print("KeyboardInterrupt caught. Exiting gracefully...")
-    signal_management.kill_signal_generator()
+    serial_signal.kill_signal_generator()
     signal_management_thread.join()
     sys.exit(0)
 
@@ -69,9 +73,15 @@ async def main():
     signal.signal(signal.SIGINT, interrupt_handler)
 
     #start thread running signal generator
-    signal_management.serial_reading = True
+    serial_signal.serial_reading = True
+    ser_com = GRPISerial()
+    if not ser_com.connect():
+        print("ERROR: Could not connect to serial port. Exiting...")
+        sys.exit(1)
+    # TODO deal with failed connections etc. etc.
+
     global signal_management_thread
-    signal_management_thread = threading.Thread(target=signal_management.signal_generator)
+    signal_management_thread = threading.Thread(target=ser_com.read_messages)
     signal_management_thread.start()
 
     asyncio.ensure_future(websocket_client())

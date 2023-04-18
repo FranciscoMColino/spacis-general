@@ -94,7 +94,11 @@ class GCSApp:
 
     def draw_spectogram(self):
         SAMPLE_SIZE = pow(2, 12) * 4 * 1.1
-        data = self.data_manager.local_data
+
+        if not self.data_manager.local_data:
+            return
+
+        data = list(zip(*self.data_manager.local_data))[0]
 
         display_data = []
         if len(data) > SAMPLE_SIZE:
