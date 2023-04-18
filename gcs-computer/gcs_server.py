@@ -34,9 +34,9 @@ class GCSServer:
             # switch case for message type
             if message["type"] == "sensor_data":
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
-                print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
+                #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
                 self.data_recorder.record_data(unpacked_data) # TODO better saves
-                
+                self.app.update_raw_data(message['data'])
                 # TODO update sensor data buffer for the correlation analysis
             else:
                 print("RECEIVED: invalid type")

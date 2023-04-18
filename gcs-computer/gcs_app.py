@@ -42,7 +42,7 @@ class GCSApp:
         raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         raw_data_frame.grid(row=1, column=0, padx=10, pady=10)
         tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...")
+        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...", width=40, height=1)
         self.raw_data_label.grid(row=1, column=0, pady=5)
         self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
         self.received_time_label.grid(row=2, column=0, pady=5)
@@ -87,6 +87,11 @@ class GCSApp:
         # Function to update server status label
         self.server_status = status
         self.server_status_label.config(text=self.server_status.value)
+
+    def update_raw_data(self, data):
+        # Function to update raw data label
+        self.raw_data_label.config(text=data)
+        self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
 
     async def update_task(self):
         while True:
