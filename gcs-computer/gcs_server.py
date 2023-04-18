@@ -8,11 +8,11 @@ import websockets
 
 
 # Using enum class create enumerations
-class ServerState(enum.Enum):
+class ServerStatus(enum.Enum):
     INIT = 0
-    WAITING_FOR_CLIENT = 1
-    CONNECTED = 2
-    CONNECTION_LOST = 3
+    WAITING_FOR_CLIENT = 'Waiting for client...'
+    CONNECTED = 'Connected'
+    DISCONNECTED = 'Disconnected'
 
 class GCSServer:
     def __init__(self, app):
@@ -47,6 +47,7 @@ class GCSServer:
 
             # confirm connection to client and save the websocket
             if message == "client-connect":
+                self.app.update_server_status(ServerStatus.CONNECTED)
                 self.client_websocket = websocket
                 # update app server state to connected and timestamp
                 continue
@@ -54,4 +55,6 @@ class GCSServer:
             # Handle messages accordingly
             self.received_message_handler(message)
 
-        print()
+        # client disconnected
+        self.client_websocket = None
+        self.app.update_server_status(ServerStatus.DISCONNECTED)

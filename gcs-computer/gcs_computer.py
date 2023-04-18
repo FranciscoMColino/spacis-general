@@ -10,7 +10,7 @@ async def main():
 
     global root
     root = tk.Tk()
-    root.geometry("400x400")
+    root.geometry("600x400")
 
     app = GCSApp(root)
     server = GCSServer(app)
@@ -21,6 +21,7 @@ async def main():
 
     while True:
         try:
+            print("Main loop")
             await asyncio.sleep(1)
         except KeyboardInterrupt:
             break
