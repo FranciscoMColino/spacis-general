@@ -3,7 +3,9 @@ import random
 import tkinter as tk
 from datetime import datetime
 
+import matplotlib.pyplot as plt
 from gcs_server import ServerStatus
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 async def test_task():
@@ -12,9 +14,11 @@ async def test_task():
         await asyncio.sleep(1)
 
 class GCSApp:
-    def __init__(self, root):
+    def __init__(self, root, data_manager):
         self.root = root
         self.root.title("Fan Control Panel")
+
+        self.data_manager = data_manager
 
         # Values shown
         self.server_status = ServerStatus.WAITING_FOR_CLIENT
@@ -47,9 +51,18 @@ class GCSApp:
         self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
         self.received_time_label.grid(row=2, column=0, pady=5)
 
+        fx, ax = plt.subplots(1, 1)
+
+        # Section shows plot of data received
+        figure1 = plt.Figure(figsize=(16, 10), dpi=50)
+        spectogram_window = FigureCanvasTkAgg(figure1, self.root)
+        spectogram_window.get_tk_widget().grid(row=0, column=1, padx=10, pady=10, rowspan=5)
+        ax.set_title("Spectogram")
+        ax.plot(self.data_manager.local_data)
+
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        button_frame.grid(row=0, column=1, padx=10, pady=10)
+        button_frame.grid(row=2, column=0, padx=10, pady=10)
         tk.Label(button_frame, text="Commands").grid(row=0, column=0)
         tk.Button(button_frame, text="Start").grid(row=1, column=0, pady=5)
         tk.Button(button_frame, text="Stop").grid(row=2, column=0, pady=5)
@@ -57,14 +70,14 @@ class GCSApp:
 
         # Section that shows real-time data
         data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        data_frame.grid(row=2, column=0, padx=10, pady=10)
+        data_frame.grid(row=3, column=0, padx=10, pady=10)
         tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
         self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
         self.real_time_data_label.grid(row=1, column=0, pady=5)
 
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        sensor_frame.grid(row=1, column=1, padx=10, pady=10)
+        sensor_frame.grid(row=4, column=0, padx=10, pady=10)
         tk.Label(sensor_frame, text="Temperature and Fan Speed").grid(row=0, column=0)
         self.temperature_label = tk.Label(sensor_frame, text="Temperature: --")
         self.temperature_label.grid(row=1, column=0, pady=5)

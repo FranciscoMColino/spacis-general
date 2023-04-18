@@ -1,9 +1,16 @@
-import spacis_utils
+import tkinter as tk
 
+root = tk.Tk()
 
-def test_unpack_sensor_data():
-    data = ['\x0b\x15\x0b', '\x0c\x16\x0c', '\r\x17\r']
-    print(spacis_utils.unpack_sensor_data(data))
+# Create a frame with a label that spans the entire second column
+frame = tk.Frame(root)
+frame.grid(row=0, column=0)
 
-test_unpack_sensor_data()
+label = tk.Label(frame, text="This label spans the entire second column")
+label.grid(row=0, column=0, columnspan=2)
 
+# Create a button that spans the entire third column
+button = tk.Button(root, text="This button spans the entire third column")
+button.grid(row=1, column=0, columnspan=3)
+
+root.mainloop()

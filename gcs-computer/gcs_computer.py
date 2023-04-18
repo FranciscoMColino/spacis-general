@@ -10,12 +10,12 @@ from gcs_server import GCSServer
 async def main():
 
     root = tk.Tk()
-    root.geometry("600x400")
+    #root.geometry("900x400")
 
-    data_recorder = data_recording.DataManager()
+    data_manager = data_recording.DataManager()
 
-    app = GCSApp(root)
-    server = GCSServer(app, data_recorder)
+    app = GCSApp(root, data_manager)
+    server = GCSServer(app, data_manager)
 
     await server.start()
     asyncio.create_task(app.run())
