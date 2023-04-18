@@ -50,15 +50,17 @@ class GCSApp:
         self.raw_data_label.grid(row=1, column=0, pady=5)
         self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
         self.received_time_label.grid(row=2, column=0, pady=5)
-
-        fx, ax = plt.subplots(1, 1)
+        
 
         # Section shows plot of data received
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)
-        spectogram_window = FigureCanvasTkAgg(figure1, self.root)
-        spectogram_window.get_tk_widget().grid(row=0, column=1, padx=10, pady=10, rowspan=5)
+        ax = figure1.add_subplot(111)
+        self.spectogram_window = FigureCanvasTkAgg(figure1, self.root)
+        self.spectogram_window.get_tk_widget().grid(row=0, column=1, padx=10, pady=10, rowspan=5)
         ax.set_title("Spectogram")
-        ax.plot(self.data_manager.local_data)
+        ax.plot([1, 2, 3, 4, 5, 6, 7])
+        self.spectogram_window.draw()
+        self.spectogram_ax = ax
 
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -90,6 +92,25 @@ class GCSApp:
         #    self.root.rowconfigure(i, weight=1, uniform="row")
         #    self.root.columnconfigure(i, weight=1, uniform="column")
 
+    def draw_spectogram(self):
+        SAMPLE_SIZE = pow(2, 12) * 4 * 1.1
+        data = self.data_manager.local_data
+
+        display_data = []
+        if len(data) > SAMPLE_SIZE:
+            display_data = data[len(data)-int(SAMPLE_SIZE):]
+        else:
+            display_data = data
+
+        
+
+        self.spectogram_ax.clear()
+        self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-5, vmax=30)
+        #self.spectogram_ax.ylabel('Frequency (Hz)')
+        #self.spectogram_ax.xlabel('Sample number')
+        #self.spectogram_ax.ylim(0, 100)
+        #self.spectogram_ax.colorbar()
+        self.spectogram_window.draw()
 
     def update_real_time_data(self):
         # Function to update real-time data label with random value
@@ -101,10 +122,11 @@ class GCSApp:
         self.server_status = status
         self.server_status_label.config(text=self.server_status.value)
 
-    def update_raw_data(self, data):
+    def update_data(self, data):
         # Function to update raw data label
         self.raw_data_label.config(text=data)
         self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
+        self.draw_spectogram()
 
     async def update_task(self):
         while True:
