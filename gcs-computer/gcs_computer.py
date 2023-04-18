@@ -1,6 +1,7 @@
 import asyncio
 import tkinter as tk
 
+import data_recording
 from gcs_app import GCSApp
 from gcs_server import GCSServer
 
@@ -8,12 +9,13 @@ from gcs_server import GCSServer
 # Run the event loop
 async def main():
 
-    global root
     root = tk.Tk()
     root.geometry("600x400")
 
+    data_recorder = data_recording.DataRecorder()
+
     app = GCSApp(root)
-    server = GCSServer(app)
+    server = GCSServer(app, data_recorder)
 
     await server.start()
     asyncio.create_task(app.run())

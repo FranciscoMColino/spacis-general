@@ -15,12 +15,13 @@ class ServerStatus(enum.Enum):
     DISCONNECTED = 'Disconnected'
 
 class GCSServer:
-    def __init__(self, app):
+    def __init__(self, app, data_recorder):
         self.client_websocket = None
         #self.state = ServerState.WAITING_FOR_CLIENT
         self.app = app
         self.port = 8080
         self.server = None
+        self.data_recorder = data_recorder
 
     async def start(self):
         self.server = await websockets.serve(self.websocket_handler, 'localhost', self.port)
@@ -34,7 +35,7 @@ class GCSServer:
             if message["type"] == "sensor_data":
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
                 print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
-                # data_recorder.record_data(unpacked_data) # TODO better saves
+                self.data_recorder.record_data(unpacked_data) # TODO better saves
                 
                 # TODO update sensor data buffer for the correlation analysis
             else:

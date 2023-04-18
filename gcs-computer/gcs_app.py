@@ -1,6 +1,7 @@
 import asyncio
 import random
 import tkinter as tk
+from datetime import datetime
 
 from gcs_server import ServerStatus
 
@@ -34,8 +35,17 @@ class GCSApp:
         server_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         server_frame.grid(row=0, column=0, padx=10, pady=10)
         tk.Label(server_frame, text="Server").grid(row=0, column=0)
-        self.real_time_data_label = tk.Label(server_frame, text=self.server_status.value)
-        self.real_time_data_label.grid(row=1, column=0, pady=5)
+        self.server_status_label = tk.Label(server_frame, text=self.server_status.value)
+        self.server_status_label.grid(row=1, column=0, pady=5)
+
+        # Section that shows raw data received
+        raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        raw_data_frame.grid(row=1, column=0, padx=10, pady=10)
+        tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
+        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...")
+        self.raw_data_label.grid(row=1, column=0, pady=5)
+        self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
+        self.received_time_label.grid(row=2, column=0, pady=5)
 
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -47,7 +57,7 @@ class GCSApp:
 
         # Section that shows real-time data
         data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        data_frame.grid(row=1, column=0, padx=10, pady=10)
+        data_frame.grid(row=2, column=0, padx=10, pady=10)
         tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
         self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
         self.real_time_data_label.grid(row=1, column=0, pady=5)
@@ -62,6 +72,10 @@ class GCSApp:
         self.fan_speed_label.grid(row=2, column=0, pady=5)
         self.fan_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
         self.fan_status_label.grid(row=3, column=0, pady=5)
+
+        #for i in range(2):
+        #    self.root.rowconfigure(i, weight=1, uniform="row")
+        #    self.root.columnconfigure(i, weight=1, uniform="column")
 
 
     def update_real_time_data(self):
