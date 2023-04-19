@@ -1,4 +1,5 @@
 import asyncio
+import json
 import random
 import tkinter as tk
 from datetime import datetime
@@ -14,10 +15,10 @@ async def test_task():
         await asyncio.sleep(1)
 
 class GCSApp:
-    def __init__(self, root, data_manager):
+    def __init__(self, root, data_manager, server):
         self.root = root
         self.root.title("Fan Control Panel")
-
+        self.server = server
         self.data_manager = data_manager
 
         # Values shown
@@ -65,10 +66,12 @@ class GCSApp:
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         button_frame.grid(row=2, column=0, padx=10, pady=10)
-        tk.Label(button_frame, text="Commands").grid(row=0, column=0)
-        tk.Button(button_frame, text="Start").grid(row=1, column=0, pady=5)
-        tk.Button(button_frame, text="Stop").grid(row=2, column=0, pady=5)
-        tk.Button(button_frame, text="Pause").grid(row=3, column=0, pady=5)
+        tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
+        tk.Button(button_frame, text="Toggle override", command=self.send_override_command).grid(row=1, column=1, pady=5, padx=5)
+        tk.Button(button_frame, text="Toggle cooling fans").grid(row=1, column=2, pady=5, padx=5)
+        self.power_limit = tk.IntVar()
+        self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=1, pady=5, padx=5)
+        tk.Button(button_frame, text="Set processing power", command=self.send_processing_power_limit).grid(row=2, column=2, pady=5, padx=5)
 
         # Section that shows real-time data
         data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -88,9 +91,27 @@ class GCSApp:
         self.fan_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
         self.fan_status_label.grid(row=3, column=0, pady=5)
 
-        #for i in range(2):
-        #    self.root.rowconfigure(i, weight=1, uniform="row")
-        #    self.root.columnconfigure(i, weight=1, uniform="column")
+    def send_processing_power_limit(self):
+        self.send_command(json.dumps({
+                "type": "processing_power",
+                "command": self.power_limit.get()
+            }))
+
+    def send_override_command(self):
+        # TODO read override status from temperature manager
+        if 1:
+            self.send_command(json.dumps({
+                "type": "override",
+                "command": "override_off"
+            }))
+        else:
+            self.send_command(json.dumps({
+                "type": "override",
+                "command": "override_on"
+            }))
+
+    def send_command(self, command):
+        self.server.send_message(command)
 
     def draw_spectogram(self):
         SAMPLE_SIZE = pow(2, 12) * 4 * 1.1
@@ -106,20 +127,14 @@ class GCSApp:
         else:
             display_data = data
 
-        
-
         self.spectogram_ax.clear()
         self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-5, vmax=30)
-        #self.spectogram_ax.ylabel('Frequency (Hz)')
-        #self.spectogram_ax.xlabel('Sample number')
         self.spectogram_ax.set_ylim([0, 100])
-        #self.spectogram_ax.colorbar()
         self.spectogram_window.draw()
 
     def update_real_time_data(self):
         # Function to update real-time data label with random value
         self.real_time_data_label.config(text="Real-time data: " + str(random.randint(1, 100)))
-        print("Updating real-time data...")
 
     def update_server_status(self, status):
         # Function to update server status label

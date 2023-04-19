@@ -15,13 +15,15 @@ class ServerStatus(enum.Enum):
     DISCONNECTED = 'Disconnected'
 
 class GCSServer:
-    def __init__(self, app, data_recorder):
+    def __init__(self, data_recorder):
         self.client_websocket = None
         #self.state = ServerState.WAITING_FOR_CLIENT
-        self.app = app
         self.port = 8080
         self.server = None
         self.data_recorder = data_recorder
+
+    def setup(self, app):
+        self.app = app
 
     async def start(self):
         self.server = await websockets.serve(self.websocket_handler, 'localhost', self.port)
@@ -42,6 +44,10 @@ class GCSServer:
                 print("RECEIVED: invalid type")
         except json.decoder.JSONDecodeError:
             print("RECEIVED: invalid message format (not JSON)")
+
+    def send_message(self, message):
+        if self.client_websocket:
+            asyncio.create_task(self.client_websocket.send(message))
 
     async def websocket_handler(self, websocket):
         async for message in websocket:

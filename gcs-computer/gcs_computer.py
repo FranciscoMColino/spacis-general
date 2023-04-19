@@ -14,17 +14,18 @@ async def main():
 
     data_manager = data_recording.DataManager()
 
-    app = GCSApp(root, data_manager)
-    server = GCSServer(app, data_manager)
-
+    server = GCSServer(data_manager)
+    app = GCSApp(root, data_manager, server)
+    
+    server.setup(app)
     await server.start()
+    
     asyncio.create_task(app.run())
     asyncio.create_task(app.update_task())
     asyncio.create_task(app.update_spectogram_task())
 
     while True:
         try:
-            print("Main loop")
             await asyncio.sleep(1)
         except KeyboardInterrupt:
             break
