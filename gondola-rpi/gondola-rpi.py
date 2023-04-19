@@ -79,8 +79,7 @@ async def main():
     serial_signal.serial_reading = True
     ser_com = GRPISerial()
     if not ser_com.connect():
-        print("ERROR: Could not connect to serial port. Exiting...")
-        sys.exit(1)
+        print("ERROR: Could not connect to serial port.")
     # TODO deal with failed connections etc. etc.
 
     global signal_management_thread

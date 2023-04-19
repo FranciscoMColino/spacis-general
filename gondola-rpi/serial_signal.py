@@ -38,6 +38,8 @@ class GRPISerial():
         self.baundrate = 500000
         self.data = []
     
+    # TODO keep trying to connect, and deal with disconnects
+
     def connect(self):
         # Filter the list to find the port with "Arduino" in its description
         arduino_ports = [
@@ -45,6 +47,11 @@ class GRPISerial():
             for p in serial.tools.list_ports.comports()
             if 'Arduino' in p.description
         ]
+
+        if (not arduino_ports):
+            print("ERROR: No Arduino found")
+            self.ser = None
+            return
 
         self.ser  = serial.Serial(arduino_ports[0], self.baundrate)
         
@@ -58,6 +65,11 @@ class GRPISerial():
     def read_messages(self):
 
         ser = self.ser
+
+        if (not ser):
+            print("ERROR: No serial port found")
+            return
+
         recorded_signals_local_cache = []
         global serial_reading
         global recorded_signals
