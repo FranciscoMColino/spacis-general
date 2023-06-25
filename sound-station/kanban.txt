@@ -1,0 +1,4 @@
+TODO:
+    Connect to server
+	Connect to serial with UI
+	Real time logs in UI
