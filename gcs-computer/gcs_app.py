@@ -5,6 +5,7 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+from app_models import TemperatureStatus
 from gcs_server import ServerStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -20,6 +21,7 @@ class GCSApp:
         self.root.title("Fan Control Panel")
         self.server = server
         self.data_manager = data_manager
+        self.temperature_status = TemperatureStatus()
 
         # Values shown
         self.server_status = ServerStatus.WAITING_FOR_CLIENT
@@ -85,13 +87,25 @@ class GCSApp:
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         sensor_frame.grid(row=4, column=0, padx=10, pady=10)
-        tk.Label(sensor_frame, text="Temperature and Fan Speed").grid(row=0, column=0)
+        tk.Label(sensor_frame, text="Temperature and Fan Speed").grid(row=0, column=0, columnspan=2)
+
+        self.override_status_label = tk.Label(sensor_frame, text="Override Status: OFF")
+        self.override_status_label.grid(row=1, column=0, pady=5)
+
         self.temperature_label = tk.Label(sensor_frame, text="Temperature: --")
-        self.temperature_label.grid(row=1, column=0, pady=5)
-        self.fan_speed_label = tk.Label(sensor_frame, text="Fan Speed: --")
-        self.fan_speed_label.grid(row=2, column=0, pady=5)
-        self.fan_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
-        self.fan_status_label.grid(row=3, column=0, pady=5)
+        self.temperature_label.grid(row=1, column=1, pady=5)
+
+        self.fan1_speed_label = tk.Label(sensor_frame, text="Fan 1 speed: --")
+        self.fan1_speed_label.grid(row=2, column=0, pady=5)
+
+        self.fan2_speed_label = tk.Label(sensor_frame, text="Fan 2 speed: --")
+        self.fan2_speed_label.grid(row=2, column=1, pady=5)
+
+        self.fan1_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
+        self.fan1_status_label.grid(row=3, column=0, pady=5)
+
+        self.fan2_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
+        self.fan2_status_label.grid(row=3, column=1, pady=5)
 
     def send_processing_power_limit(self):
         self.send_command({
@@ -162,6 +176,15 @@ class GCSApp:
         self.raw_data_label.config(text=data)
         self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
 
+    def update_temperature_status_frame(self):
+        # Function to update temperature label
+        self.temperature_label.config(text="Temperature: " + str(self.temperature_status.current_temperature))
+        self.fan1_speed_label.config(text="Fan 1 speed: " + str(self.temperature_status.fan_speed[0]))
+        self.fan2_speed_label.config(text="Fan 2 speed: " + str(self.temperature_status.fan_speed[1]))
+        self.fan1_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[0] else "OFF"))
+        self.fan2_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[1] else "OFF"))
+        self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
+        
     async def update_spectogram_task(self):
         while True:
             self.draw_spectogram()
@@ -170,4 +193,11 @@ class GCSApp:
     async def update_task(self):
         while True:
             self.update_real_time_data()
+            self.update_temperature_status_frame()
             await asyncio.sleep(1)
+
+    def set_temperature_status(self, data):
+        self.temperature_status.current_temperature = data["current_temperature"]
+        self.temperature_status.fan_speed = data["fan_speed"]
+        self.temperature_status.activate_fan = data["fan_active"]
+        self.temperature_status.override_mode = data["override_mode"]

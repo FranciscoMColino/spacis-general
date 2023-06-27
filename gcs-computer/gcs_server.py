@@ -40,6 +40,10 @@ class GCSServer:
                 self.data_recorder.record_data(unpacked_data) # TODO better saves
                 self.app.update_data(message['data'])
                 # TODO update sensor data buffer for the correlation analysis
+            
+            elif message["type"] == "temperature_status":
+                data = message['data']
+                self.app.set_temperature_status(data)
             else:
                 print("RECEIVED: invalid type")
         except json.decoder.JSONDecodeError:
