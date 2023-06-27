@@ -67,11 +67,13 @@ class GCSApp:
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         button_frame.grid(row=2, column=0, padx=10, pady=10)
         tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
-        tk.Button(button_frame, text="Toggle override", command=self.send_override_command).grid(row=1, column=1, pady=5, padx=5)
-        tk.Button(button_frame, text="Toggle cooling fans").grid(row=1, column=2, pady=5, padx=5)
+        tk.Button(button_frame, text="Turn On override", command=self.send_override_on).grid(row=1, column=1, pady=5, padx=5)
+        tk.Button(button_frame, text="Turn Off override", command=self.send_override_off).grid(row=1, column=2, pady=5, padx=5)
+        tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
         self.power_limit = tk.IntVar()
-        self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=1, pady=5, padx=5)
-        tk.Button(button_frame, text="Set processing power", command=self.send_processing_power_limit).grid(row=2, column=2, pady=5, padx=5)
+        self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=2, pady=5, padx=5)
+        tk.Button(button_frame, text="Limit processing power", command=self.send_processing_power_limit).grid(row=3, column=1, pady=5, padx=5)
+        tk.Button(button_frame, text="Unlimit processing power", command=self.send_processing_power_unlimit).grid(row=3, column=2, pady=5, padx=5)
 
         # Section that shows real-time data
         data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -92,26 +94,40 @@ class GCSApp:
         self.fan_status_label.grid(row=3, column=0, pady=5)
 
     def send_processing_power_limit(self):
-        self.send_command(json.dumps({
-                "type": "processing_power",
-                "command": self.power_limit.get()
-            }))
+        self.send_command({
+            "type": "PROCESSING_POWER",
+            "action": "SET_LIMIT",
+            "value": 1200
+        })
 
-    def send_override_command(self):
-        # TODO read override status from temperature manager
-        if 1:
-            self.send_command(json.dumps({
-                "type": "override",
-                "command": "override_off"
-            }))
-        else:
-            self.send_command(json.dumps({
-                "type": "override",
-                "command": "override_on"
-            }))
+    def send_processing_power_unlimit(self):
+        self.send_command({
+            "type": "PROCESSING_POWER",
+            "action": "UNLIMIT",
+            "value": 1
+        })
+
+    def send_override_on(self):
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "OVERRIDE",
+            "value": True	
+        })
+
+    def send_override_off(self):
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "OVERRIDE",
+            "value": False	
+        })
+
 
     def send_command(self, command):
-        self.server.send_message(command)
+        obj = {
+            "type": "command",
+            "data": command
+        }
+        self.server.send_message(json.dumps(obj))
 
     def draw_spectogram(self):
         SAMPLE_SIZE = pow(2, 12) * 4 * 1.1

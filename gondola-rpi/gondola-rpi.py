@@ -87,12 +87,11 @@ async def main():
     signal_management_thread.start()
 
     asyncio.ensure_future(websocket_client())
-    test = asyncio.create_task(other_task())  # Run other_task concurrently
+    asyncio.create_task(other_task())  # Run other_task concurrently
     asyncio.create_task(websocket_spammer())
     asyncio.create_task(periodic_data_transfer())
 
     while True:
         await asyncio.sleep(1)
         
-
 asyncio.run(main())

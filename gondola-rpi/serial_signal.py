@@ -77,7 +77,9 @@ class GRPISerial():
         while serial_reading:
             
             while ser.in_waiting > 0:
+
                 msg = ser.readline().decode('utf-8').rstrip().split(',')
+                print("RECEIVED: ", msg)
                 try:
                     msg = [int(i) for i in msg[:4] if i != '']
                     recorded_signals_local_cache.append(msg)
