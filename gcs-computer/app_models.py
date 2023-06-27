@@ -5,7 +5,8 @@ class TemperatureStatus:
         self.override_mode = False
         self.fan_active = [False, False]
 
-class CommandButtonsState:
+class CommandActionsState:
     def __init__(self):
         self.override_button_state = False
         self.fan_button_state = False
+        self.fan_speed = None

@@ -5,7 +5,7 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from app_models import CommandButtonsState, TemperatureStatus
+from app_models import CommandActionsState, TemperatureStatus
 from gcs_server import ServerStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -22,7 +22,7 @@ class GCSApp:
         self.server = server
         self.data_manager = data_manager
         self.temperature_status = TemperatureStatus()
-        self.command_buttons_state = CommandButtonsState()
+        self.command_actions_state = CommandActionsState()
 
         # Values shown
         self.server_status = ServerStatus.WAITING_FOR_CLIENT
@@ -71,6 +71,11 @@ class GCSApp:
         tk.Label(button_frame, text="Toggle cooling fans").grid(row=2, column=0, pady=5)
         self.fan_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_fans)
         self.fan_toggle.grid(row=2, column=1, pady=5, padx=5)
+
+        tk.Button(button_frame, text="Set fan speed", command=self.set_fan_speed).grid(row=3, column=0, pady=5)
+        self.command_actions_state.fan_speed = tk.IntVar()
+        self.fan_speed_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.command_actions_state.fan_speed, orient=tk.HORIZONTAL)
+        self.fan_speed_slider.grid(row=3, column=1, pady=5, padx=5)
 
         if 0:
 
@@ -123,17 +128,20 @@ class GCSApp:
     # Button/action functions
 
     def toggle_override(self):
-        if self.command_buttons_state.override_button_state == True:
+        if self.command_actions_state.override_button_state == True:
             self.send_override_off()
         else:
             self.send_override_on()
 
     def toggle_fans(self):
-        if self.command_buttons_state.fan_button_state == True:
+        if self.command_actions_state.fan_button_state == True:
             self.send_fan_off()
         else:
             self.send_fan_on()
 
+    def set_fan_speed(self):
+        self.send_fan_speed(self.command_actions_state.fan_speed.get())
+        
     # Functions to send commands to the server
 
     def send_processing_power_limit(self):
@@ -176,6 +184,13 @@ class GCSApp:
             "type": "TEMPERATURE",
             "action": "FAN_ACTIVE",
             "value": True
+        })
+
+    def send_fan_speed(self, speed):
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "FAN_SPEED",
+            "value": speed
         })
 
 
@@ -229,12 +244,12 @@ class GCSApp:
         self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
 
     def update_command_buttons(self):
-        if self.command_buttons_state.override_button_state == True:
+        if self.command_actions_state.override_button_state == True:
             self.override_toggle.config(text="Turn OFF")
         else:
             self.override_toggle.config(text="Turn ON")
 
-        if self.command_buttons_state.fan_button_state == True:
+        if self.command_actions_state.fan_button_state == True:
             self.fan_toggle.config(text="Turn OFF")
         else:
             self.fan_toggle.config(text="Turn ON")
@@ -257,5 +272,5 @@ class GCSApp:
         self.temperature_status.fan_active = data["fan_active"]
         self.temperature_status.override_mode = data["override_mode"]
 
-        self.command_buttons_state.override_button_state = data["override_mode"]
-        self.command_buttons_state.fan_button_state = data["fan_active"][0]
+        self.command_actions_state.override_button_state = data["override_mode"]
+        self.command_actions_state.fan_button_state = data["fan_active"][0]
