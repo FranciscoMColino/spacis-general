@@ -10,3 +10,4 @@ class CommandActionsState:
         self.override_button_state = False
         self.fan_button_state = False
         self.fan_speed = None
+        self.cpu_clock = 2200

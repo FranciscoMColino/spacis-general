@@ -77,6 +77,13 @@ class GCSApp:
         self.fan_speed_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.command_actions_state.fan_speed, orient=tk.HORIZONTAL)
         self.fan_speed_slider.grid(row=3, column=1, pady=5, padx=5)
 
+        tk.Button(button_frame, text="Config CPU clock (MHz)", command=self.set_cpu_clock).grid(row=4, column=0, pady=5, padx=5)
+        self.command_actions_state.cpu_clock = tk.IntVar()
+        self.cpu_clock_slider = tk.Scale(button_frame, from_=600, to=2200, variable=self.command_actions_state.cpu_clock, orient=tk.HORIZONTAL, resolution=100)
+        self.cpu_clock_slider.grid(row=4, column=1, pady=5, padx=5)
+
+        tk.Button(button_frame, text="Reboot RPI" , command=self.reboot_rpi).grid(row=5, column=0, pady=5, padx=5)
+
         if 0:
 
             tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
@@ -141,6 +148,12 @@ class GCSApp:
 
     def set_fan_speed(self):
         self.send_fan_speed(self.command_actions_state.fan_speed.get())
+
+    def set_cpu_clock(self):
+        self.send_cpu_clock(self.command_actions_state.cpu_clock.get())
+
+    def reboot_rpi(self):
+        self.send_reboot_rpi()
         
     # Functions to send commands to the server
 
@@ -193,6 +206,19 @@ class GCSApp:
             "value": speed
         })
 
+    def send_cpu_clock(self, clock):
+        self.send_command({
+            "type": "CPU_CONFIG",
+            "action": "CLOCK_SPEED",
+            "value": clock
+        })
+
+    def send_reboot_rpi(self):
+        self.send_command({
+            "type": "CPU_CONFIG",
+            "action": "REBOOT",
+            "value": True
+        })
 
     def send_command(self, command):
         obj = {
