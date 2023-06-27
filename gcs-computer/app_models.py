@@ -8,6 +8,4 @@ class TemperatureStatus:
 class CommandButtonsState:
     def __init__(self):
         self.override_button_state = False
-        self.limit_processing_power = False
-        self.activate_fans = False
-        
+        self.fan_button_state = False

@@ -68,9 +68,12 @@ class GCSApp:
         self.override_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_override)
         self.override_toggle.grid(row=1, column=1, pady=5, padx=5)
 
+        tk.Label(button_frame, text="Toggle cooling fans").grid(row=2, column=0, pady=5)
+        self.fan_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_fans)
+        self.fan_toggle.grid(row=2, column=1, pady=5, padx=5)
+
         if 0:
-            tk.Button(button_frame, text="Turn On override", command=self.send_override_on).grid(row=1, column=1, pady=5, padx=5)
-            tk.Button(button_frame, text="Turn Off override", command=self.send_override_off).grid(row=1, column=2, pady=5, padx=5)
+
             tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
             self.power_limit = tk.IntVar()
             self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=2, pady=5, padx=5)
@@ -125,6 +128,12 @@ class GCSApp:
         else:
             self.send_override_on()
 
+    def toggle_fans(self):
+        if self.command_buttons_state.fan_button_state == True:
+            self.send_fan_off()
+        else:
+            self.send_fan_on()
+
     # Functions to send commands to the server
 
     def send_processing_power_limit(self):
@@ -153,6 +162,20 @@ class GCSApp:
             "type": "TEMPERATURE",
             "action": "OVERRIDE",
             "value": False	
+        })
+
+    def send_fan_off(self):
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "FAN_ACTIVE",
+            "value": False
+        })
+
+    def send_fan_on(self):
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "FAN_ACTIVE",
+            "value": True
         })
 
 
@@ -210,6 +233,11 @@ class GCSApp:
             self.override_toggle.config(text="Turn OFF")
         else:
             self.override_toggle.config(text="Turn ON")
+
+        if self.command_buttons_state.fan_button_state == True:
+            self.fan_toggle.config(text="Turn OFF")
+        else:
+            self.fan_toggle.config(text="Turn ON")
         
     async def update_spectogram_task(self):
         while True:
@@ -230,3 +258,4 @@ class GCSApp:
         self.temperature_status.override_mode = data["override_mode"]
 
         self.command_buttons_state.override_button_state = data["override_mode"]
+        self.command_buttons_state.fan_button_state = data["fan_active"][0]
