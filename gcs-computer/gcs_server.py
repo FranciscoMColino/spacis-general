@@ -7,7 +7,7 @@ import spacis_utils
 import websockets
 
 
-class ClientState:
+class Client:
     def __init__(self):
         self.connected = False
         self.last_update = None
@@ -20,7 +20,7 @@ class GCSServer:
         self.port = 8080
         self.server = None
         self.data_recorder = data_recorder
-        self.client = ClientState()
+        self.client = Client()
 
     def setup(self, app):
         self.app = app
@@ -51,8 +51,8 @@ class GCSServer:
             print("RECEIVED: invalid message format (not JSON)")
 
     def send_message(self, message):
-        if self.client_websocket:
-            asyncio.create_task(self.client_websocket.send(message))
+        if self.client.websocket:
+            asyncio.create_task(self.client.websocket.send(message))
 
     async def websocket_handler(self, websocket):
         try:

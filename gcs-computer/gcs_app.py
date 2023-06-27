@@ -131,29 +131,35 @@ class GCSApp:
     # Button/action functions
 
     def toggle_override(self):
+        print("LOG: Toggle override button pressed")
         if self.command_actions_state.override_button_state == True:
             self.send_override_off()
         else:
             self.send_override_on()
 
     def toggle_fans(self):
+        print("LOG: Toggle fans button pressed")
         if self.command_actions_state.fan_button_state == True:
             self.send_fan_off()
         else:
             self.send_fan_on()
 
     def set_fan_speed(self):
+        print("LOG: Set fan speed button pressed")
         self.send_fan_speed(self.command_actions_state.fan_speed.get())
 
     def set_cpu_clock(self):
+        print("LOG: Set CPU clock button pressed")
         self.send_cpu_clock(self.command_actions_state.cpu_clock.get())
 
     def reboot_rpi(self):
+        print("LOG: Reboot RPI button pressed")
         self.send_reboot_rpi()
         
     # Functions to send commands to the server
 
     def send_processing_power_limit(self):
+        print("LOG: Limit processing power button pressed")
         self.send_command({
             "type": "PROCESSING_POWER",
             "action": "SET_LIMIT",
@@ -161,6 +167,7 @@ class GCSApp:
         })
 
     def send_processing_power_unlimit(self):
+        print("LOG: Unlimit processing power button pressed")
         self.send_command({
             "type": "PROCESSING_POWER",
             "action": "UNLIMIT",
@@ -168,6 +175,7 @@ class GCSApp:
         })
 
     def send_override_on(self):
+        print("LOG: Override on button pressed")
         self.send_command({
             "type": "TEMPERATURE",
             "action": "OVERRIDE",
@@ -175,6 +183,7 @@ class GCSApp:
         })
 
     def send_override_off(self):
+        print("LOG: Override off button pressed")
         self.send_command({
             "type": "TEMPERATURE",
             "action": "OVERRIDE",
@@ -182,6 +191,7 @@ class GCSApp:
         })
 
     def send_fan_off(self):
+        print("LOG: Fan off button pressed")
         self.send_command({
             "type": "TEMPERATURE",
             "action": "FAN_ACTIVE",
@@ -189,6 +199,7 @@ class GCSApp:
         })
 
     def send_fan_on(self):
+        print("LOG: Fan on button pressed")
         self.send_command({
             "type": "TEMPERATURE",
             "action": "FAN_ACTIVE",
@@ -196,6 +207,7 @@ class GCSApp:
         })
 
     def send_fan_speed(self, speed):
+        print("LOG: Fan speed button pressed")
         self.send_command({
             "type": "TEMPERATURE",
             "action": "FAN_SPEED",
@@ -203,6 +215,7 @@ class GCSApp:
         })
 
     def send_cpu_clock(self, clock):
+        print("LOG: CPU clock button pressed")
         self.send_command({
             "type": "CPU_CONFIG",
             "action": "CLOCK_SPEED",
@@ -210,6 +223,7 @@ class GCSApp:
         })
 
     def send_reboot_rpi(self):
+        print("LOG: Reboot RPI button pressed")
         self.send_command({
             "type": "CPU_CONFIG",
             "action": "REBOOT",
@@ -217,6 +231,7 @@ class GCSApp:
         })
 
     def send_command(self, command):
+        
         obj = {
             "type": "command",
             "data": command
