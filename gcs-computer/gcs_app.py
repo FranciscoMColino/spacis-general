@@ -6,7 +6,6 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 from app_models import CommandActionsState, TemperatureStatus
-from gcs_server import ServerStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
@@ -25,7 +24,7 @@ class GCSApp:
         self.command_actions_state = CommandActionsState()
 
         # Values shown
-        self.server_status = ServerStatus.WAITING_FOR_CLIENT
+        self.server_client_status = self.server.client
 
         self.create_widgets()
 
@@ -43,11 +42,8 @@ class GCSApp:
         server_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         server_frame.grid(row=0, column=0, padx=10, pady=10)
         tk.Label(server_frame, text="Server").grid(row=0, column=0)
-        self.server_status_label = tk.Label(server_frame, text=self.server_status.value)
+        self.server_status_label = tk.Label(server_frame, text="Waiting for client...")
         self.server_status_label.grid(row=1, column=0, pady=5)
-
-        
-        
 
         # Section shows plot of data received
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)

@@ -7,12 +7,11 @@ import spacis_utils
 import websockets
 
 
-# Using enum class create enumerations
-class ServerStatus(enum.Enum):
-    INIT = 0
-    WAITING_FOR_CLIENT = 'Waiting for client...'
-    CONNECTED = 'Connected'
-    DISCONNECTED = 'Disconnected'
+class ClientState:
+    def __init__(self):
+        self.connected = False
+        self.last_update = None
+        self.websocket = None
 
 class GCSServer:
     def __init__(self, data_recorder):
@@ -21,6 +20,7 @@ class GCSServer:
         self.port = 8080
         self.server = None
         self.data_recorder = data_recorder
+        self.client = ClientState()
 
     def setup(self, app):
         self.app = app
@@ -44,6 +44,7 @@ class GCSServer:
             elif message["type"] == "temperature_status":
                 data = message['data']
                 self.app.set_temperature_status(data)
+                
             else:
                 print("RECEIVED: invalid type")
         except json.decoder.JSONDecodeError:
@@ -54,18 +55,29 @@ class GCSServer:
             asyncio.create_task(self.client_websocket.send(message))
 
     async def websocket_handler(self, websocket):
-        async for message in websocket:
+        try:
+            async for message in websocket:
+                # Handle messages accordingly
 
-            # confirm connection to client and save the websocket
-            if message == "client-connect":
-                self.app.update_server_status(ServerStatus.CONNECTED)
-                self.client_websocket = websocket
+                if message == "client-connect" and not self.client.connected:
+                    self.client.connected = True
+                    self.client.websocket = websocket
+                    print("LOG: Client connected")
+                    continue
+                elif self.client.connected and websocket != self.client.websocket:
+                    print("LOG: Client already connected")
                 # update app server state to connected and timestamp
-                continue
+                
+                # TODO if json format is correct
+                self.received_message_handler(message)
 
-            # Handle messages accordingly
-            self.received_message_handler(message)
 
-        # client disconnected
-        self.client_websocket = None
-        self.app.update_server_status(ServerStatus.DISCONNECTED)
+        except Exception as e:
+            # Handle the exception or log it as needed
+            print(f"ERROR: WebSocket connection error: {e}")
+
+        finally:
+            # Client disconnected
+            self.client.connected = False
+            self.client.websocket = None
+            print("LOG: Client disconnected")
