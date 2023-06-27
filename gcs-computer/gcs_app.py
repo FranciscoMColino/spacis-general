@@ -5,7 +5,7 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from app_models import TemperatureStatus
+from app_models import CommandButtonsState, TemperatureStatus
 from gcs_server import ServerStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -22,6 +22,7 @@ class GCSApp:
         self.server = server
         self.data_manager = data_manager
         self.temperature_status = TemperatureStatus()
+        self.command_buttons_state = CommandButtonsState()
 
         # Values shown
         self.server_status = ServerStatus.WAITING_FOR_CLIENT
@@ -45,14 +46,7 @@ class GCSApp:
         self.server_status_label = tk.Label(server_frame, text=self.server_status.value)
         self.server_status_label.grid(row=1, column=0, pady=5)
 
-        # Section that shows raw data received
-        raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        raw_data_frame.grid(row=1, column=0, padx=10, pady=10)
-        tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...", width=40, height=1)
-        self.raw_data_label.grid(row=1, column=0, pady=5)
-        self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
-        self.received_time_label.grid(row=2, column=0, pady=5)
+        
         
 
         # Section shows plot of data received
@@ -67,26 +61,26 @@ class GCSApp:
 
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        button_frame.grid(row=2, column=0, padx=10, pady=10)
+        button_frame.grid(row=1, column=0, padx=10, pady=10)
         tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
-        tk.Button(button_frame, text="Turn On override", command=self.send_override_on).grid(row=1, column=1, pady=5, padx=5)
-        tk.Button(button_frame, text="Turn Off override", command=self.send_override_off).grid(row=1, column=2, pady=5, padx=5)
-        tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
-        self.power_limit = tk.IntVar()
-        self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=2, pady=5, padx=5)
-        tk.Button(button_frame, text="Limit processing power", command=self.send_processing_power_limit).grid(row=3, column=1, pady=5, padx=5)
-        tk.Button(button_frame, text="Unlimit processing power", command=self.send_processing_power_unlimit).grid(row=3, column=2, pady=5, padx=5)
 
-        # Section that shows real-time data
-        data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        data_frame.grid(row=3, column=0, padx=10, pady=10)
-        tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
-        self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
-        self.real_time_data_label.grid(row=1, column=0, pady=5)
+        tk.Label(button_frame, text="Override Mode").grid(row=1, column=0, pady=5)
+        self.override_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_override)
+        self.override_toggle.grid(row=1, column=1, pady=5, padx=5)
 
+        if 0:
+            tk.Button(button_frame, text="Turn On override", command=self.send_override_on).grid(row=1, column=1, pady=5, padx=5)
+            tk.Button(button_frame, text="Turn Off override", command=self.send_override_off).grid(row=1, column=2, pady=5, padx=5)
+            tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
+            self.power_limit = tk.IntVar()
+            self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=2, pady=5, padx=5)
+            tk.Button(button_frame, text="Limit processing power", command=self.send_processing_power_limit).grid(row=3, column=1, pady=5, padx=5)
+            tk.Button(button_frame, text="Unlimit processing power", command=self.send_processing_power_unlimit).grid(row=3, column=2, pady=5, padx=5)
+
+        
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        sensor_frame.grid(row=4, column=0, padx=10, pady=10)
+        sensor_frame.grid(row=2, column=0, padx=10, pady=10)
         tk.Label(sensor_frame, text="Temperature and Fan Speed").grid(row=0, column=0, columnspan=2)
 
         self.override_status_label = tk.Label(sensor_frame, text="Override Status: OFF")
@@ -106,6 +100,32 @@ class GCSApp:
 
         self.fan2_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
         self.fan2_status_label.grid(row=3, column=1, pady=5)
+
+        # Section that shows raw data received
+        raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        raw_data_frame.grid(row=3, column=0, padx=10, pady=10)
+        tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
+        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...", width=40, height=1)
+        self.raw_data_label.grid(row=1, column=0, pady=5)
+        self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
+        self.received_time_label.grid(row=2, column=0, pady=5)
+
+        # Section that shows real-time data
+        data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        data_frame.grid(row=4, column=0, padx=10, pady=10)
+        tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
+        self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
+        self.real_time_data_label.grid(row=1, column=0, pady=5)
+
+    # Button/action functions
+
+    def toggle_override(self):
+        if self.command_buttons_state.override_button_state == True:
+            self.send_override_off()
+        else:
+            self.send_override_on()
+
+    # Functions to send commands to the server
 
     def send_processing_power_limit(self):
         self.send_command({
@@ -184,6 +204,12 @@ class GCSApp:
         self.fan1_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[0] else "OFF"))
         self.fan2_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[1] else "OFF"))
         self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
+
+    def update_command_buttons(self):
+        if self.command_buttons_state.override_button_state == True:
+            self.override_toggle.config(text="Turn OFF")
+        else:
+            self.override_toggle.config(text="Turn ON")
         
     async def update_spectogram_task(self):
         while True:
@@ -194,10 +220,13 @@ class GCSApp:
         while True:
             self.update_real_time_data()
             self.update_temperature_status_frame()
+            self.update_command_buttons()
             await asyncio.sleep(1)
 
     def set_temperature_status(self, data):
         self.temperature_status.current_temperature = data["current_temperature"]
         self.temperature_status.fan_speed = data["fan_speed"]
-        self.temperature_status.activate_fan = data["fan_active"]
+        self.temperature_status.fan_active = data["fan_active"]
         self.temperature_status.override_mode = data["override_mode"]
+
+        self.command_buttons_state.override_button_state = data["override_mode"]
