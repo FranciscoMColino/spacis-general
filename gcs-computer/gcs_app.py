@@ -5,7 +5,7 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from app_models import CommandActionsState, TemperatureStatus
+from app_models import CommandActionsState, GpsStatus, TemperatureStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 UPDATE_UI_INTERVAL = 1/12
@@ -23,6 +23,7 @@ class GCSApp:
         self.data_manager = data_manager
         self.temperature_status = TemperatureStatus()
         self.command_actions_state = CommandActionsState()
+        self.gps_status = GpsStatus()
         self.display_data = []
 
         # Values shown
@@ -42,7 +43,7 @@ class GCSApp:
 
         # Section that shows server status
         server_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        server_frame.grid(row=0, column=0, padx=10, pady=10)
+        server_frame.grid(row=0, column=0, padx=10, pady=10, columnspan=2)
         tk.Label(server_frame, text="Server").grid(row=0, column=0)
         self.server_status_label = tk.Label(server_frame, text="Waiting for client...")
         self.server_status_label.grid(row=1, column=0, pady=5)
@@ -53,7 +54,7 @@ class GCSApp:
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)
         ax = figure1.add_subplot(111)
         self.spectogram_window = FigureCanvasTkAgg(figure1, self.root)
-        self.spectogram_window.get_tk_widget().grid(row=0, column=1, padx=10, pady=10, rowspan=5)
+        self.spectogram_window.get_tk_widget().grid(row=0, column=2, padx=10, pady=10, rowspan=5)
         ax.set_title("Spectogram")
         ax.plot([1, 2, 3, 4, 5, 6, 7])
         self.spectogram_window.draw()
@@ -61,7 +62,7 @@ class GCSApp:
 
         # Section with buttons and text
         button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        button_frame.grid(row=1, column=0, padx=10, pady=10)
+        button_frame.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
         tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
 
         tk.Label(button_frame, text="Override Mode").grid(row=1, column=0, pady=5)
@@ -116,9 +117,21 @@ class GCSApp:
         self.fan2_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
         self.fan2_status_label.grid(row=3, column=1, pady=5)
 
+        # Section for gps data
+        gps_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        gps_frame.grid(row=2, column=1, padx=10, pady=10)
+        tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
+
+        self.gps_latitude_label = tk.Label(gps_frame, text="Latitude: --")
+        self.gps_latitude_label.grid(row=1, column=0, pady=5)
+
+        self.gps_longitude_label = tk.Label(gps_frame, text="Longitude: --")
+        self.gps_longitude_label.grid(row=2, column=0, pady=5)
+
+
         # Section that shows raw data received
         raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        raw_data_frame.grid(row=3, column=0, padx=10, pady=10)
+        raw_data_frame.grid(row=3, column=0, padx=10, pady=10, columnspan=2)
         tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
         self.rcv_data_txt = tk.Text(raw_data_frame, height=10, width=50)
         self.rcv_data_txt.grid(row=1, column=0, pady=5, padx=5)
@@ -128,11 +141,11 @@ class GCSApp:
         self.received_time_label.grid(row=2, column=0, pady=5)
 
         # Section that shows real-time data
-        data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        data_frame.grid(row=4, column=0, padx=10, pady=10)
-        tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
-        self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
-        self.real_time_data_label.grid(row=1, column=0, pady=5)
+        #data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        #data_frame.grid(row=4, column=0, padx=10, pady=10)
+        #tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
+        #self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
+        #self.real_time_data_label.grid(row=1, column=0, pady=5)
 
     # Button/action functions
 
@@ -265,7 +278,8 @@ class GCSApp:
 
     def update_real_time_data(self):
         # Function to update real-time data label with random value
-        self.real_time_data_label.config(text="Real-time data: " + str(random.randint(1, 100)))
+        #self.real_time_data_label.config(text="Real-time data: " + str(random.randint(1, 100)))
+        pass
 
     def update_server_status(self):
         # Function to update server status label
@@ -307,6 +321,11 @@ class GCSApp:
         self.fan2_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[1] else "OFF"))
         self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
 
+    def update_gps_status_frame(self):
+        # Function to update GPS label
+        self.gps_latitude_label.config(text="Latitude: " + str(self.gps_status.latitude))
+        self.gps_longitude_label.config(text="Longitude: " + str(self.gps_status.longitude))
+
     def update_command_buttons(self):
         if self.command_actions_state.override_button_state == True:
             self.override_toggle.config(text="Turn OFF")
@@ -331,6 +350,7 @@ class GCSApp:
             self.update_temperature_status_frame()
             self.update_command_buttons()
             self.update_server_status()
+            self.update_gps_status_frame()
             await asyncio.sleep(UPDATE_UI_INTERVAL)
 
     def set_temperature_status(self, data):
@@ -341,3 +361,7 @@ class GCSApp:
 
         self.command_actions_state.override_button_state = data["override_mode"]
         self.command_actions_state.fan_button_state = data["fan_active"][0]
+
+    def set_gps_status(self, data):
+        self.gps_status.latitude = data["lat"]
+        self.gps_status.longitude = data["lon"]

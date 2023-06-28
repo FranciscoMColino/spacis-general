@@ -11,3 +11,8 @@ class CommandActionsState:
         self.fan_button_state = False
         self.fan_speed = None
         self.cpu_clock = 2200
+
+class GpsStatus:
+    def __init__(self):
+        self.latitude = 0
+        self.longitude = 0

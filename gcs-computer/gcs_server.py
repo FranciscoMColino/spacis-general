@@ -45,7 +45,12 @@ class GCSServer:
             elif message["type"] == "temperature_status":
                 data = message['data']
                 self.app.set_temperature_status(data)
-                
+
+            elif message["type"] == "gps_status":
+                data = message['data']
+                self.app.set_gps_status(data)
+                print(f"RECEIVED: gps status {data}")
+
             else:
                 print("RECEIVED: invalid type")
         except json.decoder.JSONDecodeError:
