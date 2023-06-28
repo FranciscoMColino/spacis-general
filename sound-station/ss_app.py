@@ -5,6 +5,7 @@ from functools import partial
 
 import numpy as np
 
+SUB_DISTANCE = 0.33
 
 class SSApp:
     def __init__(self, root, serial_com):
@@ -22,16 +23,16 @@ class SSApp:
     def calculate_angle_2_subs(self, frame):
 
         # TODO hardcoded for now
-        sub_distance = 1
-        delay_sub_0 = self.delay_control.entry_boxes[0].get()
-        delay_sub_1 = self.delay_control.entry_boxes[1].get()
+        sub_distance = SUB_DISTANCE
+        delay_sub_0 = self.delay_control.entry_boxes[4].get()
+        delay_sub_1 = self.delay_control.entry_boxes[5].get()
 
         if not delay_sub_0 or not delay_sub_1:
             print("No delay cycles entered") # TODO log in UI
             return 0
-        else:
-            delay_cycles = int(delay_sub_1) - int(delay_sub_0)
-            print("Delay cycles: {}".format(delay_cycles))
+
+        delay_cycles = int(delay_sub_1) - int(delay_sub_0)
+        print("Delay cycles: {}".format(delay_cycles))
 
         # speed of sound in air
         c = 343.0
@@ -47,20 +48,20 @@ class SSApp:
 
         frame.result_label.config(text="Tx angle: " + str(transmission_angle))
 
-    def send_delays(self, value_array):
+    def send_delays(self):
+
+        value_array = self.convert_entries_to_values(self.delay_control.entry_boxes)
+
         # check if size 6
         if len(value_array) != 6:
             print("Incorrect size of array")
             return
-        
-        data = {
-            "command": "DELAYS",
-            "values": value_array
-        }
 
-        json_message = json.dumps(data)
+        message = 'A ' + ' '.join(str(num) for num in value_array)  # 'A' represents the type of message
 
-        self.serial_com.send_message(json_message.encode())
+        print("Message sent: ", message)
+
+        self.serial_com.send_message(message.encode())
 
     def update_elements(self):
         joined_messages = "\n".join(self.serial_com.get_received_messages()[-8::])
@@ -131,7 +132,7 @@ class SSApp:
         delay_frame.result_label.grid(row=7, column=1, padx=10, pady=10)
 
         # Send delays button
-        send_button = tk.Button(delay_frame, text="Send delays", command= partial(self.send_delays, self.convert_entries_to_values(self.delay_control.entry_boxes)))
+        send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays)
         send_button.grid(row=8, column=0, padx=10, pady=10 , columnspan=2)
 
         # ##### SERIAL COM MONITOR ##### #

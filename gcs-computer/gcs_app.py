@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from app_models import CommandActionsState, TemperatureStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+UPDATE_UI_INTERVAL = 1/12
 
 async def test_task():
     while True:
@@ -22,6 +23,7 @@ class GCSApp:
         self.data_manager = data_manager
         self.temperature_status = TemperatureStatus()
         self.command_actions_state = CommandActionsState()
+        self.display_data = []
 
         # Values shown
         self.server_client_status = self.server.client
@@ -44,6 +46,8 @@ class GCSApp:
         tk.Label(server_frame, text="Server").grid(row=0, column=0)
         self.server_status_label = tk.Label(server_frame, text="Waiting for client...")
         self.server_status_label.grid(row=1, column=0, pady=5)
+        self.client_last_update_label = tk.Label(server_frame, text="Last update: ---")
+        self.client_last_update_label.grid(row=2, column=0, pady=5)
 
         # Section shows plot of data received
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)
@@ -116,8 +120,10 @@ class GCSApp:
         raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         raw_data_frame.grid(row=3, column=0, padx=10, pady=10)
         tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.raw_data_label = tk.Label(raw_data_frame, text="Waiting for data...", width=40, height=1)
-        self.raw_data_label.grid(row=1, column=0, pady=5)
+        self.rcv_data_txt = tk.Text(raw_data_frame, height=10, width=50)
+        self.rcv_data_txt.grid(row=1, column=0, pady=5, padx=5)
+        #self.rcv_data_txt.insert(tk.END, "Waiting for data...")
+        self.rcv_data_txt.config(state=tk.DISABLED)
         self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
         self.received_time_label.grid(row=2, column=0, pady=5)
 
@@ -217,15 +223,15 @@ class GCSApp:
     def send_cpu_clock(self, clock):
         print("LOG: CPU clock button pressed")
         self.send_command({
-            "type": "CPU_CONFIG",
-            "action": "CLOCK_SPEED",
+            "type": "OS",
+            "action": "SET_CPU_SPEED",
             "value": clock
         })
 
     def send_reboot_rpi(self):
         print("LOG: Reboot RPI button pressed")
         self.send_command({
-            "type": "CPU_CONFIG",
+            "type": "OS",
             "action": "REBOOT",
             "value": True
         })
@@ -261,14 +267,35 @@ class GCSApp:
         # Function to update real-time data label with random value
         self.real_time_data_label.config(text="Real-time data: " + str(random.randint(1, 100)))
 
-    def update_server_status(self, status):
+    def update_server_status(self):
         # Function to update server status label
-        self.server_status = status
-        self.server_status_label.config(text=self.server_status.value)
+        if (self.server.client.connected):
+            self.server_status_label.config(text="Client Connected")
+            # change color to green
+            self.server_status_label.config(bg="green")
+        else:
+            self.server_status_label.config(text="Client Disconnected")
+            # change color to red
+            self.server_status_label.config(bg="red")
+        
+        self.client_last_update_label.config(text="Last update: " + self.server.client.last_update)
 
     def update_data(self, data):
         # Function to update raw data label
-        self.raw_data_label.config(text=data)
+
+        self.display_data.append(data)
+
+        if len(self.display_data) > 10:
+            self.display_data.pop(0)
+        
+        self.rcv_data_txt.config(state=tk.NORMAL)
+        self.rcv_data_txt.delete("1.0", tk.END)
+
+        for d in self.display_data:
+            self.rcv_data_txt.insert(tk.END,"Number of samples {}\n".format(len(d)))
+
+        self.rcv_data_txt.config(state=tk.DISABLED)
+
         self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
 
     def update_temperature_status_frame(self):
@@ -296,12 +323,15 @@ class GCSApp:
             self.draw_spectogram()
             await asyncio.sleep(1)
 
+    
+
     async def update_task(self):
         while True:
             self.update_real_time_data()
             self.update_temperature_status_frame()
             self.update_command_buttons()
-            await asyncio.sleep(1)
+            self.update_server_status()
+            await asyncio.sleep(UPDATE_UI_INTERVAL)
 
     def set_temperature_status(self, data):
         self.temperature_status.current_temperature = data["current_temperature"]

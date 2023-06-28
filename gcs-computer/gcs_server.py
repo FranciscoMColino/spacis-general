@@ -1,6 +1,7 @@
 import asyncio
 import enum
 import json
+import time
 
 import data_recording
 import spacis_utils
@@ -10,7 +11,7 @@ import websockets
 class Client:
     def __init__(self):
         self.connected = False
-        self.last_update = None
+        self.last_update = ""
         self.websocket = None
 
 class GCSServer:
@@ -26,7 +27,7 @@ class GCSServer:
         self.app = app
 
     async def start(self):
-        self.server = await websockets.serve(self.websocket_handler, 'localhost', self.port)
+        self.server = await websockets.serve(self.websocket_handler, '192.168.43.130', self.port)
 
     def received_message_handler(self, message):
         # convert message to json
@@ -38,7 +39,7 @@ class GCSServer:
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
                 #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
                 self.data_recorder.record_data(unpacked_data) # TODO better saves
-                self.app.update_data(message['data'])
+                self.app.update_data(unpacked_data)
                 # TODO update sensor data buffer for the correlation analysis
             
             elif message["type"] == "temperature_status":
@@ -49,6 +50,10 @@ class GCSServer:
                 print("RECEIVED: invalid type")
         except json.decoder.JSONDecodeError:
             print("RECEIVED: invalid message format (not JSON)")
+
+        if self.client.connected:
+            # last update time as str with date
+            self.client.last_update = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     def send_message(self, message):
         if self.client.websocket:
