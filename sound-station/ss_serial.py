@@ -2,27 +2,8 @@ import asyncio
 
 import serial.tools.list_ports
 
-
-def test():
-    # List all available serial ports
-    ports = serial.tools.list_ports.comports()
-
-    # Filter the list to find the port with "Arduino" in its description
-    arduino_ports = [
-        p.device
-        for p in serial.tools.list_ports.comports()
-        if 'Arduino' in p.description
-    ]
-
-    ser  = serial.Serial(arduino_ports[0], 115200)
-
-    # Read and print incoming messages from the Arduino
-    while True:
-        if ser.in_waiting > 0:
-            messages = []
-            while ser.in_waiting > 0:
-                messages.append(ser.readline().decode('utf-8').rstrip())
-            print(len(messages))
+AUTO_DETECT = True
+MANUAL_SERIAL_PORT = "COM8"
 
 serial_reading = True
 
@@ -40,21 +21,29 @@ class TransmitterSerial():
 
     def connect(self):
         # Filter the list to find the port with "Arduino" in its description
-        arduino_ports = [
-            p.device
-            for p in serial.tools.list_ports.comports()
-            if 'Arduino' in p.description
-        ]
 
-        if (not arduino_ports):
-            print("ERROR: No Arduino found")
-            self.ser = None
-            return False
+        arduino_device = None
 
-        self.ser  = serial.Serial(arduino_ports[0], self.baundrate)
+        if AUTO_DETECT:
+            arduino_ports = [
+                p.device
+                for p in serial.tools.list_ports.comports()
+                if 'Arduino' in p.description
+            ]
+            if (not arduino_ports):
+                print("ERROR: No Arduino found")
+                self.ser = None
+                return False
+            arduino_device = arduino_ports[0]
+
+        else:
+            arduino_device = MANUAL_SERIAL_PORT
+        
+
+        self.ser  = serial.Serial(arduino_device, self.baundrate)
         
         if self.ser:
-            print("Connected successfully to the arduino", arduino_ports[0])
+            print("Connected successfully to the arduino", arduino_device)
             return True
         else:
             print("Failed to connect to the arduino")
