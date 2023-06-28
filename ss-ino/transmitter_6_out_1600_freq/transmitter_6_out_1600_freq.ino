@@ -123,6 +123,23 @@ void gen_next_seq(){
     free(preliminary_sequence);
 }
 
+int freeMemory() {
+  extern int __heap_start, *__brkval;
+  int free_memory;
+  if (__brkval == 0) {
+    free_memory = ((int)&free_memory) - ((int)&__heap_start);
+  } else {
+    free_memory = ((int)&free_memory) - ((int)__brkval);
+  }
+  return free_memory;
+}
+
+void printFreeMemory() {
+  Serial.print("Free Memory: ");
+  Serial.print(freeMemory());
+  Serial.println(" bytes");
+}
+
 void setup() {
   Serial.begin(115200);
   DDRB = B00111111;
@@ -142,6 +159,7 @@ void setup() {
 }
 
 void loop() {
+  
   elapsed = micros() - setup_timer1_start;
   switch (current_state) {
     case START_S:
@@ -158,9 +176,13 @@ void loop() {
     case TIMER1_WORKING:
       break;
     case TIMER1_FINISHED:
+      printFreeMemory();
       Serial.print("Elapsed time on TIMER1_FINISHED: ");
       Serial.println(elapsed);
-      free(transmission_sequence);
+      if (transmission_sequence != nullptr) {
+        free(transmission_sequence);
+        transmission_sequence = nullptr; // Optional: Set the pointer to null after freeing
+      }
       current_state = DATA_TRANSFER;
       break;
     case DATA_TRANSFER:
@@ -171,11 +193,10 @@ void loop() {
       } else {
           String message = "";
 
-          
+
+          //printFreeMemory();
          if (Serial.available()) {
-          Serial.println("Here 1");
           String message = Serial.readStringUntil('\n');
-          Serial.println("Here 2");
           if (message.startsWith("A")) { // Check if it's the expected message type (starting with 'A')
             message.remove(0, 1);
 
