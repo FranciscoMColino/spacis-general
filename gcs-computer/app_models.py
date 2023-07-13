@@ -8,9 +8,6 @@ class TemperatureStatus:
 
 class CommandActionsState:
     def __init__(self):
-        self.override_button_state = False
-        self.box_fan_button_state = False
-        self.rpi_fan_button_state = False
         self.cpu_clock = 2200
 
 class GpsStatus:

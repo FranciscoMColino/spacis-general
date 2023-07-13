@@ -93,8 +93,8 @@ class GCSApp:
         self.box_fan_label = tk.Label(box_temp_frame, text="Box fans: OFF")
         self.box_fan_label.grid(row=2, column=0, pady=5)
 
-        self.fan_toggle = tk.Button(box_temp_frame, text="Turn ON", command=self.toggle_box_fans)
-        self.fan_toggle.grid(row=3, column=0, pady=5, padx=5)
+        self.box_fan_toggle = tk.Button(box_temp_frame, text="Turn ON", command=self.toggle_box_fans)
+        self.box_fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
         rpi_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
         rpi_temp_frame.grid(row=1, column=1, pady=5, padx=5)
@@ -106,8 +106,8 @@ class GCSApp:
         self.rpi_fan_label = tk.Label(rpi_temp_frame, text="RPi fans: OFF")
         self.rpi_fan_label.grid(row=2, column=0, pady=5)
 
-        self.fan_toggle = tk.Button(rpi_temp_frame, text="Turn ON", command=self.toggle_rpi_fans)
-        self.fan_toggle.grid(row=3, column=0, pady=5, padx=5)
+        self.rpi_fan_toggle = tk.Button(rpi_temp_frame, text="Turn ON", command=self.toggle_rpi_fans)
+        self.rpi_fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
         # Section for gps data
         gps_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -143,21 +143,21 @@ class GCSApp:
 
     def toggle_override(self):
         print("LOG: Toggle override button pressed")
-        if self.command_actions_state.override_button_state == True:
+        if self.temperature_status.override_mode == True:
             self.send_override_off()
         else:
             self.send_override_on()
 
     def toggle_rpi_fans(self):
         print("LOG: Toggle RPi fans button pressed")
-        if self.command_actions_state.rpi_fan_button_state == True:
+        if self.temperature_status.rpi_fan == True:
             self.send_rpi_fan_off()
         else:
             self.send_rpi_fan_on()
 
     def toggle_box_fans(self):
         print("LOG: Toggle box fans button pressed")
-        if self.command_actions_state.box_fan_button_state == True:
+        if self.temperature_status.box_fan == True:
             self.send_box_fan_off()
         else:
             self.send_box_fan_on()
@@ -324,12 +324,17 @@ class GCSApp:
         self.rpi_fan_label.config(text="RPi Fan: " + ("ON" if self.temperature_status.rpi_fan else "OFF"))
 
 
-        if self.command_actions_state.box_fan_button_state == True:
-            self.fan_toggle.config(text="Turn OFF")
+        if self.temperature_status.box_fan == True:
+            self.box_fan_toggle.config(text="Turn OFF")
         else:
-            self.fan_toggle.config(text="Turn ON")
+            self.box_fan_toggle.config(text="Turn ON")
+
+        if self.temperature_status.rpi_fan == True:
+            self.rpi_fan_toggle.config(text="Turn OFF")
+        else:
+            self.rpi_fan_toggle.config(text="Turn ON")
         
-        if self.command_actions_state.override_button_state == True:
+        if self.temperature_status.override_mode == True:
             self.override_toggle.config(text="Turn OFF")
         else:
             self.override_toggle.config(text="Turn ON")
@@ -340,17 +345,12 @@ class GCSApp:
         self.gps_longitude_label.config(text="Longitude: " + str(self.gps_status.longitude))
 
     def update_command_buttons(self):
-        if self.command_actions_state.override_button_state == True:
+        if self.temperature_status.override_mode == True:
             self.override_toggle.config(text="Turn OFF")
         else:
             self.override_toggle.config(text="Turn ON")
 
         self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
-
-        if self.command_actions_state.box_fan_button_state == True:
-            self.fan_toggle.config(text="Turn OFF")
-        else:
-            self.fan_toggle.config(text="Turn ON")
         
     async def update_spectogram_task(self):
         while True:
@@ -375,9 +375,7 @@ class GCSApp:
         self.temperature_status.box_fan = data["box_fan"]
         self.temperature_status.rpi_fan = data["rpi_fan"]
         self.temperature_status.override_mode = data["override_mode"]
-
-        self.command_actions_state.override_button_state = data["override_mode"]
-
+    
     def set_gps_status(self, data):
         self.gps_status.latitude = data["lat"]
         self.gps_status.longitude = data["lon"]
