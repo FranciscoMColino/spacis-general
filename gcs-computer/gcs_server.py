@@ -15,19 +15,20 @@ class Client:
         self.websocket = None
 
 class GCSServer:
-    def __init__(self, data_recorder):
+    def __init__(self, data_recorder, spacis_server_client):
         self.client_websocket = None
         #self.state = ServerState.WAITING_FOR_CLIENT
         self.port = 8080
         self.server = None
         self.data_recorder = data_recorder
         self.client = Client()
+        self.spacis_server_client = spacis_server_client
 
     def setup(self, app):
         self.app = app
 
     async def start(self):
-        self.server = await websockets.serve(self.websocket_handler, '192.168.43.130', self.port)
+        self.server = await websockets.serve(self.websocket_handler, '192.168.137.1', self.port)
 
     def received_message_handler(self, message):
         # convert message to json
@@ -40,7 +41,9 @@ class GCSServer:
                 #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
                 self.data_recorder.record_data(unpacked_data) # TODO better saves
                 self.app.update_data(unpacked_data)
+                # print("RECEIVERD: unpacked data ", unpacked_data)
                 # TODO update sensor data buffer for the correlation analysis
+                self.spacis_server_client.add_message(message)
             
             elif message["type"] == "temperature_status":
                 data = message['data']
@@ -50,6 +53,7 @@ class GCSServer:
                 data = message['data']
                 self.app.set_gps_status(data)
                 print(f"RECEIVED: gps status {data}")
+                self.spacis_server_client.add_message(message)
 
             else:
                 print("RECEIVED: invalid type")

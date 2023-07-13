@@ -65,18 +65,11 @@ class GCSApp:
         button_frame.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
         tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
 
-        tk.Label(button_frame, text="Override Mode").grid(row=1, column=0, pady=5)
+
+        self.override_status_label = tk.Label(button_frame, text="Override Status: OFF")
+        self.override_status_label.grid(row=1, column=0, pady=5)
         self.override_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_override)
         self.override_toggle.grid(row=1, column=1, pady=5, padx=5)
-
-        tk.Label(button_frame, text="Toggle cooling fans").grid(row=2, column=0, pady=5)
-        self.fan_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_fans)
-        self.fan_toggle.grid(row=2, column=1, pady=5, padx=5)
-
-        tk.Button(button_frame, text="Set fan speed", command=self.set_fan_speed).grid(row=3, column=0, pady=5)
-        self.command_actions_state.fan_speed = tk.IntVar()
-        self.fan_speed_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.command_actions_state.fan_speed, orient=tk.HORIZONTAL)
-        self.fan_speed_slider.grid(row=3, column=1, pady=5, padx=5)
 
         tk.Button(button_frame, text="Config CPU clock (MHz)", command=self.set_cpu_clock).grid(row=4, column=0, pady=5, padx=5)
         self.command_actions_state.cpu_clock = tk.IntVar()
@@ -84,38 +77,37 @@ class GCSApp:
         self.cpu_clock_slider.grid(row=4, column=1, pady=5, padx=5)
 
         tk.Button(button_frame, text="Reboot RPI" , command=self.reboot_rpi).grid(row=5, column=0, pady=5, padx=5)
-
-        if 0:
-
-            tk.Button(button_frame, text="Toggle cooling fans").grid(row=2, column=1, pady=5, padx=5)
-            self.power_limit = tk.IntVar()
-            self.processing_power_slider = tk.Scale(button_frame, from_=0, to=100, variable=self.power_limit, orient=tk.HORIZONTAL).grid(row=2, column=2, pady=5, padx=5)
-            tk.Button(button_frame, text="Limit processing power", command=self.send_processing_power_limit).grid(row=3, column=1, pady=5, padx=5)
-            tk.Button(button_frame, text="Unlimit processing power", command=self.send_processing_power_unlimit).grid(row=3, column=2, pady=5, padx=5)
-
         
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         sensor_frame.grid(row=2, column=0, padx=10, pady=10)
-        tk.Label(sensor_frame, text="Temperature and Fan Speed").grid(row=0, column=0, columnspan=2)
+        tk.Label(sensor_frame, text="Temperature control").grid(row=0, column=0, columnspan=2)
 
-        self.override_status_label = tk.Label(sensor_frame, text="Override Status: OFF")
-        self.override_status_label.grid(row=1, column=0, pady=5)
+        box_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
+        box_temp_frame.grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(box_temp_frame, text="Box", font='Segoe 9 bold').grid(row=0, column=0)
 
-        self.temperature_label = tk.Label(sensor_frame, text="Temperature: --")
-        self.temperature_label.grid(row=1, column=1, pady=5)
+        self.box_temperature_label = tk.Label(box_temp_frame, text="Box temp.: --")
+        self.box_temperature_label.grid(row=1, column=0, pady=5)
 
-        self.fan1_speed_label = tk.Label(sensor_frame, text="Fan 1 speed: --")
-        self.fan1_speed_label.grid(row=2, column=0, pady=5)
+        self.box_fan_label = tk.Label(box_temp_frame, text="Box fans: OFF")
+        self.box_fan_label.grid(row=2, column=0, pady=5)
 
-        self.fan2_speed_label = tk.Label(sensor_frame, text="Fan 2 speed: --")
-        self.fan2_speed_label.grid(row=2, column=1, pady=5)
+        self.fan_toggle = tk.Button(box_temp_frame, text="Turn ON", command=self.toggle_box_fans)
+        self.fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
-        self.fan1_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
-        self.fan1_status_label.grid(row=3, column=0, pady=5)
+        rpi_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
+        rpi_temp_frame.grid(row=1, column=1, pady=5, padx=5)
+        tk.Label(rpi_temp_frame, text="RPi", font='Segoe 9 bold').grid(row=0, column=0)
 
-        self.fan2_status_label = tk.Label(sensor_frame, text="Fan Status: OFF")
-        self.fan2_status_label.grid(row=3, column=1, pady=5)
+        self.cpu_temperature_label = tk.Label(rpi_temp_frame, text="CPU temp.: --")
+        self.cpu_temperature_label.grid(row=1, column=0, pady=5)
+
+        self.rpi_fan_label = tk.Label(rpi_temp_frame, text="RPi fans: OFF")
+        self.rpi_fan_label.grid(row=2, column=0, pady=5)
+
+        self.fan_toggle = tk.Button(rpi_temp_frame, text="Turn ON", command=self.toggle_rpi_fans)
+        self.fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
         # Section for gps data
         gps_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -156,16 +148,19 @@ class GCSApp:
         else:
             self.send_override_on()
 
-    def toggle_fans(self):
-        print("LOG: Toggle fans button pressed")
-        if self.command_actions_state.fan_button_state == True:
-            self.send_fan_off()
+    def toggle_rpi_fans(self):
+        print("LOG: Toggle RPi fans button pressed")
+        if self.command_actions_state.rpi_fan_button_state == True:
+            self.send_rpi_fan_off()
         else:
-            self.send_fan_on()
+            self.send_rpi_fan_on()
 
-    def set_fan_speed(self):
-        print("LOG: Set fan speed button pressed")
-        self.send_fan_speed(self.command_actions_state.fan_speed.get())
+    def toggle_box_fans(self):
+        print("LOG: Toggle box fans button pressed")
+        if self.command_actions_state.box_fan_button_state == True:
+            self.send_box_fan_off()
+        else:
+            self.send_box_fan_on()
 
     def set_cpu_clock(self):
         print("LOG: Set CPU clock button pressed")
@@ -209,30 +204,6 @@ class GCSApp:
             "value": False	
         })
 
-    def send_fan_off(self):
-        print("LOG: Fan off button pressed")
-        self.send_command({
-            "type": "TEMPERATURE",
-            "action": "FAN_ACTIVE",
-            "value": False
-        })
-
-    def send_fan_on(self):
-        print("LOG: Fan on button pressed")
-        self.send_command({
-            "type": "TEMPERATURE",
-            "action": "FAN_ACTIVE",
-            "value": True
-        })
-
-    def send_fan_speed(self, speed):
-        print("LOG: Fan speed button pressed")
-        self.send_command({
-            "type": "TEMPERATURE",
-            "action": "FAN_SPEED",
-            "value": speed
-        })
-
     def send_cpu_clock(self, clock):
         print("LOG: CPU clock button pressed")
         self.send_command({
@@ -248,6 +219,38 @@ class GCSApp:
             "action": "REBOOT",
             "value": True
         })
+
+    def send_rpi_fan_on(self):
+        print("LOG: RPi fan on button pressed")
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "RPI_FAN_ACTIVE",
+            "value": True
+        })
+    
+    def send_rpi_fan_off(self):
+        print("LOG: RPi fan off button pressed")
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "RPI_FAN_ACTIVE",
+            "value": False
+        })
+
+    def send_box_fan_on(self):
+        print("LOG: Box fan on button pressed")
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "BOX_FAN_ACTIVE",
+            "value": True
+        })
+
+    def send_box_fan_off(self):
+        print("LOG: Box fan off button pressed")
+        self.send_command({
+            "type": "TEMPERATURE",
+            "action": "BOX_FAN_ACTIVE",
+            "value": False
+        })    
 
     def send_command(self, command):
         
@@ -314,13 +317,23 @@ class GCSApp:
 
     def update_temperature_status_frame(self):
         # Function to update temperature label
-        self.temperature_label.config(text="Temperature: " + str(self.temperature_status.current_temperature))
-        self.fan1_speed_label.config(text="Fan 1 speed: " + str(self.temperature_status.fan_speed[0]))
-        self.fan2_speed_label.config(text="Fan 2 speed: " + str(self.temperature_status.fan_speed[1]))
-        self.fan1_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[0] else "OFF"))
-        self.fan2_status_label.config(text="Fan Status: " + ("ON" if self.temperature_status.fan_active[1] else "OFF"))
-        self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
+        self.box_temperature_label.config(text="Box temp.: " + str(self.temperature_status.box_temperature))
+        self.cpu_temperature_label.config(text="CPU temp.: " + str(self.temperature_status.cpu_temperature))
 
+        self.box_fan_label.config(text="Box Fan: " + ("ON" if self.temperature_status.box_fan else "OFF"))
+        self.rpi_fan_label.config(text="RPi Fan: " + ("ON" if self.temperature_status.rpi_fan else "OFF"))
+
+
+        if self.command_actions_state.box_fan_button_state == True:
+            self.fan_toggle.config(text="Turn OFF")
+        else:
+            self.fan_toggle.config(text="Turn ON")
+        
+        if self.command_actions_state.override_button_state == True:
+            self.override_toggle.config(text="Turn OFF")
+        else:
+            self.override_toggle.config(text="Turn ON")
+        
     def update_gps_status_frame(self):
         # Function to update GPS label
         self.gps_latitude_label.config(text="Latitude: " + str(self.gps_status.latitude))
@@ -332,7 +345,9 @@ class GCSApp:
         else:
             self.override_toggle.config(text="Turn ON")
 
-        if self.command_actions_state.fan_button_state == True:
+        self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
+
+        if self.command_actions_state.box_fan_button_state == True:
             self.fan_toggle.config(text="Turn OFF")
         else:
             self.fan_toggle.config(text="Turn ON")
@@ -354,13 +369,14 @@ class GCSApp:
             await asyncio.sleep(UPDATE_UI_INTERVAL)
 
     def set_temperature_status(self, data):
-        self.temperature_status.current_temperature = data["current_temperature"]
-        self.temperature_status.fan_speed = data["fan_speed"]
-        self.temperature_status.fan_active = data["fan_active"]
+        self.temperature_status.cpu_temperature = round(data["cpu_temperature"], 2)
+        self.temperature_status.box_temperature = round(data["box_temperature"], 2)
+
+        self.temperature_status.box_fan = data["box_fan"]
+        self.temperature_status.rpi_fan = data["rpi_fan"]
         self.temperature_status.override_mode = data["override_mode"]
 
         self.command_actions_state.override_button_state = data["override_mode"]
-        self.command_actions_state.fan_button_state = data["fan_active"][0]
 
     def set_gps_status(self, data):
         self.gps_status.latitude = data["lat"]

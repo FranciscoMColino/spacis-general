@@ -3,6 +3,7 @@ import tkinter as tk
 
 import data_recording
 from gcs_app import GCSApp
+from gcs_client import GCSClient
 from gcs_server import GCSServer
 
 
@@ -14,8 +15,10 @@ async def main():
 
     data_manager = data_recording.DataManager()
 
-    server = GCSServer(data_manager)
+    client = GCSClient()
+    server = GCSServer(data_manager, client)
     app = GCSApp(root, data_manager, server)
+    
     
     server.setup(app)
     await server.start()
@@ -23,6 +26,9 @@ async def main():
     asyncio.create_task(app.run())
     asyncio.create_task(app.update_task())
     asyncio.create_task(app.update_spectogram_task())
+
+    #asyncio.create_task(client.connect())
+    #asyncio.create_task(client.periodic_dispatch())
 
     while True:
         try:

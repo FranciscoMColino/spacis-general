@@ -5,7 +5,7 @@ from functools import partial
 
 import numpy as np
 
-SUB_DISTANCE = 0.33
+SUB_DISTANCE = 2.55
 
 class SSApp:
     def __init__(self, root, serial_com):
