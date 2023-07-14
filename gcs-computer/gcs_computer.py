@@ -27,8 +27,8 @@ async def main():
     asyncio.create_task(app.update_task())
     asyncio.create_task(app.update_spectogram_task())
 
-    #asyncio.create_task(client.connect())
-    #asyncio.create_task(client.periodic_dispatch())
+    asyncio.create_task(client.connect())
+    asyncio.create_task(client.periodic_dispatch())
 
     while True:
         try:

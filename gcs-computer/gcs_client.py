@@ -3,7 +3,7 @@ import json
 
 import websockets
 
-HOST = "localhost"
+HOST = "16.16.139.172"
 PORT = 8765
 
 ON_DISPATCH_INTERVAL = 1/100

@@ -5,7 +5,7 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from app_models import CommandActionsState, GpsStatus, TemperatureStatus
+from app_models import GpsStatus, SystemControlData, TemperatureStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 UPDATE_UI_INTERVAL = 1/12
@@ -22,7 +22,7 @@ class GCSApp:
         self.server = server
         self.data_manager = data_manager
         self.temperature_status = TemperatureStatus()
-        self.command_actions_state = CommandActionsState()
+        self.system_control_data = SystemControlData()
         self.gps_status = GpsStatus()
         self.display_data = []
 
@@ -61,22 +61,36 @@ class GCSApp:
         self.spectogram_ax = ax
 
         # Section with buttons and text
-        button_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        button_frame.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
-        tk.Label(button_frame, text="Commands").grid(row=0, column=0, columnspan=3)
+        system_control_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
+        system_control_frame.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
+        tk.Label(system_control_frame, text="Commands").grid(row=0, column=0, columnspan=3)
 
-
-        self.override_status_label = tk.Label(button_frame, text="Override Status: OFF")
+        self.override_status_label = tk.Label(system_control_frame, text="Override Status: OFF")
         self.override_status_label.grid(row=1, column=0, pady=5)
-        self.override_toggle = tk.Button(button_frame, text="Turn ON", command=self.toggle_override)
+        self.override_toggle = tk.Button(system_control_frame, text="Turn ON", command=self.toggle_override)
         self.override_toggle.grid(row=1, column=1, pady=5, padx=5)
 
-        tk.Button(button_frame, text="Config CPU clock (MHz)", command=self.set_cpu_clock).grid(row=4, column=0, pady=5, padx=5)
-        self.command_actions_state.cpu_clock = tk.IntVar()
-        self.cpu_clock_slider = tk.Scale(button_frame, from_=600, to=2200, variable=self.command_actions_state.cpu_clock, orient=tk.HORIZONTAL, resolution=100)
-        self.cpu_clock_slider.grid(row=4, column=1, pady=5, padx=5)
+        tk.Label(system_control_frame, text="Clock on boot:").grid(row=2, column=0, pady=5)
 
-        tk.Button(button_frame, text="Reboot RPI" , command=self.reboot_rpi).grid(row=5, column=0, pady=5, padx=5)
+        self.clock_on_boot_label = tk.Label(system_control_frame, text="--")
+        self.clock_on_boot_label.grid(row=2, column=1, pady=5)
+
+        tk.Label(system_control_frame, text="CPU clock:").grid(row=3, column=0, pady=5)
+
+        self.cpu_clock_label = tk.Label(system_control_frame, text="--")
+        self.cpu_clock_label.grid(row=3, column=1, pady=5)
+
+        tk.Label(system_control_frame, text="Config clock:").grid(row=4, column=0, pady=5)
+
+        self.config_clock_label = tk.Label(system_control_frame, text="--")
+        self.config_clock_label.grid(row=4, column=1, pady=5)
+
+        tk.Button(system_control_frame, text="Config CPU clock (MHz)", command=self.set_cpu_clock).grid(row=5, column=0, pady=5, padx=5)
+        self.system_control_data.config_cpu_clock = tk.IntVar()
+        self.cpu_clock_slider = tk.Scale(system_control_frame, from_=600, to=2200, variable=self.system_control_data.config_cpu_clock, orient=tk.HORIZONTAL, resolution=100)
+        self.cpu_clock_slider.grid(row=5, column=1, pady=5, padx=5)
+
+        tk.Button(system_control_frame, text="Reboot RPI" , command=self.reboot_rpi).grid(row=6, column=0, pady=5, padx=5)
         
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -143,7 +157,7 @@ class GCSApp:
 
     def toggle_override(self):
         print("LOG: Toggle override button pressed")
-        if self.temperature_status.override_mode == True:
+        if self.system_control_data.override_mode == True:
             self.send_override_off()
         else:
             self.send_override_on()
@@ -164,7 +178,7 @@ class GCSApp:
 
     def set_cpu_clock(self):
         print("LOG: Set CPU clock button pressed")
-        self.send_cpu_clock(self.command_actions_state.cpu_clock.get())
+        self.send_cpu_clock(self.system_control_data.config_cpu_clock.get())
 
     def reboot_rpi(self):
         print("LOG: Reboot RPI button pressed")
@@ -191,7 +205,7 @@ class GCSApp:
     def send_override_on(self):
         print("LOG: Override on button pressed")
         self.send_command({
-            "type": "TEMPERATURE",
+            "type": "OS",
             "action": "OVERRIDE",
             "value": True	
         })
@@ -199,7 +213,7 @@ class GCSApp:
     def send_override_off(self):
         print("LOG: Override off button pressed")
         self.send_command({
-            "type": "TEMPERATURE",
+            "type": "OS",
             "action": "OVERRIDE",
             "value": False	
         })
@@ -334,24 +348,27 @@ class GCSApp:
         else:
             self.rpi_fan_toggle.config(text="Turn ON")
         
-        if self.temperature_status.override_mode == True:
-            self.override_toggle.config(text="Turn OFF")
-        else:
-            self.override_toggle.config(text="Turn ON")
-        
     def update_gps_status_frame(self):
         # Function to update GPS label
         self.gps_latitude_label.config(text="Latitude: " + str(self.gps_status.latitude))
         self.gps_longitude_label.config(text="Longitude: " + str(self.gps_status.longitude))
 
-    def update_command_buttons(self):
-        if self.temperature_status.override_mode == True:
+    def update_system_control(self):
+
+        if self.system_control_data.override_mode == True:
             self.override_toggle.config(text="Turn OFF")
         else:
             self.override_toggle.config(text="Turn ON")
 
-        self.override_status_label.config(text="Override Status: " + ("ON" if self.temperature_status.override_mode else "OFF"))
+        self.override_status_label.config(text="Override Status: " + ("ON" if self.system_control_data.override_mode else "OFF"))
         
+        self.clock_on_boot_label.config(text=self.system_control_data.clock_on_boot)
+
+        self.cpu_clock_label.config(text=self.system_control_data.current_cpu_clock)
+
+        self.config_clock_label.config(text=self.system_control_data.clock_config)
+
+
     async def update_spectogram_task(self):
         while True:
             self.draw_spectogram()
@@ -363,7 +380,7 @@ class GCSApp:
         while True:
             self.update_real_time_data()
             self.update_temperature_status_frame()
-            self.update_command_buttons()
+            self.update_system_control()
             self.update_server_status()
             self.update_gps_status_frame()
             await asyncio.sleep(UPDATE_UI_INTERVAL)
@@ -371,10 +388,15 @@ class GCSApp:
     def set_temperature_status(self, data):
         self.temperature_status.cpu_temperature = round(data["cpu_temperature"], 2)
         self.temperature_status.box_temperature = round(data["box_temperature"], 2)
-
         self.temperature_status.box_fan = data["box_fan"]
         self.temperature_status.rpi_fan = data["rpi_fan"]
-        self.temperature_status.override_mode = data["override_mode"]
+        
+
+    def set_system_control_data(self, data):
+        self.system_control_data.override_mode = data["override_mode"]
+        self.system_control_data.clock_on_boot = data["clock_on_boot"]
+        self.system_control_data.current_cpu_clock = data["cpu_speed"]
+        self.system_control_data.clock_config = data["clock_config"]
     
     def set_gps_status(self, data):
         self.gps_status.latitude = data["lat"]

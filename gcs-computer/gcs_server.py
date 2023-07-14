@@ -42,12 +42,15 @@ class GCSServer:
                 self.data_recorder.record_data(unpacked_data) # TODO better saves
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
-                # TODO update sensor data buffer for the correlation analysis
                 self.spacis_server_client.add_message(message)
             
             elif message["type"] == "temperature_status":
                 data = message['data']
                 self.app.set_temperature_status(data)
+
+            elif message["type"] == "system_control_data":
+                data = message['data']
+                self.app.set_system_control_data(data)
 
             elif message["type"] == "gps_status":
                 data = message['data']
