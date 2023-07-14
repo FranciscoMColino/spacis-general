@@ -21,7 +21,9 @@ class GCSClient:
 
     async def periodic_dispatch(self):
         while True:
+            print("LOG: Periodic dispatch")
             if self.ws is not None and self.ws.open:
+                print("LOG: Dispatching message")
                 if len(self.message_buffer) > 0:
                     message = {
                         "user": "ground-control-station",
@@ -31,6 +33,10 @@ class GCSClient:
                     await self.ws.send(json.dumps(message))
                     await asyncio.sleep(ON_DISPATCH_INTERVAL)
                     continue
+            else:
+                print("LOG: No connection, {}".format(self.ws.open if self.ws is not None else "None"))
+                print("LOG: Trying to connect")
+                await self.connect()
             await asyncio.sleep(NO_ACTIVITY_INTERVAL)
     
     def add_message(self, message):

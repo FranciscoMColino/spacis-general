@@ -5,8 +5,9 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from app_models import GpsStatus, SystemControlData, TemperatureStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+from app_models import GpsStatus, SystemControlData, TemperatureStatus
 
 UPDATE_UI_INTERVAL = 1/12
 
@@ -313,7 +314,7 @@ class GCSApp:
 
     def update_data(self, data):
         # Function to update raw data label
-
+        
         self.display_data.append(data)
 
         if len(self.display_data) > 10:

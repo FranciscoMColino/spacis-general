@@ -3,9 +3,10 @@ import enum
 import json
 import time
 
+import websockets
+
 import data_recording
 import spacis_utils
-import websockets
 
 
 class Client:
@@ -52,14 +53,14 @@ class GCSServer:
                 data = message['data']
                 self.app.set_system_control_data(data)
 
-            elif message["type"] == "gps_status":
+            elif message["type"] == "gps_data":
                 data = message['data']
                 self.app.set_gps_status(data)
-                print(f"RECEIVED: gps status {data}")
+                print(f"RECEIVED: gps data {data}")
                 self.spacis_server_client.add_message(message)
 
             else:
-                print("RECEIVED: invalid type")
+                print("RECEIVED: invalid type, {}".format(message["type"]))
         except json.decoder.JSONDecodeError:
             print("RECEIVED: invalid message format (not JSON)")
 

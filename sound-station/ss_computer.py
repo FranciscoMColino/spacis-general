@@ -1,7 +1,9 @@
 import asyncio
 import tkinter as tk
 
+from data_recording import DataManager
 from ss_app import SSApp
+from ss_client import SSClient
 from ss_serial import TransmitterSerial
 
 
@@ -20,10 +22,16 @@ async def main():
         print("Failed to connect to INO serial")
         return 
     
-    app = SSApp(root, serial_com)
+    data_manager = DataManager()
+    app = SSApp(root, serial_com, data_manager)
+    ws_client = SSClient(app, data_manager)
 
     asyncio.create_task(app.run())
+    asyncio.create_task(app.update_task())
+    asyncio.create_task(app.update_spectogram_task())
+
     asyncio.create_task(serial_com.read_messages())
+    asyncio.create_task(ws_client.run())
 
     while True:
         try:

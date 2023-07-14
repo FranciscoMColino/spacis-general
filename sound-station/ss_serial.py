@@ -79,7 +79,7 @@ class TransmitterSerial():
             while ser.in_waiting > 0:
                 msg = ser.readline().decode('utf-8').rstrip()
                 recorded_signals_local_cache.append(msg)
-                print("Serial message: {}".format(msg))
+                #print("Serial message: {}".format(msg))
 
             if recorded_signals_local_cache:
                 #transfer recorded_signals_local_cache to recorded_signals
