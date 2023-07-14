@@ -16,5 +16,12 @@ class SystemControlData:
 
 class GpsStatus:
     def __init__(self):
-        self.latitude = 0
-        self.longitude = 0
+        self.lat = 0
+        self.lon = 0
+        self.alt = 0
+        self.speed = 0
+        self.climb = 0
+        self.track = 0
+        self.time = 0
+        self.error = 0
+        self.satellites = []

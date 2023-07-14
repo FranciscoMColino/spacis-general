@@ -129,11 +129,33 @@ class GCSApp:
         gps_frame.grid(row=2, column=1, padx=10, pady=10)
         tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
 
-        self.gps_latitude_label = tk.Label(gps_frame, text="Latitude: --")
+        self.gps_latitude_label = tk.Label(gps_frame, text="Lat: --")
         self.gps_latitude_label.grid(row=1, column=0, pady=5)
 
-        self.gps_longitude_label = tk.Label(gps_frame, text="Longitude: --")
-        self.gps_longitude_label.grid(row=2, column=0, pady=5)
+        self.gps_longitude_label = tk.Label(gps_frame, text="Lon: --")
+        self.gps_longitude_label.grid(row=1, column=1, pady=5)
+
+        self.gps_altitude_label = tk.Label(gps_frame, text="Alt: --")
+        self.gps_altitude_label.grid(row=2, column=0, pady=5)
+
+        self.gps_error_label = tk.Label(gps_frame, text="Error: --")
+        self.gps_error_label.grid(row=2, column=1, pady=5)
+
+        self.gps_speed_label = tk.Label(gps_frame, text="Speed: --")
+        self.gps_speed_label.grid(row=3, column=0, pady=5)
+
+        self.gps_climb_label = tk.Label(gps_frame, text="Climb: --")
+        self.gps_climb_label.grid(row=3, column=1, pady=5)
+
+        self.gps_time_label = tk.Label(gps_frame, text="Time: --")
+        self.gps_time_label.grid(row=4, column=0, pady=5, columnspan=2)
+
+        self.gps_track_label = tk.Label(gps_frame, text="Track: --")
+        self.gps_track_label.grid(row=5, column=0, pady=5)
+
+        self.gps_satellites_label = tk.Label(gps_frame, text="Satellites: --")
+        self.gps_satellites_label.grid(row=5, column=1, pady=5)
+
 
 
         # Section that shows raw data received
@@ -314,7 +336,7 @@ class GCSApp:
 
     def update_data(self, data):
         # Function to update raw data label
-        
+
         self.display_data.append(data)
 
         if len(self.display_data) > 10:
@@ -351,8 +373,15 @@ class GCSApp:
         
     def update_gps_status_frame(self):
         # Function to update GPS label
-        self.gps_latitude_label.config(text="Latitude: " + str(self.gps_status.latitude))
-        self.gps_longitude_label.config(text="Longitude: " + str(self.gps_status.longitude))
+        self.gps_latitude_label.config(text="Lat: " + str(self.gps_status.lat))
+        self.gps_longitude_label.config(text="Lon: " + str(self.gps_status.lon))
+        self.gps_altitude_label.config(text="Alt: " + str(self.gps_status.alt))
+        self.gps_speed_label.config(text="Speed: " + str(self.gps_status.speed))
+        self.gps_climb_label.config(text="Climb: " + str(self.gps_status.climb))
+        self.gps_track_label.config(text="Track: " + str(self.gps_status.track))
+        self.gps_time_label.config(text="Time: " + str(self.gps_status.time))
+        self.gps_error_label.config(text="Error: " + str(self.gps_status.error))
+        self.gps_satellites_label.config(text="Satellites: " + str(self.gps_status.satellites))
 
     def update_system_control(self):
 
@@ -400,5 +429,12 @@ class GCSApp:
         self.system_control_data.clock_config = data["clock_config"]
     
     def set_gps_status(self, data):
-        self.gps_status.latitude = data["lat"]
-        self.gps_status.longitude = data["lon"]
+        self.gps_status.lat = data["lat"]
+        self.gps_status.lon = data["lon"]
+        self.gps_status.alt = data["alt"]
+        self.gps_status.speed = data["speed"]
+        self.gps_status.climb = data["climb"]
+        self.gps_status.satellites = data["satellites"]
+        self.gps_status.time = data["time"]
+        self.gps_status.error = data["error"]
+        self.gps_status.track = data["track"]
