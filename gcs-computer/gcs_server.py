@@ -36,11 +36,13 @@ class GCSServer:
         try:
             message = json.loads(message)
 
+            print(f"RECEIVED: message of type {message['type']}")
+
             # switch case for message type
             if message["type"] == "sensor_data":
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
                 #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
-                self.data_recorder.record_data(unpacked_data) # TODO better saves
+                self.data_recorder.record_multiple_sensor_data(unpacked_data) # TODO better saves
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
                 self.spacis_server_client.add_message(message)
@@ -48,6 +50,10 @@ class GCSServer:
             elif message["type"] == "temperature_status":
                 data = message['data']
                 self.app.set_temperature_status(data)
+                self.data_recorder.record_temperature_data([
+                    data['box_temperature'], 
+                    data['cpu_temperature']]
+                    )
 
             elif message["type"] == "system_control_data":
                 data = message['data']
@@ -56,8 +62,17 @@ class GCSServer:
             elif message["type"] == "gps_data":
                 data = message['data']
                 self.app.set_gps_status(data)
-                print(f"RECEIVED: gps data {data}")
                 self.spacis_server_client.add_message(message)
+                self.data_recorder.record_gps_data([
+                    data['lat'],
+                    data['lon'],
+                    data['alt'],
+                    data['speed'],
+                    data['climb'],
+                    data['track'],
+                    data['time'],
+                    data['error']
+                ])
 
             else:
                 print("RECEIVED: invalid type, {}".format(message["type"]))

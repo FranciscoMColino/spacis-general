@@ -51,7 +51,7 @@ class SSClient:
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
                 #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
                 # TODO record data
-                self.data_recorder.record_data(unpacked_data)
+                self.data_recorder.record_multiple_sensor_data(unpacked_data)
                 self.app.update_data(unpacked_data)
                 print("RECEIVERD: unpacked data ", len(unpacked_data))
 
@@ -59,7 +59,16 @@ class SSClient:
                 data = message['data']
                 self.app.set_gps_status(data)
                 print(f"RECEIVED: gps data {data}")
-               # self.spacis_server_client.add_message(message)
+                self.data_recorder.record_gps_data([
+                    data['lat'],
+                    data['lon'],
+                    data['alt'],
+                    data['speed'],
+                    data['climb'],
+                    data['track'],
+                    data['time'],
+                    data['error']
+                ])
 
             else:
                 print("RECEIVED: invalid type {}, ignoring message".format(message["type"]))

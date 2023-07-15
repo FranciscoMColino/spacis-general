@@ -1,7 +1,7 @@
 import asyncio
 import tkinter as tk
 
-from data_recording import DataManager
+from data_recording import DataRecorder
 from ss_app import SSApp
 from ss_client import SSClient
 from ss_serial import TransmitterSerial
@@ -22,9 +22,9 @@ async def main():
         print("Failed to connect to INO serial")
         return 
     
-    data_manager = DataManager()
-    app = SSApp(root, serial_com, data_manager)
-    ws_client = SSClient(app, data_manager)
+    data_recorder = DataRecorder()
+    app = SSApp(root, serial_com, data_recorder)
+    ws_client = SSClient(app, data_recorder)
 
     asyncio.create_task(app.run())
     asyncio.create_task(app.update_task())

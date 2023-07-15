@@ -312,8 +312,8 @@ class GCSApp:
             display_data = data
 
         self.spectogram_ax.clear()
-        self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-5, vmax=30)
-        self.spectogram_ax.set_ylim([0, 100])
+        self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-10, vmax=30)
+        self.spectogram_ax.set_ylim([0, 200])
         self.spectogram_window.draw()
 
     def update_real_time_data(self):
