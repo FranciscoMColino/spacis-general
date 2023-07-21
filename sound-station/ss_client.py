@@ -1,9 +1,8 @@
 import asyncio
 import json
 
-import websockets
-
 import spacis_utils
+import websockets
 
 HOST = "16.16.139.172"
 PORT = 8765
