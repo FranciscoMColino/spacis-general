@@ -98,28 +98,40 @@ class GCSApp:
         sensor_frame.grid(row=2, column=0, padx=10, pady=10, sticky=tk.N)
         tk.Label(sensor_frame, text="Temperature control").grid(row=0, column=0, columnspan=2)
 
-        box_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
+        box_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.FLAT)
         box_temp_frame.grid(row=1, column=0, pady=5, padx=5)
         tk.Label(box_temp_frame, text="Box", font='Segoe 9 bold').grid(row=0, column=0)
 
-        self.box_temperature_label = tk.Label(box_temp_frame, text="Box temp.: --")
-        self.box_temperature_label.grid(row=1, column=0, pady=5)
+        box_temperature_frame = tk.Frame(box_temp_frame, bd=1, relief=tk.GROOVE)
+        box_temperature_frame.grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(box_temperature_frame, text="Box temp:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.box_temperature_label = tk.Label(box_temperature_frame, text="--", width=5, anchor=tk.W)
+        self.box_temperature_label.grid(row=0, column=1, pady=5)
 
-        self.box_fan_label = tk.Label(box_temp_frame, text="Box fans: OFF")
-        self.box_fan_label.grid(row=2, column=0, pady=5)
+        box_fan_frame = tk.Frame(box_temp_frame, bd=1, relief=tk.GROOVE)
+        box_fan_frame.grid(row=2, column=0, pady=5, padx=5)
+        tk.Label(box_fan_frame, text="Box fan:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.box_fan_label = tk.Label(box_fan_frame, text="--", width=4)
+        self.box_fan_label.grid(row=0, column=1, pady=5, padx=3.25)
 
         self.box_fan_toggle = tk.Button(box_temp_frame, text="Turn ON", command=self.toggle_box_fans)
         self.box_fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
-        rpi_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
+        rpi_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.FLAT)
         rpi_temp_frame.grid(row=1, column=1, pady=5, padx=5)
         tk.Label(rpi_temp_frame, text="RPi", font='Segoe 9 bold').grid(row=0, column=0)
 
-        self.cpu_temperature_label = tk.Label(rpi_temp_frame, text="CPU temp.: --")
-        self.cpu_temperature_label.grid(row=1, column=0, pady=5)
+        cpu_temperature_frame = tk.Frame(rpi_temp_frame, bd=1, relief=tk.GROOVE)
+        cpu_temperature_frame.grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(cpu_temperature_frame, text="CPU temp:").grid(row=0, column=0, pady=5)
+        self.cpu_temperature_label = tk.Label(cpu_temperature_frame, text="--", width=5, anchor=tk.W)
+        self.cpu_temperature_label.grid(row=0, column=1, pady=5)
 
-        self.rpi_fan_label = tk.Label(rpi_temp_frame, text="RPi fans: OFF")
-        self.rpi_fan_label.grid(row=2, column=0, pady=5)
+        rpi_fan_frame = tk.Frame(rpi_temp_frame, bd=1, relief=tk.GROOVE)
+        rpi_fan_frame.grid(row=2, column=0, pady=5, padx=5)
+        tk.Label(rpi_fan_frame, text="RPi fan:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.rpi_fan_label = tk.Label(rpi_fan_frame, text="--", width=4)
+        self.rpi_fan_label.grid(row=0, column=1, pady=5, padx=3.25)
 
         self.rpi_fan_toggle = tk.Button(rpi_temp_frame, text="Turn ON", command=self.toggle_rpi_fans)
         self.rpi_fan_toggle.grid(row=3, column=0, pady=5, padx=5)
@@ -383,11 +395,11 @@ class GCSApp:
 
     def update_temperature_status_frame(self):
         # Function to update temperature label
-        self.box_temperature_label.config(text="Box temp.: " + str(self.temperature_status.box_temperature))
-        self.cpu_temperature_label.config(text="CPU temp.: " + str(self.temperature_status.cpu_temperature))
+        self.box_temperature_label.config(text=str(self.temperature_status.box_temperature))
+        self.cpu_temperature_label.config(text=str(self.temperature_status.cpu_temperature))
 
-        self.box_fan_label.config(text="Box Fan: " + ("ON" if self.temperature_status.box_fan else "OFF"))
-        self.rpi_fan_label.config(text="RPi Fan: " + ("ON" if self.temperature_status.rpi_fan else "OFF"))
+        self.box_fan_label.config(text="ON" if self.temperature_status.box_fan else "OFF", bg="green" if self.temperature_status.box_fan else "red")
+        self.rpi_fan_label.config(text="ON" if self.temperature_status.rpi_fan else "OFF", bg="green" if self.temperature_status.rpi_fan else "red")
 
 
         if self.temperature_status.box_fan == True:
@@ -432,8 +444,6 @@ class GCSApp:
         while True:
             self.draw_spectogram()
             await asyncio.sleep(1)
-
-    
 
     async def update_task(self):
         while True:
