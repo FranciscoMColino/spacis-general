@@ -28,7 +28,7 @@ class DataRecorder:
     def setup_temperature_record(self):
         self.temperature_record_file = open(self.temperature_record_path, 'a')
         self.temperature_record_file.write('box_temp,cpu_temp\n')
-        
+
     def setup_gps_record(self):
         print("here")
         self.gps_record_file = open(self.gps_record_path, 'a')
@@ -49,13 +49,16 @@ class DataRecorder:
             self.record_sensor_data(line)
         if len(self.local_data) > self.LOCAL_SIZE_LIMIT:
             self.local_data = self.local_data[len(self.local_data)-self.MAX_NO_SENQ:]
+        self.sensor_record_file.flush()
 
     def record_gps_data(self, data):
         transformed_data = [str(x) for x in data]
         self.gps_record_file.write(','.join(transformed_data) + '\n')
+        self.gps_record_file.flush()
 
     def record_temperature_data(self, data):
         transformed_data = [str(round(x, 2)) for x in data]
         current_time = datetime.datetime.now()
         transformed_data.append(current_time.strftime("%H-%M-%S")+ f".{current_time.microsecond // 1000:03d}")
         self.temperature_record_file.write(','.join(transformed_data) + '\n')
+        self.temperature_record_file.flush()

@@ -5,9 +5,8 @@ import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 from app_models import GpsStatus, SystemControlData, TemperatureStatus
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 UPDATE_UI_INTERVAL = 1/12
 
@@ -40,8 +39,7 @@ class GCSApp:
             self.root.update()
             await asyncio.sleep(1/FPS)
 
-    def create_widgets(self):
-
+    def create_server_status_widget(self):
         # Section that shows server status
         server_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         server_frame.grid(row=0, column=0, padx=10, pady=10, columnspan=2)
@@ -50,7 +48,8 @@ class GCSApp:
         self.server_status_label.grid(row=1, column=0, pady=5)
         self.client_last_update_label = tk.Label(server_frame, text="Last update: ---")
         self.client_last_update_label.grid(row=2, column=0, pady=5)
-
+    
+    def create_data_spec_widget(self):
         # Section shows plot of data received
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)
         ax = figure1.add_subplot(111)
@@ -61,7 +60,7 @@ class GCSApp:
         self.spectogram_window.draw()
         self.spectogram_ax = ax
 
-        # Section with buttons and text
+    def create_system_control_widget(self):
         system_control_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         system_control_frame.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
         tk.Label(system_control_frame, text="Commands").grid(row=0, column=0, columnspan=3)
@@ -92,7 +91,8 @@ class GCSApp:
         self.cpu_clock_slider.grid(row=5, column=1, pady=5, padx=5)
 
         tk.Button(system_control_frame, text="Reboot RPI" , command=self.reboot_rpi).grid(row=6, column=0, pady=5, padx=5)
-        
+
+    def create_temperature_control_widget(self):
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         sensor_frame.grid(row=2, column=0, padx=10, pady=10)
@@ -124,16 +124,23 @@ class GCSApp:
         self.rpi_fan_toggle = tk.Button(rpi_temp_frame, text="Turn ON", command=self.toggle_rpi_fans)
         self.rpi_fan_toggle.grid(row=3, column=0, pady=5, padx=5)
 
+    def create_gps_widget(self):
         # Section for gps data
         gps_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         gps_frame.grid(row=2, column=1, padx=10, pady=10)
         tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
 
-        self.gps_latitude_label = tk.Label(gps_frame, text="Lat: --")
-        self.gps_latitude_label.grid(row=1, column=0, pady=5)
+        gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.RIDGE)
+        gps_latitude_frame.grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(gps_latitude_frame, text="Lat:").grid(row=0, column=0, pady=5)
+        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10)
+        self.gps_latitude_label.grid(row=0, column=1, pady=5)
 
-        self.gps_longitude_label = tk.Label(gps_frame, text="Lon: --")
-        self.gps_longitude_label.grid(row=1, column=1, pady=5)
+        gps_longitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.RIDGE)
+        gps_longitude_frame.grid(row=1, column=1, pady=5, padx=5)
+        tk.Label(gps_longitude_frame, text="Lon:").grid(row=0, column=0, pady=5)
+        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10)
+        self.gps_longitude_label.grid(row=0, column=1, pady=5)
 
         self.gps_altitude_label = tk.Label(gps_frame, text="Alt: --")
         self.gps_altitude_label.grid(row=2, column=0, pady=5)
@@ -156,8 +163,7 @@ class GCSApp:
         self.gps_satellites_label = tk.Label(gps_frame, text="Satellites: --")
         self.gps_satellites_label.grid(row=5, column=1, pady=5)
 
-
-
+    def create_received_sequence_status_widget(self):
         # Section that shows raw data received
         raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
         raw_data_frame.grid(row=3, column=0, padx=10, pady=10, columnspan=2)
@@ -169,12 +175,14 @@ class GCSApp:
         self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
         self.received_time_label.grid(row=2, column=0, pady=5)
 
-        # Section that shows real-time data
-        #data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        #data_frame.grid(row=4, column=0, padx=10, pady=10)
-        #tk.Label(data_frame, text="Real-time Data").grid(row=0, column=0)
-        #self.real_time_data_label = tk.Label(data_frame, text="Waiting for data...")
-        #self.real_time_data_label.grid(row=1, column=0, pady=5)
+    def create_widgets(self):
+
+        self.create_server_status_widget()
+        self.create_data_spec_widget()
+        self.create_system_control_widget()
+        self.create_temperature_control_widget()
+        self.create_gps_widget()
+        self.create_received_sequence_status_widget()
 
     # Button/action functions
 
@@ -373,8 +381,8 @@ class GCSApp:
         
     def update_gps_status_frame(self):
         # Function to update GPS label
-        self.gps_latitude_label.config(text="Lat: " + str(self.gps_status.lat))
-        self.gps_longitude_label.config(text="Lon: " + str(self.gps_status.lon))
+        self.gps_latitude_label.config(text=str(self.gps_status.lat))
+        self.gps_longitude_label.config(text=str(self.gps_status.lon))
         self.gps_altitude_label.config(text="Alt: " + str(self.gps_status.alt))
         self.gps_speed_label.config(text="Speed: " + str(self.gps_status.speed))
         self.gps_climb_label.config(text="Climb: " + str(self.gps_status.climb))
