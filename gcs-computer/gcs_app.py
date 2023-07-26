@@ -95,7 +95,7 @@ class GCSApp:
     def create_temperature_control_widget(self):
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        sensor_frame.grid(row=2, column=0, padx=10, pady=10)
+        sensor_frame.grid(row=2, column=0, padx=10, pady=10, sticky=tk.N)
         tk.Label(sensor_frame, text="Temperature control").grid(row=0, column=0, columnspan=2)
 
         box_temp_frame = tk.Frame(sensor_frame, bd=1, relief=tk.SOLID)
@@ -130,38 +130,59 @@ class GCSApp:
         gps_frame.grid(row=2, column=1, padx=10, pady=10)
         tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
 
-        gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.RIDGE)
+        gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
         gps_latitude_frame.grid(row=1, column=0, pady=5, padx=5)
-        tk.Label(gps_latitude_frame, text="Lat:").grid(row=0, column=0, pady=5)
-        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10)
+        tk.Label(gps_latitude_frame, text="Lat:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10, anchor=tk.W)
         self.gps_latitude_label.grid(row=0, column=1, pady=5)
 
-        gps_longitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.RIDGE)
+        gps_longitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
         gps_longitude_frame.grid(row=1, column=1, pady=5, padx=5)
-        tk.Label(gps_longitude_frame, text="Lon:").grid(row=0, column=0, pady=5)
-        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10)
+        tk.Label(gps_longitude_frame, text="Lon:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10, anchor=tk.W)
         self.gps_longitude_label.grid(row=0, column=1, pady=5)
 
-        self.gps_altitude_label = tk.Label(gps_frame, text="Alt: --")
-        self.gps_altitude_label.grid(row=2, column=0, pady=5)
+        gps_altitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_altitude_frame.grid(row=2, column=0, pady=5, padx=5)
+        tk.Label(gps_altitude_frame, text="Alt:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_altitude_label = tk.Label(gps_altitude_frame, width=10, anchor=tk.W)
+        self.gps_altitude_label.grid(row=0, column=1, pady=5)
 
-        self.gps_error_label = tk.Label(gps_frame, text="Error: --")
-        self.gps_error_label.grid(row=2, column=1, pady=5)
+        gps_error_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_error_frame.grid(row=2, column=1, pady=5, padx=5)
+        tk.Label(gps_error_frame, text="Error:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_error_label = tk.Label(gps_error_frame, width=10, anchor=tk.W)
+        self.gps_error_label.grid(row=0, column=1, pady=5)
 
-        self.gps_speed_label = tk.Label(gps_frame, text="Speed: --")
-        self.gps_speed_label.grid(row=3, column=0, pady=5)
+        gps_speed_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_speed_frame.grid(row=3, column=0, pady=5, padx=5)
+        tk.Label(gps_speed_frame, text="Speed:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_speed_label = tk.Label(gps_speed_frame, width=10, anchor=tk.W)
+        self.gps_speed_label.grid(row=0, column=1, pady=5)
 
-        self.gps_climb_label = tk.Label(gps_frame, text="Climb: --")
-        self.gps_climb_label.grid(row=3, column=1, pady=5)
+        gps_climb_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_climb_frame.grid(row=3, column=1, pady=5, padx=5)
+        tk.Label(gps_climb_frame, text="Climb:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_climb_label = tk.Label(gps_climb_frame, width=10, anchor=tk.W)
+        self.gps_climb_label.grid(row=0, column=1, pady=5)
 
-        self.gps_time_label = tk.Label(gps_frame, text="Time: --")
-        self.gps_time_label.grid(row=4, column=0, pady=5, columnspan=2)
+        gps_time_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_time_frame.grid(row=4, column=0, pady=5, padx=5)
+        tk.Label(gps_time_frame, text="Time:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_time_label = tk.Label(gps_time_frame, width=10, anchor=tk.W)
+        self.gps_time_label.grid(row=0, column=1, pady=5)
 
-        self.gps_track_label = tk.Label(gps_frame, text="Track: --")
-        self.gps_track_label.grid(row=5, column=0, pady=5)
+        gps_track_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_track_frame.grid(row=4, column=1, pady=5, padx=5)
+        tk.Label(gps_track_frame, text="Track:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_track_label = tk.Label(gps_track_frame, width=10, anchor=tk.W)
+        self.gps_track_label.grid(row=0, column=1, pady=5)
 
-        self.gps_satellites_label = tk.Label(gps_frame, text="Satellites: --")
-        self.gps_satellites_label.grid(row=5, column=1, pady=5)
+        gps_satellites_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_satellites_frame.grid(row=5, column=0, pady=5, padx=5, columnspan=2)
+        tk.Label(gps_satellites_frame, text="Satellites:", width=7, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_satellites_label = tk.Label(gps_satellites_frame, width=27, anchor=tk.W)
+        self.gps_satellites_label.grid(row=0, column=1, pady=5)
 
     def create_received_sequence_status_widget(self):
         # Section that shows raw data received
@@ -383,13 +404,13 @@ class GCSApp:
         # Function to update GPS label
         self.gps_latitude_label.config(text=str(self.gps_status.lat))
         self.gps_longitude_label.config(text=str(self.gps_status.lon))
-        self.gps_altitude_label.config(text="Alt: " + str(self.gps_status.alt))
-        self.gps_speed_label.config(text="Speed: " + str(self.gps_status.speed))
-        self.gps_climb_label.config(text="Climb: " + str(self.gps_status.climb))
-        self.gps_track_label.config(text="Track: " + str(self.gps_status.track))
-        self.gps_time_label.config(text="Time: " + str(self.gps_status.time))
-        self.gps_error_label.config(text="Error: " + str(self.gps_status.error))
-        self.gps_satellites_label.config(text="Satellites: " + str(self.gps_status.satellites))
+        self.gps_altitude_label.config(text=str(self.gps_status.alt))
+        self.gps_speed_label.config(text=str(self.gps_status.speed))
+        self.gps_climb_label.config(text=str(self.gps_status.climb))
+        self.gps_track_label.config(text=str(self.gps_status.track))
+        self.gps_time_label.config(text=str(self.gps_status.time))
+        self.gps_error_label.config(text=str(self.gps_status.error))
+        self.gps_satellites_label.config(text=str(self.gps_status.satellites))
 
     def update_system_control(self):
 
