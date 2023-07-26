@@ -55,7 +55,7 @@ class GCSApp:
         # Section shows plot of data received
 
         data_viz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
-        data_viz_frame.grid(row=0, column=2, padx=10, pady=10, rowspan=4)
+        data_viz_frame.grid(row=1, column=2, padx=10, pady=10, rowspan=4)
 
         figure1 = plt.Figure(figsize=(16, 10), dpi=50)
         ax = figure1.add_subplot(111)
@@ -264,14 +264,20 @@ class GCSApp:
     def create_received_sequence_status_widget(self):
         # Section that shows raw data received
         raw_data_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        raw_data_frame.grid(row=3, column=0, padx=10, pady=10, columnspan=2)
-        tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.rcv_data_txt = tk.Text(raw_data_frame, height=10, width=50)
-        self.rcv_data_txt.grid(row=1, column=0, pady=5, padx=5)
-        #self.rcv_data_txt.insert(tk.END, "Waiting for data...")
-        self.rcv_data_txt.config(state=tk.DISABLED)
-        self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
-        self.received_time_label.grid(row=2, column=0, pady=5)
+        raw_data_frame.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
+        tk.Label(raw_data_frame, text="Samples received").grid(row=0, column=0)
+    
+        self.rcv_data_label = tk.Label(raw_data_frame, text="0", width=45, anchor=tk.W,relief=tk.SUNKEN, bg="white")
+        self.rcv_data_label.grid(row=1, column=0, pady=5)
+
+        date_time_frame = tk.Frame(raw_data_frame, bd=1)
+        date_time_frame.grid(row=2, column=0, pady=5, padx=5, sticky=tk.W)
+
+    
+        tk.Label(date_time_frame, text="Time:", anchor=tk.W ).grid(row=0, column=0, pady=2)
+
+        self.received_time_label = tk.Label(date_time_frame, text='-----', anchor=tk.W)
+        self.received_time_label.grid(row=0, column=1, pady=2)
 
     def create_widgets(self):
 
@@ -424,6 +430,9 @@ class GCSApp:
         return scientific_str
 
     def draw_spectogram(self):
+
+        # TODO redo this, may be slowing us down
+
         sample_size = self.data_viz_control.sample_size.get()
 
         if not self.data_manager.local_data:
@@ -473,18 +482,14 @@ class GCSApp:
 
         self.display_data.append(data)
 
-        if len(self.display_data) > 10:
+        if len(self.display_data) > 20:
             self.display_data.pop(0)
-        
-        self.rcv_data_txt.config(state=tk.NORMAL)
-        self.rcv_data_txt.delete("1.0", tk.END)
 
-        for d in self.display_data:
-            self.rcv_data_txt.insert(tk.END,"Number of samples {}\n".format(len(d)))
+        display_data_sizes = [len(d) for d in self.display_data]
 
-        self.rcv_data_txt.config(state=tk.DISABLED)
+        self.rcv_data_label.config(text=display_data_sizes[::-1])
 
-        self.received_time_label.config(text="Time: " + datetime.now().strftime("%H:%M:%S"))
+        self.received_time_label.config(text=datetime.now().strftime("%H:%M:%S"))
 
     def update_temperature_status_frame(self):
         # Function to update temperature label
