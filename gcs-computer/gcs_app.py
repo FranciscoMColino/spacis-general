@@ -458,10 +458,19 @@ class GCSApp:
         print("Shape of display_data: ", np.shape(np.array(self.data_manager.local_data)))
         """
 
+        PM_START = time.time()
+
         if not self.received_samples:
             return
+        
+        data_len = len(self.received_samples)
 
-        display_data = list(zip(*self.received_samples))[0]
+        sample_size = self.data_viz_control.sample_size.get()
+
+        if data_len > sample_size:
+            display_data = list(zip(*self.received_samples))[0][data_len-int(sample_size):]
+        else:
+            display_data = list(zip(*self.received_samples))[0]
 
         ylim = [self.data_viz_control.lower_freq_bound.get(), self.data_viz_control.upper_freq_bound.get()]
         vmin = self.data_viz_control.vmin.get()
@@ -471,6 +480,8 @@ class GCSApp:
         self.spectogram_ax.specgram(display_data, Fs=1600, vmin=vmin, vmax=vmax)
         self.spectogram_ax.set_ylim(ylim)
         self.spectogram_window.draw()
+
+        self.performance_recordings.record("update_spectogram", time.time() - PM_START)
 
     def update_real_time_data(self):
         # Function to update real-time data label with random value
@@ -500,7 +511,7 @@ class GCSApp:
 
         data_len = len(self.received_samples)
 
-        sample_size = self.data_viz_control.sample_size.get()
+        sample_size = self.data_viz_control.max_max_sample_size
 
         if data_len > sample_size:
             self.received_samples = self.received_samples[data_len-int(sample_size):]

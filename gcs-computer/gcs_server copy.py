@@ -3,10 +3,9 @@ import enum
 import json
 import time
 
-import websockets
-
 import data_recording
 import spacis_utils
+import websockets
 
 
 class Client:
@@ -36,7 +35,7 @@ class GCSServer:
         try:
             message = json.loads(message)
 
-            print(f"RECEIVED: message of type {message['type']}")
+            #print(f"RECEIVED: message of type {message['type']}")
 
             # switch case for message type
             if message["type"] == "sensor_data":

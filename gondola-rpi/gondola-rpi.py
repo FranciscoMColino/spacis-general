@@ -57,7 +57,7 @@ async def websocket_client():
         while True:
             try:
                 message = await websocket.recv()
-                print(f'RECEIVED: {message}')
+                #print(f'RECEIVED: {message}')
                 # Handle messages accordingly
 
             except websockets.exceptions.ConnectionClosed:

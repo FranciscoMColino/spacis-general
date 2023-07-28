@@ -22,8 +22,8 @@ class DataRecorder:
         self.sensor_record_file = open(self.sensor_record_path, 'a')
         self.sensor_record_file.write('sensor_1,sensor_2,sensor_3,sensor_4,delay\n')
         self.local_data = []
-        self.MAX_NO_SENQ = 100
-        self.LOCAL_SIZE_LIMIT = pow(2, 12) * 4 * 100
+        #self.MAX_NO_SENQ = 100
+        #self.LOCAL_SIZE_LIMIT = pow(2, 12) * 4 * 100
 
     def setup_temperature_record(self):
         self.temperature_record_file = open(self.temperature_record_path, 'a')
@@ -44,11 +44,11 @@ class DataRecorder:
         self.sensor_record_file.write(','.join(transformed_data) + '\n')
 
     def record_multiple_sensor_data(self, data):
-        self.local_data.extend(data)
+        #self.local_data.extend(data)
         for line in data:
             self.record_sensor_data(line)
-        if len(self.local_data) > self.LOCAL_SIZE_LIMIT:
-            self.local_data = self.local_data[len(self.local_data)-self.MAX_NO_SENQ:]
+        #if len(self.local_data) > self.LOCAL_SIZE_LIMIT:
+        #    self.local_data = self.local_data[len(self.local_data)-self.MAX_NO_SENQ:]
         self.sensor_record_file.flush()
 
     def record_gps_data(self, data):
