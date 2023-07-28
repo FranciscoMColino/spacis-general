@@ -1,10 +1,12 @@
 import asyncio
 import json
 import random
+import time
 import tkinter as tk
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+import numpy as np
 from app_models import (DataVizControl, GpsStatus, SystemControlData,
                         TemperatureStatus)
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -26,7 +28,8 @@ class GCSApp:
         self.system_control_data = SystemControlData()
         self.data_viz_control = DataVizControl()
         self.gps_status = GpsStatus()
-        self.display_data = []
+        self.received_sample_clusters = []
+        self.received_samples = []
 
         # Values shown
         self.server_client_status = self.server.client
@@ -204,7 +207,7 @@ class GCSApp:
     def create_gps_widget(self):
         # Section for gps data
         gps_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
-        gps_frame.grid(row=2, column=1, padx=10, pady=10)
+        gps_frame.grid(row=2, column=1, padx=10, pady=10, sticky=tk.N)
         tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
 
         gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
@@ -432,7 +435,7 @@ class GCSApp:
     def draw_spectogram(self):
 
         # TODO redo this, may be slowing us down
-
+        """
         sample_size = self.data_viz_control.sample_size.get()
 
         if not self.data_manager.local_data:
@@ -442,13 +445,22 @@ class GCSApp:
 
         data_len = len(data)
 
-        self.data_viz_sample_available_label.config(text=self.int_to_scientific_notation(data_len))
+        #self.data_viz_sample_available_label.config(text=self.int_to_scientific_notation(data_len))
 
         display_data = []
         if data_len > sample_size:
             display_data = data[data_len-int(sample_size):]
         else:
             display_data = data
+
+        print("Shape of received_Samples: ", np.shape(np.array(self.received_samples)))
+        print("Shape of display_data: ", np.shape(np.array(self.data_manager.local_data)))
+        """
+
+        if not self.received_samples:
+            return
+
+        display_data = list(zip(*self.received_samples))[0]
 
         ylim = [self.data_viz_control.lower_freq_bound.get(), self.data_viz_control.upper_freq_bound.get()]
         vmin = self.data_viz_control.vmin.get()
@@ -480,12 +492,20 @@ class GCSApp:
     def update_data(self, data):
         # Function to update raw data label
 
-        self.display_data.append(data)
+        self.received_sample_clusters.append(data)
+        self.received_samples.extend(data)
 
-        if len(self.display_data) > 20:
-            self.display_data.pop(0)
+        data_len = len(self.received_samples)
 
-        display_data_sizes = [len(d) for d in self.display_data]
+        sample_size = self.data_viz_control.sample_size.get()
+
+        if data_len > sample_size:
+            self.received_samples = self.received_samples[data_len-int(sample_size):]
+
+        if len(self.received_sample_clusters) > 20:
+            self.received_sample_clusters.pop(0)
+
+        display_data_sizes = [len(d) for d in self.received_sample_clusters]
 
         self.rcv_data_label.config(text=display_data_sizes[::-1])
 
