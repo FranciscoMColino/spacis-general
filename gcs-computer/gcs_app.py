@@ -19,11 +19,12 @@ async def test_task():
         await asyncio.sleep(1)
 
 class GCSApp:
-    def __init__(self, root, data_manager, server):
+    def __init__(self, root, data_manager, server, performance_recordings):
         self.root = root
         self.root.title("Fan Control Panel")
         self.server = server
         self.data_manager = data_manager
+        self.performance_recordings = performance_recordings
         self.temperature_status = TemperatureStatus()
         self.system_control_data = SystemControlData()
         self.data_viz_control = DataVizControl()
@@ -492,6 +493,8 @@ class GCSApp:
     def update_data(self, data):
         # Function to update raw data label
 
+        PM_START = time.time()
+
         self.received_sample_clusters.append(data)
         self.received_samples.extend(data)
 
@@ -510,6 +513,8 @@ class GCSApp:
         self.rcv_data_label.config(text=display_data_sizes[::-1])
 
         self.received_time_label.config(text=datetime.now().strftime("%H:%M:%S"))
+
+        self.performance_recordings.record("update_sensor_data", time.time()-PM_START)
 
     def update_temperature_status_frame(self):
         # Function to update temperature label

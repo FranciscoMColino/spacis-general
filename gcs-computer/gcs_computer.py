@@ -8,6 +8,7 @@ from data_recording import DataRecorder
 from gcs_app import GCSApp
 from gcs_client import GCSClient
 from gcs_server import GCSServer
+from performance_recordings import PerformanceRecordings
 
 
 def signal_handler(sig, frame, data_record):
@@ -21,10 +22,11 @@ async def main():
     root = tk.Tk()
     #root.geometry("900x400")
 
+    performance_recordings = PerformanceRecordings()
     data_record = DataRecorder()
     client = GCSClient()
     server = GCSServer(data_record, client)
-    app = GCSApp(root, data_record, server)
+    app = GCSApp(root, data_record, server, performance_recordings)
 
     signal.signal(signal.SIGINT, functools.partial(signal_handler, data_record=data_record))
     

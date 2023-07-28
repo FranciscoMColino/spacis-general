@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 
 import websockets
 
@@ -20,7 +21,11 @@ class GCSClient:
         self.ws = None
 
     async def periodic_dispatch(self):
+        start = time.time()
+        
         while True:
+            print("PERIODIC_DISPATCH: Starting, elapsed time from last exec {}".format(time.time() - start))
+            start = time.time()
             print("LOG: Periodic dispatch")
             if self.ws is not None and self.ws.open:
                 print("LOG: Dispatching message")
@@ -31,12 +36,16 @@ class GCSClient:
                     }
 
                     await self.ws.send(json.dumps(message))
+                    print("PERIODIC_DISPATCH: Finished, elapsed time {}".format(time.time() - start))
+                    start = time.time()
                     await asyncio.sleep(ON_DISPATCH_INTERVAL)
                     continue
             else:
                 print("LOG: No connection, {}".format(self.ws.open if self.ws is not None else "None"))
                 print("LOG: Trying to connect")
                 await self.connect()
+            print("PERIODIC_DISPATCH: Finished, elapsed time {}".format(time.time() - start))
+            start = time.time()
             await asyncio.sleep(NO_ACTIVITY_INTERVAL)
     
     def add_message(self, message):
