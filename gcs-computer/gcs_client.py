@@ -12,14 +12,13 @@ NO_ACTIVITY_INTERVAL = 1
 
 WS_CLIENT_WAIT_TIME = 5
 
-# TODO dispatcher should maybe be a separate class?
-
 class GCSClient:
-    def __init__(self):
+    def __init__(self, settings):
         self.message_buffer = []
-        self.url = f"ws://{HOST}:{PORT}"
+        self.settings = settings
+        self.url = f"ws://{settings.cloud_server_ip}:{settings.cloud_server_port}"
         self.ws = None
-
+        
     async def periodic_dispatch(self):
         start = time.time()
         

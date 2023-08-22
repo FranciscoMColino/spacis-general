@@ -9,6 +9,7 @@ from gcs_app import GCSApp
 from gcs_client import GCSClient
 from gcs_server import GCSServer
 from performance_recordings import PerformanceRecordings
+from spacis_utils import parse_settings
 
 
 def signal_handler(sig, frame, data_record):
@@ -19,13 +20,15 @@ def signal_handler(sig, frame, data_record):
 # Run the event loop
 async def main():
 
+    settings = {}
+    parse_settings(settings)
+
     root = tk.Tk()
-    #root.geometry("900x400")
 
     performance_recordings = PerformanceRecordings()
     data_record = DataRecorder()
-    client = GCSClient()
-    server = GCSServer(data_record, client)
+    client = GCSClient(settings)
+    server = GCSServer(data_record, client, settings)
     app = GCSApp(root, data_record, server, performance_recordings)
 
     signal.signal(signal.SIGINT, functools.partial(signal_handler, data_record=data_record))

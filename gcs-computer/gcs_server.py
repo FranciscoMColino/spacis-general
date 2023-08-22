@@ -15,15 +15,15 @@ class Client:
         self.websocket = None
 
 class GCSServer:
-    def __init__(self, data_recorder, spacis_server_client):
+    def __init__(self, data_recorder, spacis_server_client, settings):
         self.client_websocket = None
-        #self.state = ServerState.WAITING_FOR_CLIENT
-        self.port = 8080
+        self.settings = settings
+        self.port = settings.gcs_server_port
         self.server = None
         self.data_recorder = data_recorder
         self.client = Client()
         self.spacis_server_client = spacis_server_client
-
+        
     def setup(self, app):
         self.app = app
 

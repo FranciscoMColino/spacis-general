@@ -12,6 +12,7 @@ from app_models import (DataVizControl, GpsStatus, SystemControlData,
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 UPDATE_UI_INTERVAL = 1/12
+FPS = 24
 
 async def test_task():
     while True:
@@ -38,8 +39,6 @@ class GCSApp:
         self.create_widgets()
 
     async def run(self):
-
-        FPS = 24
 
         while True:
             self.root.update()
@@ -434,29 +433,6 @@ class GCSApp:
         return scientific_str
 
     def draw_spectogram(self):
-
-        # TODO redo this, may be slowing us down
-        """
-        sample_size = self.data_viz_control.sample_size.get()
-
-        if not self.data_manager.local_data:
-            return
-
-        data = list(zip(*self.data_manager.local_data))[0]
-
-        data_len = len(data)
-
-        #self.data_viz_sample_available_label.config(text=self.int_to_scientific_notation(data_len))
-
-        display_data = []
-        if data_len > sample_size:
-            display_data = data[data_len-int(sample_size):]
-        else:
-            display_data = data
-
-        print("Shape of received_Samples: ", np.shape(np.array(self.received_samples)))
-        print("Shape of display_data: ", np.shape(np.array(self.data_manager.local_data)))
-        """
 
         PM_START = time.time()
 

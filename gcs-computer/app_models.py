@@ -12,7 +12,7 @@ class TemperatureStatus:
 class SystemControlData:
     def __init__(self):
         self.override_mode = False
-        self.config_cpu_clock = 1500 #TODO change this and join with temperaturestatus
+        self.config_cpu_clock = 1500
         self.clock_on_boot = 1500
         self.clock_config = 1500
         self.current_cpu_clock = 0
