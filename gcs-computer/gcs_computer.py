@@ -20,8 +20,7 @@ def signal_handler(sig, frame, data_record):
 # Run the event loop
 async def main():
 
-    settings = {}
-    parse_settings(settings)
+    settings = parse_settings()
 
     root = tk.Tk()
 

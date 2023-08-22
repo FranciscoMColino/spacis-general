@@ -18,7 +18,7 @@ class GCSServer:
     def __init__(self, data_recorder, spacis_server_client, settings):
         self.client_websocket = None
         self.settings = settings
-        self.port = settings.gcs_server_port
+        self.port = settings['gcs_server_port']
         self.server = None
         self.data_recorder = data_recorder
         self.client = Client()
@@ -28,7 +28,7 @@ class GCSServer:
         self.app = app
 
     async def start(self):
-        self.server = await websockets.serve(self.websocket_handler, '192.168.137.1', self.port)
+        self.server = await websockets.serve(self.websocket_handler, self.settings['gcs_server_ip'], self.port)
 
     def received_message_handler(self, message):
         # convert message to json

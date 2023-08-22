@@ -16,7 +16,7 @@ class GCSClient:
     def __init__(self, settings):
         self.message_buffer = []
         self.settings = settings
-        self.url = f"ws://{settings.cloud_server_ip}:{settings.cloud_server_port}"
+        self.url = f"ws://{settings['cloud_server_ip']}:{settings['cloud_server_port']}"
         self.ws = None
         
     async def periodic_dispatch(self):

@@ -14,7 +14,7 @@ def unpack_sensor_data(data):
     zipped_data = zip(*unpacked_data)
     return list(zipped_data)
 
-def parse_settings(settings, filename='./settings.yaml'):
+def parse_settings(filename='./settings.yaml'):
 
     if not os.path.exists(filename):
         print('File does not exist:', filename)
@@ -23,4 +23,6 @@ def parse_settings(settings, filename='./settings.yaml'):
     print('Using for settings: ', filename)
 
     with open(filename) as f:
-        settings = yaml.safe_load(f)
+        return yaml.safe_load(f)
+    
+    
