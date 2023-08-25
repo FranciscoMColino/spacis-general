@@ -70,7 +70,7 @@ class SSApp:
         self.serial_com.send_message(message.encode())
 
     def update_elements(self):
-        joined_messages = "\n".join(self.serial_com.get_received_messages()[-8::])
+        joined_messages = "\n".join(self.serial_com.get_received_messages()[-20::])
         self.text_entry.config(state=tk.NORMAL)
         self.text_entry.delete("1.0", tk.END)
         self.text_entry.insert(tk.END, joined_messages)
@@ -162,34 +162,34 @@ class SSApp:
         serial_com_frame_title.grid(row=0, column=0, padx=5, pady=5)
 
         joined_messages = "\n".join(self.serial_com.get_received_messages())
-        self.text_entry = tk.Text(serial_com_frame, height=10, width=30)
+        self.text_entry = tk.Text(serial_com_frame, height=20, width=40)
         self.text_entry.grid(row=1, column=0, padx=5, pady=5)
         self.text_entry.insert(tk.END, joined_messages)
         self.text_entry.config(state=tk.DISABLED)
         #text_entry.grid(row=0, column=0, padx=10, pady=10)
 
         # ##### SYSTEM LOGS ##### #
+        
 
         system_logs_frame = tk.Frame(logs_frame, bd=1, relief=tk.FLAT)
-        system_logs_frame.grid(row=1, column=0, padx=5, pady=5)
+        system_logs_frame.grid(row=1, column=0, padx=5, pady=5)#
+        
+        #system_logs_frame_title = tk.Label(system_logs_frame, text="System Logs")
+        #system_logs_frame_title.grid(row=0, column=0, padx=5, pady=5)
 
-        system_logs_frame_title = tk.Label(system_logs_frame, text="System Logs")
-        system_logs_frame_title.grid(row=0, column=0, padx=5, pady=5)
+        #system_logs_text = tk.Text(system_logs_frame, height=10, width=30)
+        #system_logs_text.grid(row=1, column=0, padx=5, pady=5)
+        #system_logs_text.insert(tk.END, "System logs")
+        #system_logs_text.config(state=tk.DISABLED)
 
-        system_logs_text = tk.Text(system_logs_frame, height=10, width=30)
-        system_logs_text.grid(row=1, column=0, padx=5, pady=5)
-        system_logs_text.insert(tk.END, "System logs")
-        system_logs_text.config(state=tk.DISABLED)
 
         # Section that shows raw data received
         raw_data_frame = tk.Frame(system_logs_frame, bd=1, relief=tk.FLAT)
         raw_data_frame.grid(row=2, column=0, padx=5, pady=5)
 
-        system_logs_frame_title = tk.Label(system_logs_frame, text="Sensor data received")
-        system_logs_frame_title.grid(row=0, column=0, padx=5, pady=5)
-
         tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
         self.rcv_data_txt = tk.Text(raw_data_frame, height=10, width=30)
+
         self.rcv_data_txt.grid(row=1, column=0, pady=5, padx=5)
         #self.rcv_data_txt.insert(tk.END, "Waiting for data...")
         self.rcv_data_txt.config(state=tk.DISABLED)
