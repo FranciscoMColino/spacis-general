@@ -6,20 +6,12 @@ from functools import partial
 
 import matplotlib.pyplot as plt
 import numpy as np
+from app_models import DelayControl, GpsStatus
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 SUB_DISTANCE = 2.55
 UPDATE_UI_INTERVAL = 1/12
 
-class GpsStatus:
-    def __init__(self):
-        self.latitude = 0
-        self.longitude = 0
-        self.altitude = 0
-        self.track = 0
-        self.speed = 0
-        self.climb = 0
-        self.error = 0
 
 class SSApp:
     def __init__(self, root, serial_com, data_manager):
@@ -29,6 +21,7 @@ class SSApp:
         self.data_manager = data_manager
         self.display_data = []
         self.gps_status = GpsStatus()
+        self.delay_control = DelayControl()
         self.create_widgets()
 
     def calculate_angle_2_subs(self, frame):
@@ -73,6 +66,24 @@ class SSApp:
         print("Message sent: ", message)
 
         self.serial_com.send_message(message.encode())
+
+    def toggle_manual_delays(self):
+        if self.delay_control.manual_delays_var.get():
+            print("Manual control enabled")
+            for entry in self.delay_control.entry_boxes:
+                entry.config(state=tk.NORMAL)
+        else:
+            print("Manual control disabled")
+            for entry in self.delay_control.entry_boxes:
+                entry.config(state=tk.DISABLED)
+
+    def toggle_manual_send(self):
+        if self.delay_control.manual_send_var.get():
+            print("Manual send enabled")
+            self.send_button.config(state=tk.NORMAL)
+        else:
+            print("Manual send disabled")
+            self.send_button.config(state=tk.DISABLED)
 
     def update_elements(self):
         joined_messages = "\n".join(self.serial_com.get_received_messages()[-20::])
@@ -150,27 +161,52 @@ class SSApp:
         delay_frame = tk.Frame(self.section1_frame, bd=1, relief=tk.SOLID)
         delay_frame.grid(row=1, column=0, padx=10, pady=10)
 
-        title = tk.Label(delay_frame, text="Calculate angle between two subs")
+        title = tk.Label(delay_frame, text="Delay control")
         title.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-
-        class DelayControl:
-            pass
-
-        self.delay_control = DelayControl()
-
 
         self.delay_control.entry_boxes = []
 
         for i in range(6):
-            label = tk.Label(delay_frame, text="Value " + str(i+1))
-            label.grid(row=i+1, column=0, padx=10, pady=5)
-            entry = tk.Entry(delay_frame)
-            entry.grid(row=i+1, column=1, padx=10, pady=5)
+
+            sub_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
+            sub_frame.grid(row=(i)//2+1, column=(i)%2)
+
+            tk.Label(sub_frame, text="Subwoofer " + str(i)).grid(row=0, column=0, padx=10, pady=5)
+
+            ned_frame = tk.Frame(sub_frame, bd=1, relief=tk.GROOVE)
+            ned_frame.grid(row=1, column=0, padx=10, pady=5)
+
+            tk.Label(ned_frame, text="NED pos:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+            tk.Label(ned_frame, text="0, 0, 0", width=10, anchor=tk.W).grid(row=0, column=1, pady=5)
+
+            sub_delay_frame = tk.Frame(sub_frame, bd=1, relief=tk.GROOVE)
+            sub_delay_frame.grid(row=2, column=0, padx=5, pady=5)
+
+            label2 = tk.Label(sub_delay_frame, text="Delay:", width=5, anchor=tk.W)
+            label2.grid(row=0, column=0, pady=5)
+            entry = tk.Entry(sub_delay_frame, width=14)
+            entry.grid(row=0, column=1, pady=5, padx=5)
+            entry.config(state=tk.DISABLED)
 
             if entry.get() == "":
                 entry.insert(0, "0")
 
             self.delay_control.entry_boxes.append(entry)
+
+        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual control", variable=self.delay_control.manual_delays_var, command=self.toggle_manual_delays)
+        check_manual_delay.grid(row=7, column=0, padx=10, pady=10)
+
+        check_manual_send = tk.Checkbutton(delay_frame, text="Manual send", variable=self.delay_control.manual_send_var, command=self.toggle_manual_send)
+        check_manual_send.grid(row=7, column=1, padx=10, pady=10)
+
+        self.define_pos_button = tk.Button(delay_frame, text="Define positions",  width=18)
+        self.define_pos_button.grid(row=8, column=0, padx=10, pady=10)
+
+        self.send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays, width=18)
+        self.send_button.grid(row=8, column=1, padx=10, pady=10)
+        self.send_button.config(state=tk.DISABLED)
+
+        return
 
         calculate_button = tk.Button(delay_frame, text="Calculate angle", command= partial(self.calculate_angle_2_subs, delay_frame))
         calculate_button.grid(row=7, column=0, padx=10, pady=10)
@@ -255,6 +291,8 @@ class SSApp:
         self.create_log_widget()
         self.create_dataviz_frame()
 
+        self.root.update()
+
     def draw_spectogram(self):
         SAMPLE_SIZE = pow(2, 12) * 4 * 1.1
 
@@ -309,8 +347,10 @@ class SSApp:
     async def update_task(self):
         while True:
             self.update_gps_status()
-            print("LOG: update task not implemented yet")
+            #print("LOG: update task not implemented yet")
             await asyncio.sleep(UPDATE_UI_INTERVAL)
+
+    
 
     def set_gps_status(self, data):
         self.gps_status.latitude = data["lat"]
