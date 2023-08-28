@@ -15,6 +15,11 @@ class GpsStatus:
     def __init__(self):
         self.latitude = 0
         self.longitude = 0
+        self.altitude = 0
+        self.track = 0
+        self.speed = 0
+        self.climb = 0
+        self.error = 0
 
 class SSApp:
     def __init__(self, root, serial_com, data_manager):
@@ -98,24 +103,51 @@ class SSApp:
             values.append(value)
         return values
     
-    def create_gps_frames(self):
-         ##### Section for gps data
-
-        gps_control_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
-        gps_control_frame.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
-
-        gps_frame = tk.Frame(gps_control_frame, bd=1, relief=tk.SOLID)
-        gps_frame.grid(row=0, column=0, padx=10, pady=10)
+    def create_gps_widget(self):
+        # Section for gps data
+        gps_frame = tk.Frame(self.section1_frame, bd=1, relief=tk.SOLID)
+        gps_frame.grid(row=0, column=0, padx=10, pady=10, sticky=tk.N)
         tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
 
-        self.gps_latitude_label = tk.Label(gps_frame, text="Latitude: --")
-        self.gps_latitude_label.grid(row=1, column=0, pady=5)
+        gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_latitude_frame.grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(gps_latitude_frame, text="Lat:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10, anchor=tk.W)
+        self.gps_latitude_label.grid(row=0, column=1, pady=5)
 
-        self.gps_longitude_label = tk.Label(gps_frame, text="Longitude: --")
-        self.gps_longitude_label.grid(row=2, column=0, pady=5)
+        gps_longitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_longitude_frame.grid(row=1, column=1, pady=5, padx=5)
+        tk.Label(gps_longitude_frame, text="Lon:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10, anchor=tk.W)
+        self.gps_longitude_label.grid(row=0, column=1, pady=5)
 
+        gps_altitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_altitude_frame.grid(row=2, column=0, pady=5, padx=5)
+        tk.Label(gps_altitude_frame, text="Alt:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_altitude_label = tk.Label(gps_altitude_frame, width=10, anchor=tk.W)
+        self.gps_altitude_label.grid(row=0, column=1, pady=5)
+
+        gps_track_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_track_frame.grid(row=2, column=1, pady=5, padx=5)
+        tk.Label(gps_track_frame, text="Track:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_track_label = tk.Label(gps_track_frame, width=10, anchor=tk.W)
+        self.gps_track_label.grid(row=0, column=1, pady=5)
+
+        gps_speed_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_speed_frame.grid(row=3, column=0, pady=5, padx=5)
+        tk.Label(gps_speed_frame, text="Speed:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_speed_label = tk.Label(gps_speed_frame, width=10, anchor=tk.W)
+        self.gps_speed_label.grid(row=0, column=1, pady=5)
+
+        gps_climb_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
+        gps_climb_frame.grid(row=3, column=1, pady=5, padx=5)
+        tk.Label(gps_climb_frame, text="Climb:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.gps_climb_label = tk.Label(gps_climb_frame, width=10, anchor=tk.W)
+        self.gps_climb_label.grid(row=0, column=1, pady=5)
+    
+    def create_delay_widget(self):
         ###### Section for manual control
-        delay_frame = tk.Frame(gps_control_frame, bd=1, relief=tk.SOLID)
+        delay_frame = tk.Frame(self.section1_frame, bd=1, relief=tk.SOLID)
         delay_frame.grid(row=1, column=0, padx=10, pady=10)
 
         title = tk.Label(delay_frame, text="Calculate angle between two subs")
@@ -149,7 +181,7 @@ class SSApp:
         send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays)
         send_button.grid(row=8, column=0, padx=10, pady=10 , columnspan=2)
 
-    def create_log_frames(self):
+    def create_log_widget(self):
 
         logs_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
         logs_frame.grid(row=0, column=1, padx=10, pady=10)
@@ -214,9 +246,13 @@ class SSApp:
         
 
     def create_widgets(self):
-       
-        self.create_gps_frames()
-        self.create_log_frames()
+        
+        self.section1_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
+        self.section1_frame.grid(row=0, column=0, padx=10, pady=10, sticky=tk.N)
+
+        self.create_gps_widget()
+        self.create_delay_widget()
+        self.create_log_widget()
         self.create_dataviz_frame()
 
     def draw_spectogram(self):
@@ -263,8 +299,12 @@ class SSApp:
 
     def update_gps_status(self):
         # Function to update GPS label
-        self.gps_latitude_label.config(text="Latitude: " + str(self.gps_status.latitude))
-        self.gps_longitude_label.config(text="Longitude: " + str(self.gps_status.longitude))
+        self.gps_latitude_label.config(text=str(self.gps_status.latitude))
+        self.gps_longitude_label.config(text=str(self.gps_status.longitude))
+        self.gps_altitude_label.config(text=str(self.gps_status.altitude))
+        self.gps_track_label.config(text=str(self.gps_status.track))
+        self.gps_speed_label.config(text=str(self.gps_status.speed))
+        self.gps_climb_label.config(text=str(self.gps_status.climb))
 
     async def update_task(self):
         while True:
@@ -275,6 +315,11 @@ class SSApp:
     def set_gps_status(self, data):
         self.gps_status.latitude = data["lat"]
         self.gps_status.longitude = data["lon"]
+        self.gps_status.altitude = data["alt"]
+        self.gps_status.track = data["track"]
+        self.gps_status.speed = data["speed"]
+        self.gps_status.climb = data["climb"]
+        self.gps_status.error = data["error"]
 
     
 
