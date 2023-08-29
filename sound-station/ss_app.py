@@ -6,7 +6,7 @@ from functools import partial
 
 import matplotlib.pyplot as plt
 import numpy as np
-from app_models import DelayControl, GpsStatus
+from app_models import DelayControl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from position_def import open_position_def
 
@@ -15,13 +15,13 @@ UPDATE_UI_INTERVAL = 1/12
 
 
 class SSApp:
-    def __init__(self, root, serial_com, data_manager):
+    def __init__(self, root, serial_com, data_manager, gps_module):
         self.root = root
         self.root.title("Sound Station")
         self.serial_com = serial_com
         self.data_manager = data_manager
         self.display_data = []
-        self.gps_status = GpsStatus()
+        self.gps_module = gps_module
         self.delay_control = DelayControl()
         self.create_widgets()
 
@@ -85,8 +85,6 @@ class SSApp:
         else:
             print("Manual send disabled")
             self.send_button.config(state=tk.DISABLED)
-
-    
 
     def update_serial_monitor(self):
         joined_messages = "\n".join(self.serial_com.get_received_messages()[-20::])
@@ -312,21 +310,12 @@ class SSApp:
 
     def update_gps_status(self):
         # Function to update GPS label
-        self.gps_latitude_label.config(text=str(self.gps_status.latitude))
-        self.gps_longitude_label.config(text=str(self.gps_status.longitude))
-        self.gps_altitude_label.config(text=str(self.gps_status.altitude))
-        self.gps_track_label.config(text=str(self.gps_status.track))
-        self.gps_speed_label.config(text=str(self.gps_status.speed))
-        self.gps_climb_label.config(text=str(self.gps_status.climb))
-
-    def set_gps_status(self, data):
-        self.gps_status.latitude = data["lat"]
-        self.gps_status.longitude = data["lon"]
-        self.gps_status.altitude = data["alt"]
-        self.gps_status.track = data["track"]
-        self.gps_status.speed = data["speed"]
-        self.gps_status.climb = data["climb"]
-        self.gps_status.error = data["error"]
+        self.gps_latitude_label.config(text=str(self.gps_module.latitude))
+        self.gps_longitude_label.config(text=str(self.gps_module.longitude))
+        self.gps_altitude_label.config(text=str(self.gps_module.altitude))
+        self.gps_track_label.config(text=str(self.gps_module.track))
+        self.gps_speed_label.config(text=str(self.gps_module.speed))
+        self.gps_climb_label.config(text=str(self.gps_module.climb))
 
     
 

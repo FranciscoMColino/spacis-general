@@ -2,6 +2,7 @@ import asyncio
 import tkinter as tk
 
 from data_recording import DataRecorder
+from gps_module import GpsModule
 from spacis_utils import parse_settings
 from ss_app import SSApp
 from ss_client import SSClient
@@ -27,8 +28,9 @@ async def main():
         return 
     
     data_recorder = DataRecorder()
-    app = SSApp(root, serial_com, data_recorder)
-    ws_client = SSClient(app, data_recorder, settings)
+    gps_module = GpsModule()
+    app = SSApp(root, serial_com, data_recorder, gps_module)
+    ws_client = SSClient(app, data_recorder, settings, gps_module)
 
     asyncio.create_task(app.run())
     

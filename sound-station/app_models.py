@@ -1,16 +1,6 @@
 import tkinter as tk
 
 
-class GpsStatus:
-    def __init__(self):
-        self.latitude = 0
-        self.longitude = 0
-        self.altitude = 0
-        self.track = 0
-        self.speed = 0
-        self.climb = 0
-        self.error = 0
-
 class DelayControl:
     def __init__(self):
         self.manual_delays_var = tk.BooleanVar()
