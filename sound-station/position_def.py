@@ -59,4 +59,9 @@ def open_position_def(root, delay_control):
         distance_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["distance_tk"])
         distance_entry.grid(row=3, column=1, padx=10, pady=10)
 
+    # save and exit config button
+
+    tk.Button(main_frame, text="Save and Exit", command=top.destroy).grid(row=2, column=0, padx=10, pady=10)
+
+
 

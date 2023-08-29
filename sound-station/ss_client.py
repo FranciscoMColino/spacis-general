@@ -19,7 +19,13 @@ class SSClient:
         self.url = "ws://" + HOST + ":" + str(PORT)
 
     async def run(self):
-        await self.connect()
+        while True:
+            try:
+                await self.connect()
+                break
+            except Exception as e:
+                print("LOG: Exception in client ", e)
+                await asyncio.sleep(RECONNECT_WAIT_TIME)
         print("LOG: Client starting to read from server")
         await self.read_from_server()
 
@@ -38,6 +44,9 @@ class SSClient:
             except ConnectionRefusedError:
                 #print("LOG: Connection refused")
                 await asyncio.sleep(WS_CLIENT_WAIT_TIME)
+            except TimeoutError:
+                print("LOG: Connection timed out")
+                await asyncio.sleep(WS_CLIENT_LONG_WAIT_TIME)
 
     def message_handler(self, message):
         
