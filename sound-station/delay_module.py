@@ -39,6 +39,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             },
             "sub1": {
@@ -51,6 +52,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             },
             "sub2": {
@@ -63,6 +65,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             },
             "sub3": {
@@ -75,6 +78,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             },
             "sub4": {
@@ -87,6 +91,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             },
             "sub5": {
@@ -99,6 +104,7 @@ class DelayModule:
                     "distance_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
+                "delay_tk": tk.IntVar(value=0),
                 "delay": 0
             }
         }
@@ -109,9 +115,18 @@ class DelayModule:
         TRANSMISSION_FREQ = 1600
 
         while True:
+
+            if self.manual_delays_var.get():
+                await asyncio.sleep(UPDATE_DELAYS_WAIT_TIME)
+                continue
             
             balloon_lat, balloon_lon, balloon_alt = self.balloon_lla_pos["lat"], self.balloon_lla_pos["lon"], self.balloon_lla_pos["alt"]
             tx_center_lat, tx_center_lon, tx_center_alt = self.subarray_lla_pos["lat"], self.subarray_lla_pos["lon"], self.subarray_lla_pos["alt"]
+
+            if balloon_lat == tx_center_lat and balloon_lon == tx_center_lon and balloon_alt == tx_center_alt:
+                await asyncio.sleep(UPDATE_DELAYS_WAIT_TIME)
+                continue
+
 
             balloon_ned = navpy.lla2ned(balloon_lat, balloon_lon, balloon_alt, tx_center_lat, tx_center_lon, tx_center_alt)
 
@@ -134,6 +149,14 @@ class DelayModule:
 
             await asyncio.sleep(UPDATE_DELAYS_WAIT_TIME)
     
+    def update_delays(self, *args):
+        
+        if not self.manual_delays_var.get():
+            return
+
+        for i in range(6):
+            self.subwoofer_array["sub{}".format(i)]["delay"] = self.subwoofer_array["sub{}".format(i)]["delay_tk"].get()
+
     def update_raw_pos_data(self):
 
         self.subarray_lla_pos["lat"] = self.subarray_lla_pos["lat_tk"].get()

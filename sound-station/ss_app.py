@@ -78,11 +78,11 @@ class SSApp:
     def toggle_manual_delays(self):
         if self.delay_module.manual_delays_var.get():
             print("Manual control enabled")
-            for entry in self.delay_module.entry_boxes:
+            for entry in self.delay_module.delay_entries:
                 entry.config(state=tk.NORMAL)
         else:
             print("Manual control disabled")
-            for entry in self.delay_module.entry_boxes:
+            for entry in self.delay_module.delay_entries:
                 entry.config(state=tk.DISABLED)
 
     def toggle_manual_send(self):
@@ -109,10 +109,13 @@ class SSApp:
             
             self.ned_labels[i].config(text=label_str)
 
-            self.delay_module.delay_entries[i].config(state=tk.NORMAL)
-            self.delay_module.delay_entries[i].delete(0, tk.END)
-            self.delay_module.delay_entries[i].insert(0, self.delay_module.subwoofer_array["sub{}".format(i)]["delay"])
-            self.delay_module.delay_entries[i].config(state=tk.DISABLED)
+            
+            if not self.delay_module.manual_delays_var.get():
+
+                self.delay_module.delay_entries[i].config(state=tk.NORMAL)
+                self.delay_module.delay_entries[i].delete(0, tk.END)
+                self.delay_module.delay_entries[i].insert(0, self.delay_module.subwoofer_array["sub{}".format(i)]["delay"])
+                self.delay_module.delay_entries[i].config(state=tk.DISABLED)
 
     async def run(self):
 
@@ -229,12 +232,10 @@ class SSApp:
             label2 = tk.Label(sub_delay_frame, text="Delay:", width=5, anchor=tk.W)
             label2.grid(row=0, column=0, pady=5)
             
-            entry = tk.Entry(sub_delay_frame, width=14)
+            entry = tk.Entry(sub_delay_frame, width=14, textvariable=self.delay_module.subwoofer_array["sub{}".format(i)]["delay_tk"], state=tk.DISABLED)
             entry.grid(row=0, column=1, pady=5, padx=5)
-            entry.config(state=tk.DISABLED)
 
-            if entry.get() == "":
-                entry.insert(0, "0")
+            self.delay_module.subwoofer_array["sub{}".format(i)]["delay_tk"].trace("w", self.delay_module.update_delays)
 
             self.delay_module.delay_entries.append(entry)
 
