@@ -5,6 +5,7 @@ class DelayControl:
     def __init__(self):
         self.manual_delays_var = tk.BooleanVar()
         self.manual_send_var = tk.BooleanVar()
+        self.manual_target_var = tk.BooleanVar()
         self.entry_boxes = []
         self.subwoofer_array = {
             "sub0": {

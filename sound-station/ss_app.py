@@ -15,14 +15,15 @@ UPDATE_UI_INTERVAL = 1/12
 
 
 class SSApp:
-    def __init__(self, root, serial_com, data_manager, gps_module):
+    def __init__(self, root, serial_com, data_manager,delay_control, gps_module):
         self.root = root
         self.root.title("Sound Station")
         self.serial_com = serial_com
         self.data_manager = data_manager
         self.display_data = []
+
         self.gps_module = gps_module
-        self.delay_control = DelayControl()
+        self.delay_control = delay_control
         self.create_widgets()
 
     def calculate_angle_2_subs(self, frame):
@@ -219,17 +220,20 @@ class SSApp:
 
             self.delay_control.entry_boxes.append(entry)
 
-        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual control", variable=self.delay_control.manual_delays_var, command=self.toggle_manual_delays)
-        check_manual_delay.grid(row=7, column=0, padx=10, pady=10)
-
         check_manual_send = tk.Checkbutton(delay_frame, text="Manual send", variable=self.delay_control.manual_send_var, command=self.toggle_manual_send)
-        check_manual_send.grid(row=7, column=1, padx=10, pady=10)
+        check_manual_send.grid(row=7, column=0, padx=10, pady=10)
+
+        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual target", variable=self.delay_control.manual_target_var)
+        check_manual_delay.grid(row=8, column=0, padx=10, pady=10)
+
+        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual delays", variable=self.delay_control.manual_delays_var, command=self.toggle_manual_delays)
+        check_manual_delay.grid(row=9, column=0, padx=10, pady=10)
 
         self.define_pos_button = tk.Button(delay_frame, text="Define positions",  width=18, command=partial(open_position_def, self.root, self.delay_control))
-        self.define_pos_button.grid(row=8, column=0, padx=10, pady=10)
+        self.define_pos_button.grid(row=8, column=1, padx=10, pady=10)
 
         self.send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays, width=18)
-        self.send_button.grid(row=8, column=1, padx=10, pady=10)
+        self.send_button.grid(row=7, column=1, padx=10, pady=10)
         self.send_button.config(state=tk.DISABLED)
 
     def create_log_widget(self):
@@ -323,12 +327,4 @@ class SSApp:
         self.gps_track_label.config(text=str(self.gps_module.track))
         self.gps_speed_label.config(text=str(self.gps_module.speed))
         self.gps_climb_label.config(text=str(self.gps_module.climb))
-        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.gps_module.latitude, self.gps_module.longitude, self.gps_module.altitude))
-
-    
-
-        
-
-
-        
-        
+        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_control.subwoofer_array['sub0']['lla_pos']['lat'], self.delay_control.subwoofer_array['sub0']['lla_pos']['lon'], self.delay_control.subwoofer_array['sub0']['lla_pos']['alt']))
