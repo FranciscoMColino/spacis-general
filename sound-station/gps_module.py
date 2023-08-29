@@ -1,6 +1,6 @@
 
 class GpsModule:
-    def __init__(self, delay_control):
+    def __init__(self, delay_module):
         self.latitude = 0
         self.longitude = 0
         self.altitude = 0
@@ -8,7 +8,7 @@ class GpsModule:
         self.speed = 0
         self.climb = 0
         self.error = 0
-        self.delay_control = delay_control
+        self.delay_module = delay_module
 
     def update_gps_data(self, data):
         try:
@@ -20,10 +20,10 @@ class GpsModule:
             self.climb = data['climb']
             self.error = data['error']
 
-            if (not self.delay_control.manual_target_var.get()):
-                self.delay_control.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.latitude
-                self.delay_control.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.longitude
-                self.delay_control.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.altitude
+            if (not self.delay_module.manual_target_var.get()):
+                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.latitude
+                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.longitude
+                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.altitude
 
         except Exception as e:
             print("LOG: Exception while updating gps data ", e)
