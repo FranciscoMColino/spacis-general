@@ -1,7 +1,15 @@
 import tkinter as tk
+from functools import partial
 from tkinter import *
 from tkinter.ttk import *
 
+from gps_steering import *
+
+
+def save_and_exit(top, delay_control):
+    delay_control.update_raw_pos_data()
+    calculate_ned_positions(delay_control.subwoofer_array)
+    top.destroy()
 
 def open_position_def(root, delay_control):
     top= Toplevel(root)
@@ -37,8 +45,6 @@ def open_position_def(root, delay_control):
     
     for i in range(1,6):
 
-        print(i)
-
         sub_pos_frame = tk.Frame(pos_frame, bd=1, relief=tk.FLAT)
         sub_pos_frame.grid(row=i//2, column=i%2, padx=10, pady=10)
 
@@ -49,10 +55,10 @@ def open_position_def(root, delay_control):
         orientation_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["orientation_tk"])
         orientation_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        tk.Label(sub_pos_frame, text="Depth").grid(row=2, column=0, padx=10, pady=10)
+        tk.Label(sub_pos_frame, text="height").grid(row=2, column=0, padx=10, pady=10)
 
-        depth_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["depth_tk"])
-        depth_entry.grid(row=2, column=1, padx=10, pady=10)
+        height_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["height_tk"])
+        height_entry.grid(row=2, column=1, padx=10, pady=10)
 
         tk.Label(sub_pos_frame, text="Distance").grid(row=3, column=0, padx=10, pady=10)
 
@@ -61,7 +67,7 @@ def open_position_def(root, delay_control):
 
     # save and exit config button
 
-    tk.Button(main_frame, text="Save and Exit", command=top.destroy).grid(row=2, column=0, padx=10, pady=10)
+    tk.Button(main_frame, text="Save and Exit", command=partial(save_and_exit, top, delay_control)).grid(row=2, column=0, padx=10, pady=10)
 
 
 

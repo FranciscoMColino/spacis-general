@@ -21,8 +21,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -41,8 +41,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -53,8 +53,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -65,8 +65,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -77,8 +77,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -89,8 +89,8 @@ class DelayControl:
                 "raw_pos_data": {
                     "orientation": 0, #degrees
                     "orientation_tk": tk.IntVar(),
-                    "depth": 0, #meters
-                    "depth_tk": tk.IntVar(),
+                    "height": 0, #meters
+                    "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
@@ -98,3 +98,15 @@ class DelayControl:
                 "delay": 0
             }
         }
+    
+    def update_raw_pos_data(self):
+
+        self.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.subwoofer_array["sub0"]["lla_pos"]["lat_tk"].get()
+        self.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.subwoofer_array["sub0"]["lla_pos"]["lon_tk"].get()
+        self.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.subwoofer_array["sub0"]["lla_pos"]["alt_tk"].get()
+
+        for i in range(1,6):
+            sub = self.subwoofer_array["sub{}".format(i)]
+            sub["raw_pos_data"]["orientation"] = sub["raw_pos_data"]["orientation_tk"].get()
+            sub["raw_pos_data"]["height"] = sub["raw_pos_data"]["height_tk"].get()
+            sub["raw_pos_data"]["distance"] = sub["raw_pos_data"]["distance_tk"].get()

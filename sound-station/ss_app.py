@@ -86,19 +86,31 @@ class SSApp:
             print("Manual send disabled")
             self.send_button.config(state=tk.DISABLED)
 
-    def update_elements(self):
+    
+
+    def update_serial_monitor(self):
         joined_messages = "\n".join(self.serial_com.get_received_messages()[-20::])
         self.text_entry.config(state=tk.NORMAL)
         self.text_entry.delete("1.0", tk.END)
         self.text_entry.insert(tk.END, joined_messages)
         self.text_entry.config(state=tk.DISABLED)
 
+    def update_delay_control(self):
+        for i in range(6):
+
+            # label str composed of ned_pos with 2 decimal places
+
+            label_str = "{:.2f}, {:.2f}, {:.2f}".format(self.delay_control.subwoofer_array["sub{}".format(i)]["ned_pos"][0], self.delay_control.subwoofer_array["sub{}".format(i)]["ned_pos"][1], self.delay_control.subwoofer_array["sub{}".format(i)]["ned_pos"][2])
+            
+            self.ned_labels[i].config(text=label_str)
+
     async def run(self):
 
         FPS = 24
 
         while True:
-            self.update_elements()
+            self.update_serial_monitor()
+            self.update_delay_control()
             self.update_gps_status()
             self.draw_spectogram()
             self.root.update()
@@ -169,6 +181,8 @@ class SSApp:
 
         self.delay_control.entry_boxes = []
 
+        self.ned_labels = []
+
         for i in range(6):
 
             sub_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
@@ -180,7 +194,10 @@ class SSApp:
             ned_frame.grid(row=1, column=0, padx=10, pady=5)
 
             tk.Label(ned_frame, text="NED pos:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
-            tk.Label(ned_frame, text="0, 0, 0", width=10, anchor=tk.W).grid(row=0, column=1, pady=5)
+            ned_label= tk.Label(ned_frame, text="0, 0, 0", width=12, anchor=tk.W)
+            ned_label.grid(row=0, column=1, pady=5)
+
+            self.ned_labels.append(ned_label)
 
             sub_delay_frame = tk.Frame(sub_frame, bd=1, relief=tk.GROOVE)
             sub_delay_frame.grid(row=2, column=0, padx=5, pady=5)
