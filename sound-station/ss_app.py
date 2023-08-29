@@ -187,6 +187,7 @@ class SSApp:
 
             label2 = tk.Label(sub_delay_frame, text="Delay:", width=5, anchor=tk.W)
             label2.grid(row=0, column=0, pady=5)
+            
             entry = tk.Entry(sub_delay_frame, width=14)
             entry.grid(row=0, column=1, pady=5, padx=5)
             entry.config(state=tk.DISABLED)

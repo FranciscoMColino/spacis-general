@@ -13,7 +13,8 @@ async def main():
     root = tk.Tk()
 
     serial_com = TransmitterSerial()
-    res = serial_com.connect()
+    #res = serial_com.connect()
+    res = True
 
     # TODO - handle serial connection failure, put in logs
     if res:
@@ -28,7 +29,7 @@ async def main():
 
     asyncio.create_task(app.run())
     
-    asyncio.create_task(serial_com.read_messages())
+    #asyncio.create_task(serial_com.read_messages())
     asyncio.create_task(ws_client.run())
 
     while True:
