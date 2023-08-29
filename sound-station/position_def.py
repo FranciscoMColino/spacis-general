@@ -13,14 +13,50 @@ def open_position_def(root, delay_control):
 
     pos_frame = tk.Frame(main_frame, bd=1, relief=tk.FLAT)
     pos_frame.grid(row=1, column=0, padx=10, pady=10)
+
+    i = 0
+    sub_pos_frame = tk.Frame(pos_frame, bd=1, relief=tk.SUNKEN)
+    sub_pos_frame.grid(row=i//2, column=i%2, padx=10, pady=10)
+
+    tk.Label(sub_pos_frame, text="Subwoofer {}".format(i)).grid(row=0, column=0, padx=10, pady=10, columnspan=2)
+
+    tk.Label(sub_pos_frame, text="Latitude").grid(row=1, column=0, padx=10, pady=10)
+
+    latitude_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["lla_pos"]["lat_tk"])
+    latitude_entry.grid(row=1, column=1, padx=10, pady=10)
+
+    tk.Label(sub_pos_frame, text="Longitude").grid(row=2, column=0, padx=10, pady=10)
+
+    longitude_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["lla_pos"]["lon_tk"])
+    longitude_entry.grid(row=2, column=1, padx=10, pady=10)
+
+    tk.Label(sub_pos_frame, text="Altitude").grid(row=3, column=0, padx=10, pady=10)
+
+    altitude_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["lla_pos"]["alt_tk"])
+    altitude_entry.grid(row=3, column=1, padx=10, pady=10)
     
-    for i in range(6):
+    for i in range(1,6):
+
+        print(i)
 
         sub_pos_frame = tk.Frame(pos_frame, bd=1, relief=tk.FLAT)
         sub_pos_frame.grid(row=i//2, column=i%2, padx=10, pady=10)
 
         tk.Label(sub_pos_frame, text="Subwoofer {}".format(i)).grid(row=0, column=0, padx=10, pady=10, columnspan=2)
+
         tk.Label(sub_pos_frame, text="Orientation").grid(row=1, column=0, padx=10, pady=10)
 
-        entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["orientation_tk"])
-        entry.grid(row=1, column=1, padx=10, pady=10)
+        orientation_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["orientation_tk"])
+        orientation_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        tk.Label(sub_pos_frame, text="Depth").grid(row=2, column=0, padx=10, pady=10)
+
+        depth_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["depth_tk"])
+        depth_entry.grid(row=2, column=1, padx=10, pady=10)
+
+        tk.Label(sub_pos_frame, text="Distance").grid(row=3, column=0, padx=10, pady=10)
+
+        distance_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["distance_tk"])
+        distance_entry.grid(row=3, column=1, padx=10, pady=10)
+
+

@@ -26,6 +26,14 @@ class DelayControl:
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
                 },
+                "lla_pos": {
+                    "lat": 0,
+                    "lat_tk": tk.IntVar(),
+                    "lon": 0,
+                    "lon_tk": tk.IntVar(),
+                    "alt": 0,
+                    "alt_tk": tk.IntVar(),
+                },
                 "ned_pos": [0, 0, 0],
                 "delay": 0
             },
