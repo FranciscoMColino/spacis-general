@@ -2,6 +2,7 @@ import asyncio
 import tkinter as tk
 
 from data_recording import DataRecorder
+from spacis_utils import parse_settings
 from ss_app import SSApp
 from ss_client import SSClient
 from ss_serial import TransmitterSerial
@@ -9,6 +10,8 @@ from ss_serial import TransmitterSerial
 
 # Run the event loop
 async def main():
+
+    settings = parse_settings()
 
     root = tk.Tk()
 
@@ -25,7 +28,7 @@ async def main():
     
     data_recorder = DataRecorder()
     app = SSApp(root, serial_com, data_recorder)
-    ws_client = SSClient(app, data_recorder)
+    ws_client = SSClient(app, data_recorder, settings)
 
     asyncio.create_task(app.run())
     
