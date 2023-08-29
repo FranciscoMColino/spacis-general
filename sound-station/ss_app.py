@@ -181,9 +181,16 @@ class SSApp:
         pointing_to_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
         pointing_to_frame.grid(row=1, column=0, padx=10, pady=5, columnspan=2)
 
-        tk.Label(pointing_to_frame, text="Pointing to:").grid(row=1, column=0, padx=10, pady=5)
+        tk.Label(pointing_to_frame, text="Pointing to:", width=12).grid(row=1, column=0, padx=10, pady=5)
         self.balloon_pos_label = tk.Label(pointing_to_frame, text="0, 0, 0", width=26, anchor= tk.W)
         self.balloon_pos_label.grid(row=1, column=1, padx=10, pady=5)
+
+        subarray_lla_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
+        subarray_lla_frame.grid(row=2, column=0, padx=10, pady=5, columnspan=2)
+
+        tk.Label(subarray_lla_frame, text="Subarray LLA:", width=12).grid(row=1, column=0, padx=10, pady=5)
+        self.subarray_lla_label = tk.Label(subarray_lla_frame, text="0, 0, 0", width=26, anchor= tk.W)
+        self.subarray_lla_label.grid(row=1, column=1, padx=10, pady=5)
 
         self.delay_module.entry_boxes = []
 
@@ -192,7 +199,7 @@ class SSApp:
         for i in range(6):
 
             sub_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
-            sub_frame.grid(row=(i)//2+2, column=(i)%2)
+            sub_frame.grid(row=(i)//2+3, column=(i)%2)
 
             tk.Label(sub_frame, text="Subwoofer " + str(i)).grid(row=0, column=0, padx=10, pady=5)
 
@@ -327,4 +334,5 @@ class SSApp:
         self.gps_track_label.config(text=str(self.gps_module.track))
         self.gps_speed_label.config(text=str(self.gps_module.speed))
         self.gps_climb_label.config(text=str(self.gps_module.climb))
-        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_module.subwoofer_array['sub0']['lla_pos']['lat'], self.delay_module.subwoofer_array['sub0']['lla_pos']['lon'], self.delay_module.subwoofer_array['sub0']['lla_pos']['alt']))
+        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_module.balloon_lla_pos['lat'], self.delay_module.balloon_lla_pos['lon'], self.delay_module.balloon_lla_pos['alt']))
+        self.subarray_lla_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_module.subarray_lla_pos['lat'], self.delay_module.subarray_lla_pos['lon'], self.delay_module.subarray_lla_pos['alt']))

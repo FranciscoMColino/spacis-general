@@ -1,5 +1,6 @@
 import tkinter as tk
 
+UPDATE_DELAYS_WAIT_TIME = 1/10
 
 class DelayModule:
     def __init__(self):
@@ -7,6 +8,22 @@ class DelayModule:
         self.manual_send_var = tk.BooleanVar()
         self.manual_target_var = tk.BooleanVar()
         self.entry_boxes = []
+        self.balloon_lla_pos = {
+            "lat": 0,
+            "lat_tk": tk.DoubleVar(),
+            "lon": 0,
+            "lon_tk": tk.DoubleVar(),
+            "alt": 0,
+            "alt_tk": tk.DoubleVar(),
+        }
+        self.subarray_lla_pos = {
+            "lat": 0.00,
+            "lat_tk": tk.DoubleVar(),
+            "lon": 0.00,
+            "lon_tk": tk.DoubleVar(),
+            "alt": 0.00,
+            "alt_tk": tk.DoubleVar(),
+        }
         self.subwoofer_array = {
             "sub0": {
                 "raw_pos_data": {
@@ -16,14 +33,6 @@ class DelayModule:
                     "height_tk": tk.IntVar(),
                     "distance": 0, #meters
                     "distance_tk": tk.IntVar(),
-                },
-                "lla_pos": {
-                    "lat": 0,
-                    "lat_tk": tk.IntVar(),
-                    "lon": 0,
-                    "lon_tk": tk.IntVar(),
-                    "alt": 0,
-                    "alt_tk": tk.IntVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay": 0
@@ -92,12 +101,15 @@ class DelayModule:
     
     def update_raw_pos_data(self):
 
-        self.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.subwoofer_array["sub0"]["lla_pos"]["lat_tk"].get()
-        self.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.subwoofer_array["sub0"]["lla_pos"]["lon_tk"].get()
-        self.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.subwoofer_array["sub0"]["lla_pos"]["alt_tk"].get()
+        self.subarray_lla_pos["lat"] = self.subarray_lla_pos["lat_tk"].get()
+        self.subarray_lla_pos["lon"] = self.subarray_lla_pos["lon_tk"].get()
+        self.subarray_lla_pos["alt"] = self.subarray_lla_pos["alt_tk"].get()
 
         for i in range(1,6):
             sub = self.subwoofer_array["sub{}".format(i)]
             sub["raw_pos_data"]["orientation"] = sub["raw_pos_data"]["orientation_tk"].get()
             sub["raw_pos_data"]["height"] = sub["raw_pos_data"]["height_tk"].get()
             sub["raw_pos_data"]["distance"] = sub["raw_pos_data"]["distance_tk"].get()
+
+    #def update_delays(self):
+        

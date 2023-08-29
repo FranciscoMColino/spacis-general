@@ -21,9 +21,9 @@ class GpsModule:
             self.error = data['error']
 
             if (not self.delay_module.manual_target_var.get()):
-                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.latitude
-                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.longitude
-                self.delay_module.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.altitude
+                self.delay_module.balloon_lla_pos["lat"] = self.latitude
+                self.delay_module.balloon_lla_pos["lon"] = self.longitude
+                self.delay_module.balloon_lla_pos["alt"] = self.altitude
 
         except Exception as e:
             print("LOG: Exception while updating gps data ", e)
