@@ -11,7 +11,20 @@ def save_and_exit(top, delay_control):
     calculate_ned_positions(delay_control.subwoofer_array)
     top.destroy()
 
+def update_tk_vars(delay_control):
+    for sub in delay_control.subwoofer_array:
+        for key in delay_control.subwoofer_array[sub]["raw_pos_data"]:
+            if not key.endswith("_tk"):
+                delay_control.subwoofer_array[sub]["raw_pos_data"][key + "_tk"].set(delay_control.subwoofer_array[sub]["raw_pos_data"][key])
+
+    sub = "sub0"
+    for key in delay_control.subwoofer_array[sub]["lla_pos"]:
+        if not key.endswith("_tk"):
+            delay_control.subwoofer_array[sub]["lla_pos"][key + "_tk"].set(delay_control.subwoofer_array[sub]["lla_pos"][key])
+
 def open_position_def(root, delay_control):
+
+    update_tk_vars(delay_control)
     top= Toplevel(root)
 
     main_frame = tk.Frame(top, bd=1, relief=tk.FLAT)
