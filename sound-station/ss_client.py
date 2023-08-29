@@ -4,7 +4,7 @@ import json
 import spacis_utils
 import websockets
 
-WS_CLIENT_WAIT_TIME = 1/40
+WS_CLIENT_WAIT_TIME = 1/100
 WS_CLIENT_LONG_WAIT_TIME = 1/200
 RECONNECT_WAIT_TIME = 5
 

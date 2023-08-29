@@ -177,6 +177,13 @@ class SSApp:
         title = tk.Label(delay_frame, text="Delay control")
         title.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
+        pointing_to_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
+        pointing_to_frame.grid(row=1, column=0, padx=10, pady=5, columnspan=2)
+
+        tk.Label(pointing_to_frame, text="Pointing to:").grid(row=1, column=0, padx=10, pady=5)
+        self.balloon_pos_label = tk.Label(pointing_to_frame, text="0, 0, 0", width=26, anchor= tk.W)
+        self.balloon_pos_label.grid(row=1, column=1, padx=10, pady=5)
+
         self.delay_control.entry_boxes = []
 
         self.ned_labels = []
@@ -184,7 +191,7 @@ class SSApp:
         for i in range(6):
 
             sub_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
-            sub_frame.grid(row=(i)//2+1, column=(i)%2)
+            sub_frame.grid(row=(i)//2+2, column=(i)%2)
 
             tk.Label(sub_frame, text="Subwoofer " + str(i)).grid(row=0, column=0, padx=10, pady=5)
 
@@ -316,6 +323,7 @@ class SSApp:
         self.gps_track_label.config(text=str(self.gps_module.track))
         self.gps_speed_label.config(text=str(self.gps_module.speed))
         self.gps_climb_label.config(text=str(self.gps_module.climb))
+        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.gps_module.latitude, self.gps_module.longitude, self.gps_module.altitude))
 
     
 
