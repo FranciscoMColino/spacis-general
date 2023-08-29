@@ -35,9 +35,10 @@ async def main():
     ws_client = SSClient(app, data_recorder, settings, gps_module)
 
     asyncio.create_task(app.run())
-    
+    asyncio.create_task(delay_module.calculate_delays())
     asyncio.create_task(serial_com.read_messages())
     asyncio.create_task(ws_client.run())
+
 
     while True:
         try:

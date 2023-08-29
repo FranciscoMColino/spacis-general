@@ -103,6 +103,11 @@ class SSApp:
             
             self.ned_labels[i].config(text=label_str)
 
+            self.delay_module.delay_entries[i].config(state=tk.NORMAL)
+            self.delay_module.delay_entries[i].delete(0, tk.END)
+            self.delay_module.delay_entries[i].insert(0, self.delay_module.subwoofer_array["sub{}".format(i)]["delay"])
+            self.delay_module.delay_entries[i].config(state=tk.DISABLED)
+
     async def run(self):
 
         FPS = 24
@@ -225,7 +230,7 @@ class SSApp:
             if entry.get() == "":
                 entry.insert(0, "0")
 
-            self.delay_module.entry_boxes.append(entry)
+            self.delay_module.delay_entries.append(entry)
 
         check_manual_send = tk.Checkbutton(delay_frame, text="Manual send", variable=self.delay_module.manual_send_var, command=self.toggle_manual_send)
         check_manual_send.grid(row=7, column=0, padx=10, pady=10)
