@@ -54,10 +54,16 @@ class SSApp:
 
         frame.result_label.config(text="Tx angle: " + str(transmission_angle))
 
+    def get_delay_values(self):
+        values = []
+        for sub in self.delay_module.subwoofer_array:
+            values.append(self.delay_module.subwoofer_array[sub]["delay"])
+        return values
+
     def send_delays(self):
 
-        value_array = self.convert_entries_to_values(self.delay_module.entry_boxes)
-
+        #value_array = self.convert_entries_to_values(self.delay_module.delay_entries)
+        value_array = self.get_delay_values()
         # check if size 6
         if len(value_array) != 6:
             print("Incorrect size of array")
