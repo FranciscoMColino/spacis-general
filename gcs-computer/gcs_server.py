@@ -7,6 +7,7 @@ import data_recording
 import spacis_utils
 import websockets
 
+HEART_BEAT_INTERVAL = 5/2
 
 class Client:
     def __init__(self):
@@ -86,18 +87,38 @@ class GCSServer:
         if self.client.websocket:
             asyncio.create_task(self.client.websocket.send(message))
 
+    def send_hearbeat(self):
+        obj = {
+            "type": "heartbeat",
+            "data": {
+                "last_update": self.client.last_update
+            }
+        }
+        self.send_message(json.dumps(obj))
+
+    async def periodic_heartbeat(self):
+        while True:
+            # Send heartbeat to client every 5 seconds
+            await asyncio.sleep(5)
+            try:
+                if self.client:
+                    self.send_hearbeat()
+            except Exception as e:
+                print(f"ERROR: Failed to send heartbeat: {e}")
+
     async def websocket_handler(self, websocket):
         try:
             async for message in websocket:
                 # Handle messages accordingly
 
-                if message == "client-connect" and not self.client.connected:
+                if message == "client-connect":
                     self.client.connected = True
                     self.client.websocket = websocket
+                    self.send_hearbeat()
                     print("LOG: Client connected")
                     continue
-                elif self.client.connected and websocket != self.client.websocket:
-                    print("LOG: Client already connected")
+                #elif self.client.connected and websocket != self.client.websocket:
+                #    print("LOG: Client already connected")
                 # update app server state to connected and timestamp
                 
                 # TODO if json format is correct
@@ -107,6 +128,8 @@ class GCSServer:
         except Exception as e:
             # Handle the exception or log it as needed
             print(f"ERROR: WebSocket connection error: {e}")
+            self.client.connected = False
+            self.client.websocket = None
 
         finally:
             # Client disconnected
