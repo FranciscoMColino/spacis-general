@@ -14,11 +14,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 UPDATE_UI_INTERVAL = 1/12
 FPS = 24
 
-async def test_task():
-    while True:
-        print("Performing test task...")
-        await asyncio.sleep(1)
-
 class GCSApp:
     def __init__(self, root, data_manager, server, performance_recordings):
         self.root = root
