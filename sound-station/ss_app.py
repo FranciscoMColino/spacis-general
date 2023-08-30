@@ -9,6 +9,7 @@ import numpy as np
 from app_models import DelayControl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from position_def import open_position_def
+from target_def import open_target_def
 
 SUB_DISTANCE = 2.55
 UPDATE_UI_INTERVAL = 1/12
@@ -94,6 +95,14 @@ class SSApp:
         else:
             print("Manual send disabled")
             self.send_button.config(state=tk.DISABLED)
+
+    def toggle_manual_target(self):
+        if self.delay_module.manual_target_var.get():
+            print("Manual target enabled")
+            self.define_targert_button.config(state=tk.NORMAL)
+        else:
+            print("Manual target disabled")
+            self.define_targert_button.config(state=tk.DISABLED)
 
     def update_serial_monitor(self):
         joined_messages = "\n".join(self.serial_com.get_received_messages()[-20::])
@@ -250,18 +259,22 @@ class SSApp:
         check_manual_send = tk.Checkbutton(delay_frame, text="Manual send", variable=self.delay_module.manual_send_var, command=self.toggle_manual_send)
         check_manual_send.grid(row=7, column=0, padx=10, pady=10)
 
-        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual target", variable=self.delay_module.manual_target_var)
+        check_manual_delay = tk.Checkbutton(delay_frame, text="Manual target", variable=self.delay_module.manual_target_var, command=self.toggle_manual_target)
         check_manual_delay.grid(row=8, column=0, padx=10, pady=10)
 
         check_manual_delay = tk.Checkbutton(delay_frame, text="Manual delays", variable=self.delay_module.manual_delays_var, command=self.toggle_manual_delays)
         check_manual_delay.grid(row=9, column=0, padx=10, pady=10)
 
         self.define_pos_button = tk.Button(delay_frame, text="Define positions",  width=18, command=partial(open_position_def, self.root, self.delay_module))
-        self.define_pos_button.grid(row=8, column=1, padx=10, pady=10)
+        self.define_pos_button.grid(row=9, column=1, padx=10, pady=10)
 
         self.send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays, width=18)
         self.send_button.grid(row=7, column=1, padx=10, pady=10)
         self.send_button.config(state=tk.DISABLED)
+
+        self.define_targert_button = tk.Button(delay_frame, text="Define target", command=partial(open_target_def, self.root, self.delay_module), width=18)
+        self.define_targert_button.grid(row=8, column=1, padx=10, pady=10)
+        self.define_targert_button.config(state=tk.DISABLED)
 
     def create_log_widget(self):
 
@@ -306,8 +319,7 @@ class SSApp:
         dataviz_frame.grid(row=0, column=2, padx=10, pady=10)
 
         # Section shows plot of data received
-        figure1 = plt.Figure(figsize=(16, 10), dpi=50)
-        ax = figure1.add_subplot(111)
+        figure1, ax = plt.subplots(1, 1, figsize=(20, 12), dpi=50)
         self.spectogram_window = FigureCanvasTkAgg(figure1, dataviz_frame)
         self.spectogram_window.get_tk_widget().grid(row=0, column=0, padx=10, pady=10, rowspan=5)
         ax.set_title("Spectogram")

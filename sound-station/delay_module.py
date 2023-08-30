@@ -157,11 +157,18 @@ class DelayModule:
         for i in range(6):
             self.subwoofer_array["sub{}".format(i)]["delay"] = self.subwoofer_array["sub{}".format(i)]["delay_tk"].get()
 
+    def update_target(self):
+        if self.manual_target_var.get():
+            self.balloon_lla_pos["lat"] = self.balloon_lla_pos["lat_tk"].get()
+            self.balloon_lla_pos["lon"] = self.balloon_lla_pos["lon_tk"].get()
+            self.balloon_lla_pos["alt"] = self.balloon_lla_pos["alt_tk"].get()
+
     def update_raw_pos_data(self):
 
         self.subarray_lla_pos["lat"] = self.subarray_lla_pos["lat_tk"].get()
         self.subarray_lla_pos["lon"] = self.subarray_lla_pos["lon_tk"].get()
         self.subarray_lla_pos["alt"] = self.subarray_lla_pos["alt_tk"].get()
+        
 
         for i in range(1,6):
             sub = self.subwoofer_array["sub{}".format(i)]
