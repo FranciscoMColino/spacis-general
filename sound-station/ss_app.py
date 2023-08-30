@@ -13,6 +13,8 @@ from position_def import open_position_def
 SUB_DISTANCE = 2.55
 UPDATE_UI_INTERVAL = 1/12
 
+UPDATE_UI_INTERVAL = 1/12
+FPS = 24
 
 class SSApp:
     def __init__(self, root, serial_com, data_manager,delay_module, gps_module):
@@ -117,15 +119,21 @@ class SSApp:
                 self.delay_module.delay_entries[i].insert(0, self.delay_module.subwoofer_array["sub{}".format(i)]["delay"])
                 self.delay_module.delay_entries[i].config(state=tk.DISABLED)
 
-    async def run(self):
+    async def update_spectogram_task(self):
+        while True:
+            self.draw_spectogram()
+            await asyncio.sleep(1)
 
-        FPS = 24
-
+    async def update_task(self):
         while True:
             self.update_serial_monitor()
             self.update_delay_module()
             self.update_gps_status()
-            self.draw_spectogram()
+            await asyncio.sleep(UPDATE_UI_INTERVAL)
+
+    async def run(self):
+
+        while True:
             self.root.update()
             await asyncio.sleep(1/FPS)
 

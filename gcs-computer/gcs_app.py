@@ -57,41 +57,75 @@ class GCSApp:
     def create_data_spec_widget(self):
         # Section shows plot of data received
 
-        data_viz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
+        self.data_viz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
+        data_viz_frame = self.data_viz_frame
         data_viz_frame.grid(row=1, column=2, padx=10, pady=10, rowspan=4)
 
-        figure1 = plt.Figure(figsize=(16, 10), dpi=50)
-        ax = figure1.add_subplot(111)
-        self.spectogram_window = FigureCanvasTkAgg(figure1, data_viz_frame)
-        self.spectogram_window.get_tk_widget().grid(row=0, column=0, padx=10, pady=10)
-        ax.set_title("Spectogram")
-        ax.plot([1, 2, 3, 4, 5, 6, 7])
+        self.fig_single_sensor, self.ax_single_sensor = plt.subplots(1, 1, figsize=(20, 12), dpi=50)
+        ax = self.ax_single_sensor
+        ax.text(
+            0.5, 0.5, "No data",
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes,
+            fontsize=20,  # Set the fontsize here
+        )
+        ax.xaxis.set_visible(False)
+
+        plt.tight_layout()
+
+        self.fig_all_sensor, self.axs_all_sensors = plt.subplots(2, 2, figsize=(20, 12), dpi=50)
+        i = 0
+        for axs_row in self.axs_all_sensors:
+            for ax in axs_row:
+                ax.text(
+                    0.5, 0.5, "No data",
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                    transform=ax.transAxes,
+                    fontsize=20,  # Set the fontsize here
+                )
+                ax.title.set_text("Sensor " + str(i))
+                
+                ax.xaxis.set_visible(False)
+                if i == 1 or i == 3:
+                    ax.yaxis.set_visible(False)
+                i += 1
+        plt.tight_layout()
+
+
+        self.spectogram_window = FigureCanvasTkAgg(self.fig_single_sensor, data_viz_frame)
+        self.spectogram_window.get_tk_widget().grid(row=0, column=0)
         self.spectogram_window.draw()
-        self.spectogram_ax = ax
 
-        data_viz_freq_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
-        data_viz_freq_control_frame.grid(row=0, column=1, pady=5, padx=5)
 
-        tk.Label(data_viz_freq_control_frame, text="Upper \nbound (Hz):", anchor=tk.W).grid(row=0, column=0, pady=5, padx=5)
+        data_viz_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.SOLID)
+        data_viz_control_frame.grid(row=0, column=1, pady=5, padx=5, rowspan=3)
+
+        drop = tk.OptionMenu(data_viz_control_frame, self.data_viz_control.selected_spec_mode, *self.data_viz_control.select_spec_options)
+        drop.grid(row=0, column=0, pady=5, padx=5)
+        self.data_viz_control.selected_spec_mode.trace("w", self.on_spec_mode_change)
+
+        tk.Label(data_viz_control_frame, text="Upper \nbound (Hz):", anchor=tk.W).grid(row=1, column=0, pady=5, padx=5)
         
-        self.data_viz_upper_bound_slider = tk.Scale(data_viz_freq_control_frame, 
+        self.data_viz_upper_bound_slider = tk.Scale(data_viz_control_frame, 
                                                     from_=self.data_viz_control.max_upper_freq_bound, 
                                                     to=self.data_viz_control.lower_freq_bound.get(),
                                                       variable=self.data_viz_control.upper_freq_bound,
                                                       orient=tk.VERTICAL, resolution=10, length=200, command=self.on_upper_bound_change,
                                                       width=15)
         self.data_viz_upper_bound_slider.set(self.data_viz_control.upper_freq_bound.get())
-        self.data_viz_upper_bound_slider.grid(row=1, column=0, pady=5, padx=5, sticky=tk.E)
+        self.data_viz_upper_bound_slider.grid(row=2, column=0, pady=5, padx=5, sticky=tk.E)
 
-        tk.Label(data_viz_freq_control_frame, text="Lower \nbound (Hz):", anchor=tk.W).grid(row=2, column=0, pady=5, padx=5)
+        tk.Label(data_viz_control_frame, text="Lower \nbound (Hz):", anchor=tk.W).grid(row=3, column=0, pady=5, padx=5)
 
-        self.data_viz_lower_bound_slider = tk.Scale(data_viz_freq_control_frame, from_=self.data_viz_control.upper_freq_bound.get(), 
+        self.data_viz_lower_bound_slider = tk.Scale(data_viz_control_frame, from_=self.data_viz_control.upper_freq_bound.get(), 
                                                     to=self.data_viz_control.min_lower_freq_bound, 
                                                     variable=self.data_viz_control.lower_freq_bound, 
                                                     orient=tk.VERTICAL, resolution=10, length=200, command=self.on_lower_bound_change, 
                                                     width=15)
         self.data_viz_lower_bound_slider.set(self.data_viz_control.lower_freq_bound.get())
-        self.data_viz_lower_bound_slider.grid(row=3, column=0, pady=5, padx=5, sticky=tk.E)
+        self.data_viz_lower_bound_slider.grid(row=4, column=0, pady=5, padx=5, sticky=tk.E)
 
         data_viz_v_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
         data_viz_v_control_frame.grid(row=1, column=0, pady=5, padx=5, sticky=tk.W)
@@ -307,6 +341,20 @@ class GCSApp:
         # Function to handle vmax value changes
         self.data_viz_vmin_slider.config(to=self.data_viz_vmax_slider.get())
 
+    def on_spec_mode_change(self, *args):
+        print("LOG: Spectogram mode changed to " + self.data_viz_control.selected_spec_mode.get())
+
+        if self.data_viz_control.selected_spec_mode.get() == "All Sensors":
+            self.spectogram_window.get_tk_widget().grid_forget()
+            self.spectogram_window = FigureCanvasTkAgg(self.fig_all_sensor, self.data_viz_frame)
+            self.spectogram_window.get_tk_widget().grid(row=0, column=0)
+            self.draw_spectogram()
+        else:
+            self.spectogram_window.get_tk_widget().grid_forget()
+            self.spectogram_window = FigureCanvasTkAgg(self.fig_single_sensor, self.data_viz_frame)
+            self.spectogram_window.get_tk_widget().grid(row=0, column=0)
+            self.draw_spectogram()
+
     # Button/action functions
 
     def toggle_override(self):
@@ -439,23 +487,46 @@ class GCSApp:
         if not self.received_samples:
             return
         
-        data_len = len(self.received_samples)
-
-        sample_size = self.data_viz_control.sample_size.get()
-
-        if data_len > sample_size:
-            display_data = list(zip(*self.received_samples))[0][data_len-int(sample_size):]
-        else:
-            display_data = list(zip(*self.received_samples))[0]
-
         ylim = [self.data_viz_control.lower_freq_bound.get(), self.data_viz_control.upper_freq_bound.get()]
         vmin = self.data_viz_control.vmin.get()
         vmax = self.data_viz_control.vmax.get()
+        
+        data_len = len(self.received_samples)
+        sample_size = self.data_viz_control.sample_size.get()
+        sensor_id = 0
 
-        self.spectogram_ax.clear()
-        self.spectogram_ax.specgram(display_data, Fs=1600, vmin=vmin, vmax=vmax)
-        self.spectogram_ax.set_ylim(ylim)
-        self.spectogram_window.draw()
+        if self.data_viz_control.selected_spec_mode.get().startswith("Sensor"):
+            sensor_id = int(self.data_viz_control.selected_spec_mode.get().split(" ")[1])
+
+            if data_len > sample_size:
+                display_data = list(zip(*self.received_samples))[sensor_id][data_len-int(sample_size):]
+            else:
+                display_data = list(zip(*self.received_samples))[sensor_id]
+            
+            self.ax_single_sensor.clear()
+            self.ax_single_sensor.specgram(display_data, Fs=1600, vmin=vmin, vmax=vmax)
+            self.ax_single_sensor.set_ylim(ylim)
+            self.spectogram_window.draw()
+
+        else:
+            
+            display_data = []
+
+            if data_len > sample_size:
+                display_data = [list(zip(*self.received_samples))[i][data_len-int(sample_size):] for i in range(0, 4)]
+            else:
+                display_data = list(zip(*self.received_samples))
+
+            for i in range(0, 4):
+                
+                ax = self.axs_all_sensors[i//2][i%2]
+                ax.clear()
+                ax.title.set_text("Sensor " + str(i))
+                ax.specgram(display_data[i], Fs=1600, vmin=vmin, vmax=vmax)
+                ax.set_ylim(ylim)
+            
+            self.spectogram_window.draw()
+
 
         self.performance_recordings.record("update_spectogram", time.time() - PM_START)
 

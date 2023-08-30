@@ -31,6 +31,19 @@ class GpsStatus:
 
 class DataVizControl:
     def __init__(self):
+
+        self.select_spec_options = [
+            "Sensor 0",
+            "Sensor 1",
+            "Sensor 2",
+            "Sensor 3",
+            "All Sensors",
+        ]
+        #self.all_sensors_mode = False
+
+        self.selected_spec_mode = tk.StringVar()
+        self.selected_spec_mode.set(self.select_spec_options[0])
+
         self.max_upper_freq_bound = 400
         self.min_lower_freq_bound = 0
 
