@@ -1,0 +1,11 @@
+geopy==2.4.0
+matplotlib==3.6.3
+NavPy==1.0
+numpy==1.24.1
+pandas==1.4.2
+pyserial==3.5
+PyYAML==6.0
+PyYAML==6.0.1
+scipy==1.8.0
+sympy==1.10.1
+websockets==11.0.1

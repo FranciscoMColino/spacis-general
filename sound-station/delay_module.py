@@ -32,11 +32,11 @@ class DelayModule:
             "sub0": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
@@ -45,11 +45,11 @@ class DelayModule:
             "sub1": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
@@ -58,11 +58,11 @@ class DelayModule:
             "sub2": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
@@ -71,11 +71,11 @@ class DelayModule:
             "sub3": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
@@ -84,11 +84,11 @@ class DelayModule:
             "sub4": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
@@ -97,11 +97,11 @@ class DelayModule:
             "sub5": {
                 "raw_pos_data": {
                     "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
+                    "orientation_tk": tk.DoubleVar(),
                     "height": 0, #meters
-                    "height_tk": tk.IntVar(),
+                    "height_tk": tk.DoubleVar(),
                     "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
+                    "distance_tk": tk.DoubleVar(),
                 },
                 "ned_pos": [0, 0, 0],
                 "delay_tk": tk.IntVar(value=0),
