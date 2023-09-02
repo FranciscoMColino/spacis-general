@@ -366,5 +366,5 @@ class SSApp:
         self.gps_track_label.config(text=str(self.gps_module.track))
         self.gps_speed_label.config(text=str(self.gps_module.speed))
         self.gps_climb_label.config(text=str(self.gps_module.climb))
-        self.balloon_pos_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_module.balloon_lla_pos['lat'], self.delay_module.balloon_lla_pos['lon'], self.delay_module.balloon_lla_pos['alt']))
-        self.subarray_lla_label.config(text="{:.3f}, {:.3f}, {:.3f}".format(self.delay_module.subarray_lla_pos['lat'], self.delay_module.subarray_lla_pos['lon'], self.delay_module.subarray_lla_pos['alt']))
+        self.balloon_pos_label.config(text="{:.6f}, {:.6f}, {:.6f}".format(self.delay_module.balloon_lla_pos['lat'], self.delay_module.balloon_lla_pos['lon'], self.delay_module.balloon_lla_pos['alt']))
+        self.subarray_lla_label.config(text="{:.6f}, {:.6f}, {:.6f}".format(self.delay_module.subarray_lla_pos['lat'], self.delay_module.subarray_lla_pos['lon'], self.delay_module.subarray_lla_pos['alt']))
