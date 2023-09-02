@@ -134,11 +134,15 @@ class DelayModule:
 
             delays = [0, 0, 0, 0, 0, 0]
 
+            DELAY_OFFSET = 25
+
+            delays[0] = DELAY_OFFSET
+
             for i in range(1,6):
                 sub_ned_pos = self.subwoofer_array["sub{}".format(i)]["ned_pos"]
                 delay_dist = np.dot(sub_ned_pos, direction_versor)
-                delay_time = (delay_dist / SOUND_SPEED) // (1/TRANSMISSION_FREQ)
-                delays[i] = delay_time
+                delay_time = round((delay_dist / SOUND_SPEED) / (1/TRANSMISSION_FREQ))
+                delays[i] = delay_time + DELAY_OFFSET
 
             delay_min = min(delays)
             if delay_min < 0:
