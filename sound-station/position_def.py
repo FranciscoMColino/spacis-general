@@ -67,7 +67,7 @@ def open_position_def(root, delay_control):
         orientation_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["orientation_tk"])
         orientation_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        tk.Label(sub_pos_frame, text="height").grid(row=2, column=0, padx=10, pady=10)
+        tk.Label(sub_pos_frame, text="Height").grid(row=2, column=0, padx=10, pady=10)
 
         height_entry = tk.Entry(sub_pos_frame, textvariable=delay_control.subwoofer_array["sub{}".format(i)]["raw_pos_data"]["height_tk"])
         height_entry.grid(row=2, column=1, padx=10, pady=10)
