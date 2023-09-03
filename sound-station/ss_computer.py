@@ -29,7 +29,7 @@ async def main():
         return 
     
     data_recorder = DataRecorder()
-    delay_module = DelayModule()
+    delay_module = DelayModule(settings)
     gps_module = GpsModule(delay_module)
     app = SSApp(root, serial_com, data_recorder, delay_module, gps_module)
     ws_client = SSClient(app, data_recorder, settings, gps_module)

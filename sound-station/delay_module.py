@@ -6,26 +6,28 @@ import numpy as np
 
 UPDATE_DELAYS_WAIT_TIME = 1/2
 
+DELAY_OFFSET = 25
+
 class DelayModule:
-    def __init__(self):
+    def __init__(self, settings):
         self.manual_delays_var = tk.BooleanVar()
         self.manual_send_var = tk.BooleanVar()
         self.manual_target_var = tk.BooleanVar()
         self.delay_entries = []
         self.balloon_lla_pos = {
-            "lat": 0,
+            "lat": settings["balloon_target_lla"][0],
             "lat_tk": tk.DoubleVar(),
-            "lon": 0,
+            "lon": settings["balloon_target_lla"][1],
             "lon_tk": tk.DoubleVar(),
-            "alt": 0,
+            "alt": settings["balloon_target_lla"][2],
             "alt_tk": tk.DoubleVar(),
         }
         self.subarray_lla_pos = {
-            "lat": 0.00,
+            "lat": settings["sound_station_lla"][0],
             "lat_tk": tk.DoubleVar(),
-            "lon": 0.00,
+            "lon": settings["sound_station_lla"][1],
             "lon_tk": tk.DoubleVar(),
-            "alt": 0.00,
+            "alt": settings["sound_station_lla"][2],
             "alt_tk": tk.DoubleVar(),
         }
         self.subwoofer_array = {
@@ -133,8 +135,6 @@ class DelayModule:
             direction_versor = balloon_ned / np.linalg.norm(balloon_ned)
 
             delays = [0, 0, 0, 0, 0, 0]
-
-            DELAY_OFFSET = 25
 
             delays[0] = DELAY_OFFSET
 
