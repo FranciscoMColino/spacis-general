@@ -12,8 +12,10 @@ int polynomial_array[4][6] = {
     {12, 10, 9, 3, 0, 0}};
 unsigned current_polynom = -1;
 
+const unsigned DELAY_OFFSET = 25;
+
 // delays for pin 8->13
-unsigned delay_offsets[] = {0, 3, 0, 0, 0, 0};
+unsigned delay_offsets[] = {DELAY_OFFSET, DELAY_OFFSET, DELAY_OFFSET, DELAY_OFFSET, DELAY_OFFSET, DELAY_OFFSET};
 
 const uint16_t t1_load = 0;
 const uint16_t t1_comp = 1250; // 1250
@@ -219,8 +221,15 @@ void loop()
 
     Serial.print("LOG: transmitting polynom ");
     Serial.println(current_polynom);
+    
     Serial.print("LOG: start polynom ");
     Serial.println(transmission_sequence[0], HEX);
+
+    char seq_tx_msg[50];
+    sprintf(seq_tx_msg, " %u, %#lX", current_polynom, transmission_sequence[0]);
+
+    Serial.print("SEQ_TX: ");
+    Serial.println(seq_tx_msg);
     
     current_state = TIMER1_WORKING;
     reset_timer1();

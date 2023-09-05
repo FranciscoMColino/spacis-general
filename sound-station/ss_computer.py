@@ -18,7 +18,9 @@ async def main():
 
     root = tk.Tk()
 
-    serial_com = TransmitterSerial()
+    data_recorder = DataRecorder()
+
+    serial_com = TransmitterSerial(data_recorder)
     res = serial_com.connect()
 
     # TODO - handle serial connection failure, put in logs
@@ -28,7 +30,7 @@ async def main():
         print("Failed to connect to INO serial")
         return 
     
-    data_recorder = DataRecorder()
+    
     delay_module = DelayModule(settings)
     gps_module = GpsModule(delay_module)
     app = SSApp(root, serial_com, data_recorder, delay_module, gps_module)

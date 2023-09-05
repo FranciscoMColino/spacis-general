@@ -1,21 +1,19 @@
 import asyncio
+import datetime
 
 import serial.tools.list_ports
 
 AUTO_DETECT = True
 MANUAL_SERIAL_PORT = "COM8"
+MAX_NO_RCV = 100
 
 serial_reading = True
 
-def kill_signal_generator():
-    global serial_reading
-    serial_reading = False
-
 class TransmitterSerial():
-    def __init__(self):
+    def __init__(self, data_recorder):
         self.baundrate = 115200
         self.received_messages = []
-        self.data = []
+        self.data_recorder = data_recorder
     
     # TODO keep trying to connect, and deal with disconnects
 
@@ -70,20 +68,27 @@ class TransmitterSerial():
         if (not ser):
             print("ERROR: No serial port found")
             return
-
-        recorded_signals_local_cache = []
-        global serial_reading
-
-        while serial_reading:
+        
+        while True:
             
             while ser.in_waiting > 0:
                 msg = ser.readline().decode('utf-8').rstrip()
-                recorded_signals_local_cache.append(msg)
-                #print("Serial message: {}".format(msg))
+                self.received_messages.append(msg)
+                if len(self.received_messages) > MAX_NO_RCV:
+                    self.received_messages = self.received_messages[len(self.received_messages)-MAX_NO_RCV:]
+                # split message by :
+                msg_split = msg.split(':')
 
-            if recorded_signals_local_cache:
-                #transfer recorded_signals_local_cache to recorded_signals
-                self.received_messages.extend(recorded_signals_local_cache)
-                recorded_signals_local_cache = []
+                if len(msg_split) != 2:
+                    continue
+
+                msg_type, msg_body = msg_split[0], msg_split[1]
+
+                if msg_type == "SEQ_TX":
+                    data = msg_body.split(',')
+                    #strip spaces
+                    data = [x.strip() for x in data]
+                    data.append(datetime.datetime.now().strftime("%H-%M-%S")+ f".{datetime.datetime.now().microsecond // 1000:03d}")
+                    self.data_recorder.record_transmitted_data(data)
 
             await asyncio.sleep(2)

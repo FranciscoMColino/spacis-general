@@ -201,5 +201,5 @@ class DelayModule:
         self.azimuth = ((azimuth * 180 / np.pi) + 360) % 360
         self.elevation = 0
 
-    #def update_delays(self):
+
         
