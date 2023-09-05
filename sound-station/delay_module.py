@@ -13,6 +13,10 @@ class DelayModule:
         self.manual_delays_var = tk.BooleanVar()
         self.manual_send_var = tk.BooleanVar()
         self.manual_target_var = tk.BooleanVar()
+
+        self.azimuth = 0
+        self.elevation = 0
+
         self.delay_entries = []
         self.balloon_lla_pos = {
             "lat": settings["balloon_target_lla"][0],
@@ -111,6 +115,8 @@ class DelayModule:
             }
         }
 
+        self.update_azi_ele()
+
     async def calculate_delays(self):
 
         SOUND_SPEED = 343 #m/s
@@ -128,7 +134,6 @@ class DelayModule:
             if balloon_lat == tx_center_lat and balloon_lon == tx_center_lon and balloon_alt == tx_center_alt:
                 await asyncio.sleep(UPDATE_DELAYS_WAIT_TIME)
                 continue
-
 
             balloon_ned = navpy.lla2ned(balloon_lat, balloon_lon, balloon_alt, tx_center_lat, tx_center_lon, tx_center_alt)
 
@@ -166,6 +171,8 @@ class DelayModule:
             self.balloon_lla_pos["lat"] = self.balloon_lla_pos["lat_tk"].get()
             self.balloon_lla_pos["lon"] = self.balloon_lla_pos["lon_tk"].get()
             self.balloon_lla_pos["alt"] = self.balloon_lla_pos["alt_tk"].get()
+        
+        self.update_azi_ele()
 
     def update_raw_pos_data(self):
 
@@ -173,12 +180,26 @@ class DelayModule:
         self.subarray_lla_pos["lon"] = self.subarray_lla_pos["lon_tk"].get()
         self.subarray_lla_pos["alt"] = self.subarray_lla_pos["alt_tk"].get()
         
-
         for i in range(1,6):
             sub = self.subwoofer_array["sub{}".format(i)]
             sub["raw_pos_data"]["orientation"] = sub["raw_pos_data"]["orientation_tk"].get()
             sub["raw_pos_data"]["height"] = sub["raw_pos_data"]["height_tk"].get()
             sub["raw_pos_data"]["distance"] = sub["raw_pos_data"]["distance_tk"].get()
+
+        self.update_azi_ele()
+
+    def update_azi_ele(self):
+
+        fi1 = np.radians(self.subarray_lla_pos["lat"])
+        fi2 = np.radians(self.balloon_lla_pos["lat"])
+        delta_lambda = np.radians(self.balloon_lla_pos["lon"] - self.subarray_lla_pos["lon"])
+        x = np.cos(fi2) * np.sin(delta_lambda)
+        y = np.cos(fi1) * np.sin(fi2) - np.sin(fi1) * np.cos(fi2) * np.cos(delta_lambda)
+        azimuth = np.arctan2(x, y)
+
+
+        self.azimuth = ((azimuth * 180 / np.pi) + 360) % 360
+        self.elevation = 0
 
     #def update_delays(self):
         

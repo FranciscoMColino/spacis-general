@@ -223,14 +223,34 @@ class SSApp:
         self.subarray_lla_label = tk.Label(subarray_lla_frame, text="0, 0, 0", width=26, anchor= tk.W)
         self.subarray_lla_label.grid(row=1, column=1, padx=10, pady=5)
 
+        azimuth_elevation_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
+        azimuth_elevation_frame.grid(row=3, column=0, padx=10, pady=5, columnspan=2)
+
+        azimuth_frame = tk.Frame(azimuth_elevation_frame, bd=1, relief=tk.FLAT)
+        azimuth_frame.grid(row=0, column=0, padx=10)
+
+        tk.Label(azimuth_frame, text="Heading:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.azimuth_label = tk.Label(azimuth_frame, text="0", width=10, anchor=tk.W)
+        self.azimuth_label.grid(row=0, column=1, pady=5)
+
+        elevation_frame = tk.Frame(azimuth_elevation_frame, bd=1, relief=tk.FLAT)
+        elevation_frame.grid(row=0, column=1, padx=10)
+
+        tk.Label(elevation_frame, text="Elevation:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
+        self.elevation_label = tk.Label(elevation_frame, text="0", width=10, anchor=tk.W)
+        self.elevation_label.grid(row=0, column=1, pady=5)
+
+        subwoofer_delays_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
+        subwoofer_delays_frame.grid(row=4, column=0, padx=10, pady=5, columnspan=2)
+
         self.delay_module.entry_boxes = []
 
-        self.ned_labels = []
+        self.ned_labels = []   
 
         for i in range(6):
 
-            sub_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
-            sub_frame.grid(row=(i)//2+3, column=(i)%2)
+            sub_frame = tk.Frame(subwoofer_delays_frame, bd=1, relief=tk.FLAT)
+            sub_frame.grid(row=(i)//2, column=(i)%2)
 
             tk.Label(sub_frame, text="Subwoofer " + str(i)).grid(row=0, column=0, padx=10, pady=5)
 
@@ -368,3 +388,5 @@ class SSApp:
         self.gps_climb_label.config(text=str(self.gps_module.climb))
         self.balloon_pos_label.config(text="{:.6f}, {:.6f}, {:.6f}".format(self.delay_module.balloon_lla_pos['lat'], self.delay_module.balloon_lla_pos['lon'], self.delay_module.balloon_lla_pos['alt']))
         self.subarray_lla_label.config(text="{:.6f}, {:.6f}, {:.6f}".format(self.delay_module.subarray_lla_pos['lat'], self.delay_module.subarray_lla_pos['lon'], self.delay_module.subarray_lla_pos['alt']))
+        self.azimuth_label.config(text="{:.3f}".format(self.delay_module.azimuth))
+        self.elevation_label.config(text="{:.3f}".format(self.delay_module.elevation))
