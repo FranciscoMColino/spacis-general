@@ -19,8 +19,9 @@ async def main():
     root = tk.Tk()
 
     data_recorder = DataRecorder()
+    delay_module = DelayModule(settings)
 
-    serial_com = TransmitterSerial(data_recorder)
+    serial_com = TransmitterSerial(data_recorder, delay_module)
     res = serial_com.connect()
 
     # TODO - handle serial connection failure, put in logs
@@ -30,8 +31,6 @@ async def main():
         print("Failed to connect to INO serial")
         return 
     
-    
-    delay_module = DelayModule(settings)
     gps_module = GpsModule(delay_module)
     app = SSApp(root, serial_com, data_recorder, delay_module, gps_module)
     ws_client = SSClient(app, data_recorder, settings, gps_module)
@@ -41,6 +40,7 @@ async def main():
     asyncio.create_task(app.update_spectogram_task())
     asyncio.create_task(delay_module.calculate_delays())
     asyncio.create_task(serial_com.read_messages())
+    asyncio.create_task(serial_com.periodic_send_delays())
     asyncio.create_task(ws_client.run())
 
 

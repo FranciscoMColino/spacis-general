@@ -7,13 +7,16 @@ AUTO_DETECT = True
 MANUAL_SERIAL_PORT = "COM8"
 MAX_NO_RCV = 100
 
+DELAY_SEND_WAIT_TIME = 2 # seconds
+
 serial_reading = True
 
 class TransmitterSerial():
-    def __init__(self, data_recorder):
+    def __init__(self, data_recorder, delay_module):
         self.baundrate = 115200
         self.received_messages = []
         self.data_recorder = data_recorder
+        self.delay_module = delay_module
     
     # TODO keep trying to connect, and deal with disconnects
 
@@ -60,6 +63,43 @@ class TransmitterSerial():
 
         ser.write(message)
         ser.write(b'\n')
+
+    def send_delays(self, values):
+
+        #value_array = self.convert_entries_to_values(self.delay_module.delay_entries)
+        
+        # check if size 6
+        if len(values) != 6:
+            print("Incorrect size of array")
+            return
+
+        message = 'A ' + ' '.join(str(num) for num in values)  # 'A' represents the type of message
+
+        print("Message sent: ", message)
+
+        self.send_message(message.encode())
+
+    async def periodic_send_delays(self): 
+
+        last_sent = [-1, -1, -1, -1, -1, -1]
+    
+        while True:
+
+            if self.delay_module.manual_send_var.get():
+                last_sent = [-1, -1, -1, -1, -1, -1]
+                await asyncio.sleep(DELAY_SEND_WAIT_TIME)
+                continue
+
+            delays = [self.delay_module.subwoofer_array["sub{}".format(i)]["delay"] for i in range(6)]
+
+            if delays == last_sent:
+                await asyncio.sleep(DELAY_SEND_WAIT_TIME)
+                continue
+
+            self.send_delays(delays)
+            last_sent = delays
+            
+            await asyncio.sleep(DELAY_SEND_WAIT_TIME)
 
     async def read_messages(self):
 

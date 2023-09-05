@@ -72,11 +72,7 @@ class SSApp:
             print("Incorrect size of array")
             return
 
-        message = 'A ' + ' '.join(str(num) for num in value_array)  # 'A' represents the type of message
-
-        print("Message sent: ", message)
-
-        self.serial_com.send_message(message.encode())
+        self.serial_com.send_delays(value_array)
 
     def toggle_manual_delays(self):
         if self.delay_module.manual_delays_var.get():
