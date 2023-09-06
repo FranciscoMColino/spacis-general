@@ -20,18 +20,17 @@ async def main():
 
     data_recorder = DataRecorder()
     delay_module = DelayModule(settings)
+    gps_module = GpsModule(delay_module)
 
-    serial_com = TransmitterSerial(data_recorder, delay_module)
-    res = serial_com.connect()
-
-    # TODO - handle serial connection failure, put in logs
-    if res:
+    serial_com = TransmitterSerial(data_recorder, delay_module, settings)
+    
+    if serial_com.connect():
         print("Connected to INO serial")
     else:
         print("Failed to connect to INO serial")
-        return 
+        return
     
-    gps_module = GpsModule(delay_module)
+    
     app = SSApp(root, serial_com, data_recorder, delay_module, gps_module)
     ws_client = SSClient(app, data_recorder, settings, gps_module)
 
@@ -42,7 +41,6 @@ async def main():
     asyncio.create_task(serial_com.read_messages())
     asyncio.create_task(serial_com.periodic_send_delays())
     asyncio.create_task(ws_client.run())
-
 
     while True:
         try:

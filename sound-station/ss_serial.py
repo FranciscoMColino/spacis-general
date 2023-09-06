@@ -3,8 +3,6 @@ import datetime
 
 import serial.tools.list_ports
 
-AUTO_DETECT = True
-MANUAL_SERIAL_PORT = "COM8"
 MAX_NO_RCV = 100
 
 DELAY_SEND_WAIT_TIME = 2 # seconds
@@ -12,42 +10,47 @@ DELAY_SEND_WAIT_TIME = 2 # seconds
 serial_reading = True
 
 class TransmitterSerial():
-    def __init__(self, data_recorder, delay_module):
+    def __init__(self, data_recorder, delay_module, settings):
         self.baundrate = 115200
         self.received_messages = []
         self.data_recorder = data_recorder
         self.delay_module = delay_module
+        self.manual_port_config = settings["manual_port_config"]
+        self.manual_serial_port = settings["manual_serial_port"]
     
     # TODO keep trying to connect, and deal with disconnects
 
     def connect(self):
         # Filter the list to find the port with "Arduino" in its description
+        try:
+            arduino_device = None
 
-        arduino_device = None
+            if not self.manual_port_config:
+                arduino_ports = [
+                    p.device
+                    for p in serial.tools.list_ports.comports()
+                    if 'Arduino' in p.description
+                ]
+                if (not arduino_ports):
+                    print("ERROR: No Arduino found")
+                    self.ser = None
+                    return False
+                arduino_device = arduino_ports[0]
 
-        if AUTO_DETECT:
-            arduino_ports = [
-                p.device
-                for p in serial.tools.list_ports.comports()
-                if 'Arduino' in p.description
-            ]
-            if (not arduino_ports):
-                print("ERROR: No Arduino found")
-                self.ser = None
+            else:
+                arduino_device = self.manual_serial_port
+            
+
+            self.ser  = serial.Serial(arduino_device, self.baundrate)
+            
+            if self.ser:
+                print("Connected successfully to the arduino", arduino_device)
+                return True
+            else:
+                print("Failed to connect to the arduino with device", arduino_device)
                 return False
-            arduino_device = arduino_ports[0]
-
-        else:
-            arduino_device = MANUAL_SERIAL_PORT
-        
-
-        self.ser  = serial.Serial(arduino_device, self.baundrate)
-        
-        if self.ser:
-            print("Connected successfully to the arduino", arduino_device)
-            return True
-        else:
-            print("Failed to connect to the arduino")
+        except Exception as e:
+            print("Failed to connect to the arduino, ", e)
             return False
 
     def get_received_messages(self):
