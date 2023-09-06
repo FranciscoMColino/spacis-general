@@ -30,7 +30,6 @@ class DataRecorder:
         self.temperature_record_file.write('box_temp,cpu_temp\n')
 
     def setup_gps_record(self):
-        print("here")
         self.gps_record_file = open(self.gps_record_path, 'a')
         self.gps_record_file.write('lat,lon,alt,speed,climb,track,time,error\n')
     

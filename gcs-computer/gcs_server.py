@@ -45,7 +45,8 @@ class GCSServer:
                 self.data_recorder.record_multiple_sensor_data(unpacked_data) # TODO better saves
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
-                self.spacis_server_client.add_message(message)
+                if self.spacis_server_client.connected:
+                    self.spacis_server_client.add_message(message)
             
             elif message["type"] == "temperature_status":
                 data = message['data']
@@ -62,7 +63,8 @@ class GCSServer:
             elif message["type"] == "gps_data":
                 data = message['data']
                 self.app.set_gps_status(data)
-                self.spacis_server_client.add_message(message)
+                if self.spacis_server_client.connected:
+                    self.spacis_server_client.add_message(message)
                 self.data_recorder.record_gps_data([
                     data['lat'],
                     data['lon'],
