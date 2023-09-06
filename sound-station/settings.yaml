@@ -1,4 +1,4 @@
-cloud_server_ip: "16.16.172.220"
+cloud_server_ip: "spacis-cloud.ddns.net"
 cloud_server_port: 8765
 sound_station_lla: [41.178253, -8.594974, 150]
 balloon_target_lla: [41.177228, -8.599973, 150]
