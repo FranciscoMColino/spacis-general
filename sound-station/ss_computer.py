@@ -1,7 +1,6 @@
 import asyncio
 import tkinter as tk
 
-from app_models import DelayControl
 from data_recording import DataRecorder
 from delay_module import DelayModule
 from gps_module import GpsModule

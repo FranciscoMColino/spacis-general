@@ -6,7 +6,7 @@ from functools import partial
 
 import matplotlib.pyplot as plt
 import numpy as np
-from app_models import DelayControl
+from app_models import DataVizControl
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from position_def import open_position_def
 from target_def import open_target_def
@@ -23,10 +23,14 @@ class SSApp:
         self.root.title("Sound Station")
         self.serial_com = serial_com
         self.data_manager = data_manager
-        self.display_data = []
+
+        self.received_sample_clusters = []
+        self.received_samples = []
 
         self.gps_module = gps_module
         self.delay_module = delay_module
+        self.data_viz_control = DataVizControl()
+
         self.create_widgets()
 
     def calculate_angle_2_subs(self, frame):
@@ -321,27 +325,117 @@ class SSApp:
         raw_data_frame.grid(row=2, column=0, padx=5, pady=5)
 
         tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.rcv_data_txt = tk.Text(raw_data_frame, height=10, width=30)
+        self.rcv_data_label = tk.Label(raw_data_frame, text="0", width=45, anchor=tk.W,relief=tk.SUNKEN, bg="white")
+        self.rcv_data_label.grid(row=1, column=0, pady=5)
 
-        self.rcv_data_txt.grid(row=1, column=0, pady=5, padx=5)
-        #self.rcv_data_txt.insert(tk.END, "Waiting for data...")
-        self.rcv_data_txt.config(state=tk.DISABLED)
-        self.received_time_label = tk.Label(raw_data_frame, text="Time: " + datetime.now().strftime("%H:%M:%S"))
-        self.received_time_label.grid(row=2, column=0, pady=5)
 
-    def create_dataviz_frame(self):
-
-        dataviz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
-        dataviz_frame.grid(row=0, column=2, padx=10, pady=10)
-
+    def create_data_spec_widget(self):
         # Section shows plot of data received
-        figure1, ax = plt.subplots(1, 1, figsize=(20, 12), dpi=50)
-        self.spectogram_window = FigureCanvasTkAgg(figure1, dataviz_frame)
-        self.spectogram_window.get_tk_widget().grid(row=0, column=0, padx=10, pady=10, rowspan=5)
-        ax.set_title("Spectogram")
-        ax.plot([1, 2, 3, 4, 5, 6, 7])
+
+        self.data_viz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
+        data_viz_frame = self.data_viz_frame
+        data_viz_frame.grid(row=0, column=2, padx=10, pady=10, rowspan=4)
+
+        self.fig_single_sensor, self.ax_single_sensor = plt.subplots(1, 1, figsize=(20, 12), dpi=50)
+        ax = self.ax_single_sensor
+        ax.text(
+            0.5, 0.5, "No data",
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes,
+            fontsize=20,  # Set the fontsize here
+        )
+        ax.xaxis.set_visible(False)
+
+        plt.tight_layout()
+
+        self.fig_all_sensor, self.axs_all_sensors = plt.subplots(2, 2, figsize=(20, 12), dpi=50)
+        i = 0
+        for axs_row in self.axs_all_sensors:
+            for ax in axs_row:
+                ax.text(
+                    0.5, 0.5, "No data",
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                    transform=ax.transAxes,
+                    fontsize=20,  # Set the fontsize here
+                )
+                ax.title.set_text("Sensor " + str(i))
+                
+                ax.xaxis.set_visible(False)
+                if i == 1 or i == 3:
+                    ax.yaxis.set_visible(False)
+                i += 1
+        plt.tight_layout()
+
+
+        self.spectogram_window = FigureCanvasTkAgg(self.fig_single_sensor, data_viz_frame)
+        self.spectogram_window.get_tk_widget().grid(row=0, column=0)
         self.spectogram_window.draw()
-        self.spectogram_ax = ax
+
+
+        data_viz_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.SOLID)
+        data_viz_control_frame.grid(row=0, column=1, pady=5, padx=5, rowspan=3)
+
+        drop = tk.OptionMenu(data_viz_control_frame, self.data_viz_control.selected_spec_mode, *self.data_viz_control.select_spec_options)
+        drop.grid(row=0, column=0, pady=5, padx=5)
+        self.data_viz_control.selected_spec_mode.trace("w", self.on_spec_mode_change)
+
+        tk.Label(data_viz_control_frame, text="Upper \nbound (Hz):", anchor=tk.W).grid(row=1, column=0, pady=5, padx=5)
+        
+        self.data_viz_upper_bound_slider = tk.Scale(data_viz_control_frame, 
+                                                    from_=self.data_viz_control.max_upper_freq_bound, 
+                                                    to=self.data_viz_control.lower_freq_bound.get(),
+                                                      variable=self.data_viz_control.upper_freq_bound,
+                                                      orient=tk.VERTICAL, resolution=10, length=200, command=self.on_upper_bound_change,
+                                                      width=15)
+        self.data_viz_upper_bound_slider.set(self.data_viz_control.upper_freq_bound.get())
+        self.data_viz_upper_bound_slider.grid(row=2, column=0, pady=5, padx=5, sticky=tk.E)
+
+        tk.Label(data_viz_control_frame, text="Lower \nbound (Hz):", anchor=tk.W).grid(row=3, column=0, pady=5, padx=5)
+
+        self.data_viz_lower_bound_slider = tk.Scale(data_viz_control_frame, from_=self.data_viz_control.upper_freq_bound.get(), 
+                                                    to=self.data_viz_control.min_lower_freq_bound, 
+                                                    variable=self.data_viz_control.lower_freq_bound, 
+                                                    orient=tk.VERTICAL, resolution=10, length=200, command=self.on_lower_bound_change, 
+                                                    width=15)
+        self.data_viz_lower_bound_slider.set(self.data_viz_control.lower_freq_bound.get())
+        self.data_viz_lower_bound_slider.grid(row=4, column=0, pady=5, padx=5, sticky=tk.E)
+
+        data_viz_v_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
+        data_viz_v_control_frame.grid(row=1, column=0, pady=5, padx=5, sticky=tk.W)
+
+        tk.Label(data_viz_v_control_frame, text="Vmin:", anchor=tk.W).grid(row=0, column=0, pady=5, padx=5)
+
+        self.data_viz_vmin_slider = tk.Scale(data_viz_v_control_frame, from_=self.data_viz_control.min_vmin, to=self.data_viz_control.vmax.get(), variable=self.data_viz_control.vmin,
+                                                orient=tk.HORIZONTAL, resolution=5, length=200, command=self.on_vmin_change,
+                                                width=10)
+        self.data_viz_vmin_slider.set(self.data_viz_control.vmin.get())
+        self.data_viz_vmin_slider.grid(row=0, column=1, pady=5, padx=5, sticky=tk.S)
+
+        tk.Label(data_viz_v_control_frame, text="Vmax:", anchor=tk.W).grid(row=0, column=2, pady=5, padx=5)
+
+        self.data_viz_vmax_slider = tk.Scale(data_viz_v_control_frame, from_=self.data_viz_control.vmin.get(), to=self.data_viz_control.max_vmax, variable=self.data_viz_control.vmax,
+                                                orient=tk.HORIZONTAL, resolution=5, length=200, command=self.on_vmax_change,
+                                                width=10)
+        self.data_viz_vmax_slider.set(self.data_viz_control.vmax.get())
+        self.data_viz_vmax_slider.grid(row=0, column=3, pady=5, padx=5, sticky=tk.S)
+
+        data_viz_sample_size_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
+        data_viz_sample_size_frame.grid(row=2, column=0, pady=5, padx=5, sticky=tk.W)
+
+        tk.Label(data_viz_sample_size_frame, text="Sample size:", anchor=tk.W).grid(row=0, column=0, pady=5, padx=5)
+
+        self.data_viz_sample_size_slider = tk.Scale(data_viz_sample_size_frame, from_=self.data_viz_control.min_max_sample_size, to=self.data_viz_control.max_max_sample_size, variable=self.data_viz_control.sample_size,
+                                                orient=tk.HORIZONTAL, resolution=self.data_viz_control.sample_size_step, length=200,
+                                                width=10)
+        self.data_viz_sample_size_slider.set(self.data_viz_control.sample_size.get())
+        self.data_viz_sample_size_slider.grid(row=0, column=1, pady=5, padx=5, sticky=tk.S)
+
+        tk.Label(data_viz_sample_size_frame, text="Sample available:", anchor=tk.W).grid(row=0, column=2, pady=5, padx=5)
+
+        self.data_viz_sample_available_label = tk.Label(data_viz_sample_size_frame, text="0", anchor=tk.W)
+        self.data_viz_sample_available_label.grid(row=0, column=3, pady=5, padx=5)
 
     def create_widgets(self):
         
@@ -351,28 +445,105 @@ class SSApp:
         self.create_gps_widget()
         self.create_delay_widget()
         self.create_log_widget()
-        self.create_dataviz_frame()
+        self.create_data_spec_widget()
 
         self.root.update()
 
-    def draw_spectogram(self):
-        SAMPLE_SIZE = pow(2, 12) * 4 * 1.1
+    def on_lower_bound_change(self, value):
+        # Function to handle lower bound value changes
+        self.data_viz_upper_bound_slider.config(to=self.data_viz_lower_bound_slider.get())
 
-        if not self.data_manager.local_data:
-            return
+    def on_upper_bound_change(self, value):
+        # Function to handle upper bound value changes
+        self.data_viz_lower_bound_slider.config(from_=self.data_viz_upper_bound_slider.get())
 
-        data = list(zip(*self.data_manager.local_data))[0]
+    def on_vmin_change(self, value):
+        # Function to handle vmin value changes
+        self.data_viz_vmax_slider.config(from_=self.data_viz_vmin_slider.get())
 
-        display_data = []
-        if len(data) > SAMPLE_SIZE:
-            display_data = data[len(data)-int(SAMPLE_SIZE):]
+    def on_vmax_change(self, value):
+        # Function to handle vmax value changes
+        self.data_viz_vmin_slider.config(to=self.data_viz_vmax_slider.get())
+
+    def on_spec_mode_change(self, *args):
+        print("LOG: Spectogram mode changed to " + self.data_viz_control.selected_spec_mode.get())
+
+        if self.data_viz_control.selected_spec_mode.get() == "All Sensors":
+            self.spectogram_window.get_tk_widget().grid_forget()
+            self.spectogram_window = FigureCanvasTkAgg(self.fig_all_sensor, self.data_viz_frame)
+            self.spectogram_window.get_tk_widget().grid(row=0, column=0)
+            self.draw_spectogram()
         else:
-            display_data = data
+            self.spectogram_window.get_tk_widget().grid_forget()
+            self.spectogram_window = FigureCanvasTkAgg(self.fig_single_sensor, self.data_viz_frame)
+            self.spectogram_window.get_tk_widget().grid(row=0, column=0)
+            self.draw_spectogram()
 
-        self.spectogram_ax.clear()
-        self.spectogram_ax.specgram(display_data, Fs=1600, vmin=-5, vmax=30)
-        self.spectogram_ax.set_ylim([0, 100])
-        self.spectogram_window.draw()
+    def draw_spectogram(self):
+
+        if not self.received_samples:
+            return
+        
+        ylim = [self.data_viz_control.lower_freq_bound.get(), self.data_viz_control.upper_freq_bound.get()]
+        vmin = self.data_viz_control.vmin.get()
+        vmax = self.data_viz_control.vmax.get()
+        
+        data_len = len(self.received_samples)
+        sample_size = self.data_viz_control.sample_size.get()
+        sensor_id = 0
+
+        if self.data_viz_control.selected_spec_mode.get().startswith("Sensor"):
+            sensor_id = int(self.data_viz_control.selected_spec_mode.get().split(" ")[1])
+
+            if data_len > sample_size:
+                display_data = list(zip(*self.received_samples))[sensor_id][data_len-int(sample_size):]
+            else:
+                display_data = list(zip(*self.received_samples))[sensor_id]
+            
+            self.ax_single_sensor.clear()
+            self.ax_single_sensor.specgram(display_data, Fs=1600, vmin=vmin, vmax=vmax)
+            self.ax_single_sensor.set_ylim(ylim)
+            self.spectogram_window.draw()
+
+        else:
+            
+            display_data = []
+
+            if data_len > sample_size:
+                display_data = [list(zip(*self.received_samples))[i][data_len-int(sample_size):] for i in range(0, 4)]
+            else:
+                display_data = list(zip(*self.received_samples))
+
+            for i in range(0, 4):
+                
+                ax = self.axs_all_sensors[i//2][i%2]
+                ax.clear()
+                ax.title.set_text("Sensor " + str(i))
+                ax.specgram(display_data[i], Fs=1600, vmin=vmin, vmax=vmax)
+                ax.set_ylim(ylim)
+            
+            self.spectogram_window.draw()
+
+    def update_data(self, data):
+        # Function to update raw data label
+
+        self.received_sample_clusters.append(data)
+        self.received_samples.extend(data)
+
+        data_len = len(self.received_samples)
+
+        sample_size = self.data_viz_control.max_max_sample_size
+
+        if data_len > sample_size:
+            self.received_samples = self.received_samples[data_len-int(sample_size):]
+
+        if len(self.received_sample_clusters) > 20:
+            self.received_sample_clusters.pop(0)
+
+        display_data_sizes = [len(d) for d in self.received_sample_clusters]
+
+        self.rcv_data_label.config(text=display_data_sizes[::-1])
+
 
     def update_gps_status(self):
         # Function to update GPS label

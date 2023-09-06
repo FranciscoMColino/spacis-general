@@ -1,103 +1,43 @@
 import tkinter as tk
 
 
-class DelayControl:
+class DataVizControl:
     def __init__(self):
-        self.manual_delays_var = tk.BooleanVar()
-        self.manual_send_var = tk.BooleanVar()
-        self.manual_target_var = tk.BooleanVar()
-        self.entry_boxes = []
-        self.subwoofer_array = {
-            "sub0": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "lla_pos": {
-                    "lat": 0,
-                    "lat_tk": tk.IntVar(),
-                    "lon": 0,
-                    "lon_tk": tk.IntVar(),
-                    "alt": 0,
-                    "alt_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            },
-            "sub1": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            },
-            "sub2": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            },
-            "sub3": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            },
-            "sub4": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            },
-            "sub5": {
-                "raw_pos_data": {
-                    "orientation": 0, #degrees
-                    "orientation_tk": tk.IntVar(),
-                    "height": 0, #meters
-                    "height_tk": tk.IntVar(),
-                    "distance": 0, #meters
-                    "distance_tk": tk.IntVar(),
-                },
-                "ned_pos": [0, 0, 0],
-                "delay": 0
-            }
-        }
-    
-    def update_raw_pos_data(self):
 
-        self.subwoofer_array["sub0"]["lla_pos"]["lat"] = self.subwoofer_array["sub0"]["lla_pos"]["lat_tk"].get()
-        self.subwoofer_array["sub0"]["lla_pos"]["lon"] = self.subwoofer_array["sub0"]["lla_pos"]["lon_tk"].get()
-        self.subwoofer_array["sub0"]["lla_pos"]["alt"] = self.subwoofer_array["sub0"]["lla_pos"]["alt_tk"].get()
+        self.select_spec_options = [
+            "Sensor 0",
+            "Sensor 1",
+            "Sensor 2",
+            "Sensor 3",
+            "All Sensors",
+        ]
+        #self.all_sensors_mode = False
 
-        for i in range(1,6):
-            sub = self.subwoofer_array["sub{}".format(i)]
-            sub["raw_pos_data"]["orientation"] = sub["raw_pos_data"]["orientation_tk"].get()
-            sub["raw_pos_data"]["height"] = sub["raw_pos_data"]["height_tk"].get()
-            sub["raw_pos_data"]["distance"] = sub["raw_pos_data"]["distance_tk"].get()
+        self.selected_spec_mode = tk.StringVar()
+        self.selected_spec_mode.set(self.select_spec_options[0])
+
+        self.max_upper_freq_bound = 400
+        self.min_lower_freq_bound = 0
+
+        self.lower_freq_bound = tk.IntVar()
+        self.lower_freq_bound.set(0)
+        self.upper_freq_bound = tk.IntVar()
+        self.upper_freq_bound.set(200)
+
+        self.min_vmin = -100
+        self.max_vmax = 300
+
+        self.vmin = tk.IntVar()
+        self.vmin.set(-10)
+        self.vmax = tk.IntVar()
+        self.vmax.set(10)
+
+        self.max_max_sample_size = 65536 # pow(2, 12) * 16
+        self.min_max_sample_size = 4096 # pow(2, 12) * 1
+        self.sample_size_step = 1024 # pow(2, 12) / 4
+
+        self.sample_size = tk.IntVar()
+        self.sample_size.set(16384)
+
+        self.timeline_offset = tk.IntVar()
+        self.timeline_offset.set(0)

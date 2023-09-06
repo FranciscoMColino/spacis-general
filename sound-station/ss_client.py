@@ -58,6 +58,7 @@ class SSClient:
                 unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
                 #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
                 # TODO record data
+                self.app.update_data(unpacked_data)
                 self.data_recorder.record_multiple_sensor_data(unpacked_data)
                 print("RECEIVERD: unpacked data ", len(unpacked_data))
 

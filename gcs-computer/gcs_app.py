@@ -471,10 +471,6 @@ class GCSApp:
         }
         self.server.send_message(json.dumps(obj))
 
-    def int_to_scientific_notation(self, integer):
-        scientific_str = "{:.2e}".format(integer)
-        return scientific_str
-
     def draw_spectogram(self):
 
         PM_START = time.time()
