@@ -25,9 +25,9 @@ class GCSClient:
         while True:
             try:
 
-                print("LOG: Periodic dispatch")
+                #print("LOG: Periodic dispatch")
                 if self.ws is not None and self.ws.open:
-                    print("LOG: Dispatching message")
+                    #print("LOG: Dispatching message")
                     if len(self.message_buffer) > 0:
                         message = {
                             "user": "ground-control-station",

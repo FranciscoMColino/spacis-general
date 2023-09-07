@@ -7,7 +7,7 @@ import data_recording
 import spacis_utils
 import websockets
 
-HEART_BEAT_INTERVAL = 5/2
+HEART_BEAT_INTERVAL = 1
 
 class Client:
     def __init__(self):
