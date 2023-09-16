@@ -9,11 +9,13 @@ import websockets
 
 HEART_BEAT_INTERVAL = 1
 
+
 class Client:
     def __init__(self):
         self.connected = False
         self.last_update = ""
         self.websocket = None
+
 
 class GCSServer:
     def __init__(self, data_recorder, spacis_server_client, settings):
@@ -24,7 +26,7 @@ class GCSServer:
         self.data_recorder = data_recorder
         self.client = Client()
         self.spacis_server_client = spacis_server_client
-        
+
     def setup(self, app):
         self.app = app
 
@@ -36,25 +38,32 @@ class GCSServer:
         try:
             message = json.loads(message)
 
-            #print(f"RECEIVED: message of type {message['type']}")
+            # print(f"RECEIVED: message of type {message['type']}")
 
             # switch case for message type
             if message["type"] == "sensor_data":
-                unpacked_data = spacis_utils.unpack_sensor_data(message['data'])
-                #print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
-                self.data_recorder.record_multiple_sensor_data(unpacked_data) # TODO better saves
+                unpacked_data = spacis_utils.unpack_sensor_data(
+                    message['data']['sensor_read'])
+                unpacked_elapsed = spacis_utils.unpack_elapsed_time(
+                    message['data']['elapsed_time'])
+                unpacked_pps_ids = spacis_utils.unpack_pps_ids(
+                    message['data']['pps_ids'])
+
+                self.data_recorder.record_multiple_sensor_data(
+                    unpacked_data, unpacked_elapsed, unpacked_pps_ids)
+
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
                 if self.spacis_server_client.connected:
                     self.spacis_server_client.add_message(message)
-            
+
             elif message["type"] == "temperature_status":
                 data = message['data']
                 self.app.set_temperature_status(data)
                 self.data_recorder.record_temperature_data([
-                    data['box_temperature'], 
+                    data['box_temperature'],
                     data['cpu_temperature']]
-                    )
+                )
 
             elif message["type"] == "system_control_data":
                 data = message['data']
@@ -83,7 +92,8 @@ class GCSServer:
 
         if self.client.connected:
             # last update time as str with date
-            self.client.last_update = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            self.client.last_update = time.strftime(
+                "%Y-%m-%d %H:%M:%S", time.localtime())
 
     def send_message(self, message):
         if self.client.websocket:
@@ -119,13 +129,12 @@ class GCSServer:
                     self.send_hearbeat()
                     print("LOG: Client connected")
                     continue
-                #elif self.client.connected and websocket != self.client.websocket:
+                # elif self.client.connected and websocket != self.client.websocket:
                 #    print("LOG: Client already connected")
                 # update app server state to connected and timestamp
-                
+
                 # TODO if json format is correct
                 self.received_message_handler(message)
-
 
         except Exception as e:
             # Handle the exception or log it as needed
