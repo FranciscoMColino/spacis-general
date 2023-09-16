@@ -43,14 +43,11 @@ class GCSClient:
                     self.connected = False
                     await self.connect()
 
-                await asyncio.sleep(NO_ACTIVITY_INTERVAL)
+                await asyncio.sleep(ON_DISPATCH_INTERVAL)
             except Exception as e:
                 print("ERROR: Failed to dispatch message: {}".format(e))
                 self.connected = False
                 await self.connect()
-            finally:
-                await asyncio.sleep(NO_ACTIVITY_INTERVAL)
-
     
     def add_message(self, message):
         self.message_buffer.append(message)

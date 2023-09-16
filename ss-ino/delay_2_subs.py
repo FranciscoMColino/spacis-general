@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     print("Distance traveled: {} meters".format(distance_traveled))
 
-    transmission_angle = np.rad2deg(np.pi/2-np.arctan(distance_traveled/sub_distance))
+    transmission_angle = np.rad2deg(np.arctan(distance_traveled/sub_distance))
 
     print("Transmission angle: {} degrees".format(transmission_angle))
     
