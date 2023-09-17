@@ -86,7 +86,7 @@ class GCSServer:
                 ])
 
             elif message["type"] == "pps_data":
-                print("RECEIVED: pps data")
+                # print("RECEIVED: pps data")
                 self.data_recorder.record_pps_data(message['data'])
             else:
                 print("RECEIVED: invalid type, {}".format(message["type"]))
@@ -114,7 +114,7 @@ class GCSServer:
     async def periodic_heartbeat(self):
         while True:
             # Send heartbeat to client every 5 seconds
-            await asyncio.sleep(5)
+            await asyncio.sleep(HEART_BEAT_INTERVAL)
             try:
                 if self.client:
                     self.send_hearbeat()
