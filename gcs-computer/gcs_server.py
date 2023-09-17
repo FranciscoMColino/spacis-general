@@ -7,7 +7,7 @@ import data_recording
 import spacis_utils
 import websockets
 
-HEART_BEAT_INTERVAL = 2.5
+HEART_BEAT_INTERVAL = 1
 
 
 class Client:
@@ -26,6 +26,9 @@ class GCSServer:
         self.data_recorder = data_recorder
         self.client = Client()
         self.spacis_server_client = spacis_server_client
+        self.current_batch_id = 0
+        self.last_few_batch_size = []
+        self.average_batch_freq = 0
 
     def setup(self, app):
         self.app = app
@@ -49,13 +52,29 @@ class GCSServer:
                 unpacked_pps_ids = spacis_utils.unpack_pps_ids(
                     message['data']['pps_id'])
 
+                if len(self.last_few_batch_size) > 10:
+                    self.last_few_batch_size.pop(0)
+                    self.last_few_batch_size.append(len(unpacked_data))
+                else:
+                    self.last_few_batch_size.append(len(unpacked_data))
+
+                GATHER_PERIOD = 1/4
+
+                self.average_batch_freq = sum(
+                    self.last_few_batch_size) / (GATHER_PERIOD*10)
+
                 self.data_recorder.record_multiple_sensor_data(
-                    unpacked_data, unpacked_elapsed, unpacked_pps_ids)
+                    unpacked_data, unpacked_elapsed, unpacked_pps_ids, self.current_batch_id)
+
+                self.data_recorder.record_batch_data(
+                    self.current_batch_id, len(unpacked_data))
 
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
                 if self.spacis_server_client.connected:
                     self.spacis_server_client.add_message(message)
+
+                self.current_batch_id += 1
 
             elif message["type"] == "temperature_status":
                 data = message['data']
@@ -87,11 +106,15 @@ class GCSServer:
 
             elif message["type"] == "pps_data":
                 # print("RECEIVED: pps data")
+
                 self.data_recorder.record_pps_data(message['data'])
             else:
                 print("RECEIVED: invalid type, {}".format(message["type"]))
         except json.decoder.JSONDecodeError:
             print("RECEIVED: invalid message format (not JSON)")
+        except Exception as e:
+            print(
+                "RECEIVED: error processing message: {} on message {}".format(e, message))
 
         if self.client.connected:
             # last update time as str with date
