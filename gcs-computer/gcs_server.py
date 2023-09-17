@@ -47,7 +47,7 @@ class GCSServer:
                 unpacked_elapsed = spacis_utils.unpack_elapsed_time(
                     message['data']['elapsed_time'])
                 unpacked_pps_ids = spacis_utils.unpack_pps_ids(
-                    message['data']['pps_ids'])
+                    message['data']['pps_id'])
 
                 self.data_recorder.record_multiple_sensor_data(
                     unpacked_data, unpacked_elapsed, unpacked_pps_ids)
