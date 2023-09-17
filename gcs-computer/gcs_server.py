@@ -85,6 +85,9 @@ class GCSServer:
                     data['error']
                 ])
 
+            elif message["type"] == "pps_data":
+                print("RECEIVED: pps data")
+                self.data_recorder.record_pps_data(message['data'])
             else:
                 print("RECEIVED: invalid type, {}".format(message["type"]))
         except json.decoder.JSONDecodeError:
