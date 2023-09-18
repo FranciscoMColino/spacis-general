@@ -9,6 +9,9 @@ import websockets
 
 HEART_BEAT_INTERVAL = 1
 
+SAMPLE_FREQ_SIZE = 5
+GATHER_PERIOD = 1/4
+
 
 class Client:
     def __init__(self):
@@ -52,16 +55,14 @@ class GCSServer:
                 unpacked_pps_ids = spacis_utils.unpack_pps_ids(
                     message['data']['pps_id'])
 
-                if len(self.last_few_batch_size) > 10:
+                if len(self.last_few_batch_size) >= SAMPLE_FREQ_SIZE:
                     self.last_few_batch_size.pop(0)
                     self.last_few_batch_size.append(len(unpacked_data))
                 else:
                     self.last_few_batch_size.append(len(unpacked_data))
 
-                GATHER_PERIOD = 1/4
-
                 self.average_batch_freq = sum(
-                    self.last_few_batch_size) / (GATHER_PERIOD*10)
+                    self.last_few_batch_size) / (GATHER_PERIOD*SAMPLE_FREQ_SIZE)
 
                 self.data_recorder.record_multiple_sensor_data(
                     unpacked_data, unpacked_elapsed, unpacked_pps_ids, self.current_batch_id)
