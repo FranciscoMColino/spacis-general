@@ -228,6 +228,9 @@ class GCSApp:
         tk.Button(system_control_frame, text="Reboot RPI",
                   command=self.reboot_rpi).grid(row=6, column=0, pady=5, padx=5)
 
+        tk.Button(system_control_frame, text="Restart service",
+                  command=self.restart_service).grid(row=6, column=1, pady=5, padx=5)
+
     def create_temperature_control_widget(self):
         # Section that shows temperature and fan speed
         sensor_frame = tk.Frame(self.root, bd=1, relief=tk.SOLID)
@@ -447,6 +450,10 @@ class GCSApp:
         print("LOG: Reboot RPI button pressed")
         self.send_reboot_rpi()
 
+    def restart_service(self):
+        print("LOG: Restart service button pressed")
+        self.send_restart_service()
+
     # Functions to send commands to the server
 
     def send_processing_power_limit(self):
@@ -494,6 +501,14 @@ class GCSApp:
         self.send_command({
             "type": "OS",
             "action": "REBOOT",
+            "value": True
+        })
+
+    def send_restart_service(self):
+        print("LOG: Restart service button pressed")
+        self.send_command({
+            "type": "OS",
+            "action": "RESTART_SERVICE",
             "value": True
         })
 
