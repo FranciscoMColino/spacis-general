@@ -73,7 +73,11 @@ class GCSServer:
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
                 if self.spacis_server_client.connected:
-                    self.spacis_server_client.add_message(message)
+                    new_message = {
+                        "type": "sensor_data",
+                        "data": message['data']['sensor_read'],
+                    }
+                    self.spacis_server_client.add_message(new_message)
 
                 self.current_batch_id += 1
 

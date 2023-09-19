@@ -127,7 +127,8 @@ class GCSApp:
         tk.Label(data_viz_control_frame, text="Lower \nbound (Hz):",
                  anchor=tk.W).grid(row=3, column=0, pady=5, padx=5)
 
-        self.data_viz_lower_bound_slider = tk.Scale(data_viz_control_frame, from_=self.data_viz_control.upper_freq_bound.get(),
+        self.data_viz_lower_bound_slider = tk.Scale(data_viz_control_frame,
+                                                    from_=self.data_viz_control.upper_freq_bound.get(),
                                                     to=self.data_viz_control.min_lower_freq_bound,
                                                     variable=self.data_viz_control.lower_freq_bound,
                                                     orient=tk.VERTICAL, resolution=10, length=200, command=self.on_lower_bound_change,

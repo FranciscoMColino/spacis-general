@@ -33,7 +33,7 @@ class DataRecorder:
     def setup_sensor_record(self):
         self.sensor_record_file = open(self.sensor_record_path, 'a')
         self.sensor_record_file.write(
-            'sensor_1,sensor_2,sensor_3,sensor_4,delay\n')
+            'sensor_0,sensor_1,sensor_2,sensor_3,elapsed,pps_id,batch_id\n')
         self.local_data = []
         # self.MAX_NO_SENQ = 100
         # self.LOCAL_SIZE_LIMIT = pow(2, 12) * 4 * 100
