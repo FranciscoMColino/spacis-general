@@ -22,15 +22,15 @@ async def main():
     gps_module = GpsModule(delay_module)
 
     serial_com = TransmitterSerial(data_recorder, delay_module, settings)
-    
+
     if serial_com.connect():
         print("Connected to INO serial")
     else:
         print("Failed to connect to INO serial")
         return
-    
-    
-    app = SSApp(root, serial_com, data_recorder, delay_module, gps_module)
+
+    app = SSApp(root, serial_com, data_recorder,
+                delay_module, gps_module, settings)
     ws_client = SSClient(app, data_recorder, settings, gps_module)
 
     asyncio.create_task(app.run())
@@ -47,4 +47,4 @@ async def main():
         except KeyboardInterrupt:
             break
 
-asyncio.run(main())        
+asyncio.run(main())
