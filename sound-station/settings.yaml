@@ -2,5 +2,5 @@ cloud_server_ip: "spacis-cloud.ddns.net"
 cloud_server_port: 8765
 sound_station_lla: [67.8796186, 21.0618723, 473]
 balloon_target_lla: [67.878802, 21.061968, 480]
-manual_port_config: true
+manual_port_config: false
 manual_serial_port: "COM7"

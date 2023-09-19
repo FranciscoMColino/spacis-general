@@ -17,6 +17,12 @@ UPDATE_UI_INTERVAL = 1/12
 UPDATE_UI_INTERVAL = 1/12
 FPS = 24
 
+LABEL_FONT = ("Helvetica", 9)  # You can make this size configurable
+TEXT_FONT = ("Helvetica", 8)
+PAD_X = 4
+PAD_Y = 3
+FIG_SIZE = [10, 6]
+
 class SSApp:
     def __init__(self, root, serial_com, data_manager,delay_module, gps_module):
         self.root = root
@@ -162,86 +168,86 @@ class SSApp:
     def create_gps_widget(self):
         # Section for gps data
         gps_frame = tk.Frame(self.section1_frame, bd=1, relief=tk.SOLID)
-        gps_frame.grid(row=0, column=0, padx=10, pady=10, sticky=tk.N)
-        tk.Label(gps_frame, text="GPS Data").grid(row=0, column=0, columnspan=2)
+        gps_frame.grid(row=0, column=0, padx=PAD_X, pady=PAD_Y, sticky=tk.N)
+        tk.Label(gps_frame, text="GPS Data", font=LABEL_FONT).grid(row=0, column=0, columnspan=2)
 
         gps_latitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_latitude_frame.grid(row=1, column=0, pady=5, padx=5)
-        tk.Label(gps_latitude_frame, text="Lat:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10, anchor=tk.W)
-        self.gps_latitude_label.grid(row=0, column=1, pady=5)
+        gps_latitude_frame.grid(row=1, column=0, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_latitude_frame, text="Lat:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_latitude_label = tk.Label(gps_latitude_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_latitude_label.grid(row=0, column=1, pady=PAD_Y)
 
         gps_longitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_longitude_frame.grid(row=1, column=1, pady=5, padx=5)
-        tk.Label(gps_longitude_frame, text="Lon:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10, anchor=tk.W)
-        self.gps_longitude_label.grid(row=0, column=1, pady=5)
+        gps_longitude_frame.grid(row=1, column=1, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_longitude_frame, text="Lon:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_longitude_label = tk.Label(gps_longitude_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_longitude_label.grid(row=0, column=1, pady=PAD_Y)
 
         gps_altitude_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_altitude_frame.grid(row=2, column=0, pady=5, padx=5)
-        tk.Label(gps_altitude_frame, text="Alt:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_altitude_label = tk.Label(gps_altitude_frame, width=10, anchor=tk.W)
-        self.gps_altitude_label.grid(row=0, column=1, pady=5)
+        gps_altitude_frame.grid(row=2, column=0, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_altitude_frame, text="Alt:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_altitude_label = tk.Label(gps_altitude_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_altitude_label.grid(row=0, column=1, pady=PAD_Y)
 
         gps_track_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_track_frame.grid(row=2, column=1, pady=5, padx=5)
-        tk.Label(gps_track_frame, text="Track:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_track_label = tk.Label(gps_track_frame, width=10, anchor=tk.W)
-        self.gps_track_label.grid(row=0, column=1, pady=5)
+        gps_track_frame.grid(row=2, column=1, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_track_frame, text="Track:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_track_label = tk.Label(gps_track_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_track_label.grid(row=0, column=1, pady=PAD_Y)
 
         gps_speed_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_speed_frame.grid(row=3, column=0, pady=5, padx=5)
-        tk.Label(gps_speed_frame, text="Speed:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_speed_label = tk.Label(gps_speed_frame, width=10, anchor=tk.W)
-        self.gps_speed_label.grid(row=0, column=1, pady=5)
+        gps_speed_frame.grid(row=3, column=0, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_speed_frame, text="Speed:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_speed_label = tk.Label(gps_speed_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_speed_label.grid(row=0, column=1, pady=PAD_Y)
 
         gps_climb_frame = tk.Frame(gps_frame, bd=1, relief=tk.GROOVE)
-        gps_climb_frame.grid(row=3, column=1, pady=5, padx=5)
-        tk.Label(gps_climb_frame, text="Climb:", width=5, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.gps_climb_label = tk.Label(gps_climb_frame, width=10, anchor=tk.W)
-        self.gps_climb_label.grid(row=0, column=1, pady=5)
+        gps_climb_frame.grid(row=3, column=1, pady=PAD_Y, padx=PAD_X)
+        tk.Label(gps_climb_frame, text="Climb:", width=5, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.gps_climb_label = tk.Label(gps_climb_frame, width=10, anchor=tk.W, font=LABEL_FONT)
+        self.gps_climb_label.grid(row=0, column=1, pady=PAD_Y)
     
     def create_delay_widget(self):
         ###### Section for manual control
         delay_frame = tk.Frame(self.section1_frame, bd=1, relief=tk.SOLID)
-        delay_frame.grid(row=1, column=0, padx=10, pady=10)
+        delay_frame.grid(row=1, column=0, padx=PAD_X, pady=PAD_Y)
 
-        title = tk.Label(delay_frame, text="Delay control")
-        title.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+        title = tk.Label(delay_frame, text="Delay control", font=LABEL_FONT)
+        title.grid(row=0, column=0, columnspan=2, padx=PAD_X, pady=PAD_Y)
 
         pointing_to_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
-        pointing_to_frame.grid(row=1, column=0, padx=10, pady=5, columnspan=2)
+        pointing_to_frame.grid(row=1, column=0, padx=PAD_X, pady=PAD_Y, columnspan=2)
 
-        tk.Label(pointing_to_frame, text="Pointing to:", width=12).grid(row=1, column=0, padx=10, pady=5)
-        self.balloon_pos_label = tk.Label(pointing_to_frame, text="0, 0, 0", width=26, anchor= tk.W)
-        self.balloon_pos_label.grid(row=1, column=1, padx=10, pady=5)
+        tk.Label(pointing_to_frame, text="Pointing to:", width=12, font=LABEL_FONT).grid(row=1, column=0, padx=10, pady=PAD_Y)
+        self.balloon_pos_label = tk.Label(pointing_to_frame, text="0, 0, 0", width=26, anchor= tk.W, font=LABEL_FONT)
+        self.balloon_pos_label.grid(row=1, column=1, padx=PAD_X, pady=PAD_Y)
 
         subarray_lla_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
-        subarray_lla_frame.grid(row=2, column=0, padx=10, pady=5, columnspan=2)
+        subarray_lla_frame.grid(row=2, column=0, padx=PAD_X, pady=PAD_Y, columnspan=2)
 
-        tk.Label(subarray_lla_frame, text="Subarray LLA:", width=12).grid(row=1, column=0, padx=10, pady=5)
-        self.subarray_lla_label = tk.Label(subarray_lla_frame, text="0, 0, 0", width=26, anchor= tk.W)
-        self.subarray_lla_label.grid(row=1, column=1, padx=10, pady=5)
+        tk.Label(subarray_lla_frame, text="Subarray LLA:", width=12, font=LABEL_FONT).grid(row=1, column=0, padx=10, pady=PAD_Y)
+        self.subarray_lla_label = tk.Label(subarray_lla_frame, text="0, 0, 0", width=26, anchor= tk.W, font=LABEL_FONT)
+        self.subarray_lla_label.grid(row=1, column=1, padx=PAD_X, pady=PAD_Y)
 
         azimuth_elevation_frame = tk.Frame(delay_frame, bd=1, relief=tk.GROOVE)
-        azimuth_elevation_frame.grid(row=3, column=0, padx=10, pady=5, columnspan=2)
+        azimuth_elevation_frame.grid(row=3, column=0, padx=PAD_X, pady=PAD_Y, columnspan=2)
 
         azimuth_frame = tk.Frame(azimuth_elevation_frame, bd=1, relief=tk.FLAT)
-        azimuth_frame.grid(row=0, column=0, padx=10)
+        azimuth_frame.grid(row=0, column=0, padx=PAD_X)
 
-        tk.Label(azimuth_frame, text="Heading:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.azimuth_label = tk.Label(azimuth_frame, text="0", width=10, anchor=tk.W)
-        self.azimuth_label.grid(row=0, column=1, pady=5)
+        tk.Label(azimuth_frame, text="Heading:", width=8, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.azimuth_label = tk.Label(azimuth_frame, text="0", width=10, anchor=tk.W, font=LABEL_FONT)
+        self.azimuth_label.grid(row=0, column=1, pady=PAD_Y)
 
         elevation_frame = tk.Frame(azimuth_elevation_frame, bd=1, relief=tk.FLAT)
-        elevation_frame.grid(row=0, column=1, padx=10)
+        elevation_frame.grid(row=0, column=1, padx=PAD_X)
 
-        tk.Label(elevation_frame, text="Elevation:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
-        self.elevation_label = tk.Label(elevation_frame, text="0", width=10, anchor=tk.W)
-        self.elevation_label.grid(row=0, column=1, pady=5)
+        tk.Label(elevation_frame, text="Elevation:", width=8, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+        self.elevation_label = tk.Label(elevation_frame, text="0", width=10, anchor=tk.W, font=LABEL_FONT)
+        self.elevation_label.grid(row=0, column=1, pady=PAD_Y)
 
         subwoofer_delays_frame = tk.Frame(delay_frame, bd=1, relief=tk.FLAT)
-        subwoofer_delays_frame.grid(row=4, column=0, padx=10, pady=5, columnspan=2)
+        subwoofer_delays_frame.grid(row=4, column=0, padx=PAD_X, pady=PAD_Y, columnspan=2)
 
         self.delay_module.entry_boxes = []
 
@@ -252,65 +258,65 @@ class SSApp:
             sub_frame = tk.Frame(subwoofer_delays_frame, bd=1, relief=tk.FLAT)
             sub_frame.grid(row=(i)//2, column=(i)%2)
 
-            tk.Label(sub_frame, text="Subwoofer " + str(i)).grid(row=0, column=0, padx=10, pady=5)
+            tk.Label(sub_frame, text="Subwoofer " + str(i), font=LABEL_FONT).grid(row=0, column=0, padx=PAD_X, pady=PAD_Y)
 
             ned_frame = tk.Frame(sub_frame, bd=1, relief=tk.GROOVE)
-            ned_frame.grid(row=1, column=0, padx=10, pady=5)
+            ned_frame.grid(row=1, column=0, padx=PAD_X, pady=PAD_Y)
 
-            tk.Label(ned_frame, text="NED pos:", width=8, anchor=tk.W).grid(row=0, column=0, pady=5)
-            ned_label= tk.Label(ned_frame, text="0, 0, 0", width=12, anchor=tk.W)
-            ned_label.grid(row=0, column=1, pady=5)
+            tk.Label(ned_frame, text="NED pos:", width=8, anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y)
+            ned_label= tk.Label(ned_frame, text="0, 0, 0", width=12, anchor=tk.W, font=LABEL_FONT)
+            ned_label.grid(row=0, column=1, pady=PAD_Y)
 
             self.ned_labels.append(ned_label)
 
             sub_delay_frame = tk.Frame(sub_frame, bd=1, relief=tk.GROOVE)
-            sub_delay_frame.grid(row=2, column=0, padx=5, pady=5)
+            sub_delay_frame.grid(row=2, column=0, padx=PAD_X, pady=PAD_Y)
 
-            label2 = tk.Label(sub_delay_frame, text="Delay:", width=5, anchor=tk.W)
-            label2.grid(row=0, column=0, pady=5)
+            label2 = tk.Label(sub_delay_frame, text="Delay:", width=5, anchor=tk.W, font=LABEL_FONT)
+            label2.grid(row=0, column=0, pady=PAD_Y)
             
-            entry = tk.Entry(sub_delay_frame, width=14, textvariable=self.delay_module.subwoofer_array["sub{}".format(i)]["delay_tk"], state=tk.DISABLED)
-            entry.grid(row=0, column=1, pady=5, padx=5)
+            entry = tk.Entry(sub_delay_frame, width=14, font=TEXT_FONT, textvariable=self.delay_module.subwoofer_array["sub{}".format(i)]["delay_tk"], state=tk.DISABLED)
+            entry.grid(row=0, column=1, pady=PAD_Y, padx=PAD_X)
 
             self.delay_module.subwoofer_array["sub{}".format(i)]["delay_tk"].trace("w", self.delay_module.update_delays)
 
             self.delay_module.delay_entries.append(entry)
 
         check_manual_send = tk.Checkbutton(delay_frame, text="Manual send", variable=self.delay_module.manual_send_var, command=self.toggle_manual_send)
-        check_manual_send.grid(row=7, column=0, padx=10, pady=10)
+        check_manual_send.grid(row=7, column=0, padx=PAD_X, pady=PAD_Y)
 
         check_manual_delay = tk.Checkbutton(delay_frame, text="Manual target", variable=self.delay_module.manual_target_var, command=self.toggle_manual_target)
-        check_manual_delay.grid(row=8, column=0, padx=10, pady=10)
+        check_manual_delay.grid(row=8, column=0, padx=PAD_X, pady=PAD_Y)
 
         check_manual_delay = tk.Checkbutton(delay_frame, text="Manual delays", variable=self.delay_module.manual_delays_var, command=self.toggle_manual_delays)
-        check_manual_delay.grid(row=9, column=0, padx=10, pady=10)
+        check_manual_delay.grid(row=9, column=0, padx=PAD_X, pady=PAD_Y)
 
-        self.define_pos_button = tk.Button(delay_frame, text="Define positions",  width=18, command=partial(open_position_def, self.root, self.delay_module))
-        self.define_pos_button.grid(row=9, column=1, padx=10, pady=10)
+        self.define_pos_button = tk.Button(delay_frame, text="Define positions", font=TEXT_FONT,  width=18, command=partial(open_position_def, self.root, self.delay_module))
+        self.define_pos_button.grid(row=9, column=1, padx=PAD_X, pady=PAD_Y)
 
-        self.send_button = tk.Button(delay_frame, text="Send delays", command= self.send_delays, width=18)
-        self.send_button.grid(row=7, column=1, padx=10, pady=10)
+        self.send_button = tk.Button(delay_frame, text="Send delays", font=TEXT_FONT, command= self.send_delays, width=18)
+        self.send_button.grid(row=7, column=1, padx=PAD_X, pady=PAD_Y)
         self.send_button.config(state=tk.DISABLED)
 
-        self.define_targert_button = tk.Button(delay_frame, text="Define target", command=partial(open_target_def, self.root, self.delay_module), width=18)
-        self.define_targert_button.grid(row=8, column=1, padx=10, pady=10)
+        self.define_targert_button = tk.Button(delay_frame, text="Define target", font=TEXT_FONT, command=partial(open_target_def, self.root, self.delay_module), width=18)
+        self.define_targert_button.grid(row=8, column=1, padx=PAD_X, pady=PAD_Y)
         self.define_targert_button.config(state=tk.DISABLED)
 
     def create_log_widget(self):
 
         logs_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
-        logs_frame.grid(row=0, column=1, padx=10, pady=10)
+        logs_frame.grid(row=0, column=1, padx=PAD_X, pady=PAD_Y)
 
         ##### frame that shows the last 8 messages from the serial_com
         serial_com_frame = tk.Frame(logs_frame, bd=1, relief=tk.FLAT)
-        serial_com_frame.grid(row=0, column=0, padx=5, pady=5)
+        serial_com_frame.grid(row=0, column=0, padx=PAD_X, pady=PAD_Y)
 
-        serial_com_frame_title = tk.Label(serial_com_frame, text="Serial Com")
-        serial_com_frame_title.grid(row=0, column=0, padx=5, pady=5)
+        serial_com_frame_title = tk.Label(serial_com_frame, text="Serial Com", font=LABEL_FONT)
+        serial_com_frame_title.grid(row=0, column=0, padx=PAD_X, pady=PAD_Y)
 
         joined_messages = "\n".join(self.serial_com.get_received_messages())
-        self.text_entry = tk.Text(serial_com_frame, height=20, width=40)
-        self.text_entry.grid(row=1, column=0, padx=5, pady=5)
+        self.text_entry = tk.Text(serial_com_frame, height=20, width=40, font=TEXT_FONT)
+        self.text_entry.grid(row=1, column=0, padx=PAD_X, pady=PAD_Y)
         self.text_entry.insert(tk.END, joined_messages)
         self.text_entry.config(state=tk.DISABLED)
         #text_entry.grid(row=0, column=0, padx=10, pady=10)
@@ -318,15 +324,15 @@ class SSApp:
         # ##### SYSTEM LOGS ##### #
         
         system_logs_frame = tk.Frame(logs_frame, bd=1, relief=tk.FLAT)
-        system_logs_frame.grid(row=1, column=0, padx=5, pady=5)#
+        system_logs_frame.grid(row=1, column=0, padx=PAD_X, pady=PAD_Y)#
 
         # Section that shows raw data received
         raw_data_frame = tk.Frame(system_logs_frame, bd=1, relief=tk.FLAT)
-        raw_data_frame.grid(row=2, column=0, padx=5, pady=5)
+        raw_data_frame.grid(row=2, column=0, padx=PAD_X, pady=PAD_Y)
 
-        tk.Label(raw_data_frame, text="Raw data received").grid(row=0, column=0)
-        self.rcv_data_label = tk.Label(raw_data_frame, text="0", width=45, anchor=tk.W,relief=tk.SUNKEN, bg="white")
-        self.rcv_data_label.grid(row=1, column=0, pady=5)
+        tk.Label(raw_data_frame, text="Raw data received", font=LABEL_FONT).grid(row=0, column=0)
+        self.rcv_data_label = tk.Label(raw_data_frame, text="0", width=45, anchor=tk.W,relief=tk.SUNKEN, bg="white", font=LABEL_FONT)
+        self.rcv_data_label.grid(row=1, column=0, pady=PAD_Y)
 
 
     def create_data_spec_widget(self):
@@ -334,9 +340,9 @@ class SSApp:
 
         self.data_viz_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
         data_viz_frame = self.data_viz_frame
-        data_viz_frame.grid(row=0, column=2, padx=10, pady=10, rowspan=4)
+        data_viz_frame.grid(row=0, column=2, padx=PAD_X, pady=PAD_Y, rowspan=4)
 
-        self.fig_single_sensor, self.ax_single_sensor = plt.subplots(1, 1, figsize=(20, 12), dpi=50)
+        self.fig_single_sensor, self.ax_single_sensor = plt.subplots(1, 1, figsize=FIG_SIZE, dpi=50)
         ax = self.ax_single_sensor
         ax.text(
             0.5, 0.5, "No data",
@@ -375,13 +381,13 @@ class SSApp:
 
 
         data_viz_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.SOLID)
-        data_viz_control_frame.grid(row=0, column=1, pady=5, padx=5, rowspan=3)
+        data_viz_control_frame.grid(row=0, column=1, pady=PAD_Y, padx=PAD_X, rowspan=3)
 
         drop = tk.OptionMenu(data_viz_control_frame, self.data_viz_control.selected_spec_mode, *self.data_viz_control.select_spec_options)
-        drop.grid(row=0, column=0, pady=5, padx=5)
+        drop.grid(row=0, column=0, pady=PAD_Y, padx=PAD_X)
         self.data_viz_control.selected_spec_mode.trace("w", self.on_spec_mode_change)
 
-        tk.Label(data_viz_control_frame, text="Upper \nbound (Hz):", anchor=tk.W).grid(row=1, column=0, pady=5, padx=5)
+        tk.Label(data_viz_control_frame, text="Upper \nbound (Hz):", anchor=tk.W, font=LABEL_FONT).grid(row=1, column=0, pady=5, padx=PAD_X)
         
         self.data_viz_upper_bound_slider = tk.Scale(data_viz_control_frame, 
                                                     from_=self.data_viz_control.max_upper_freq_bound, 
@@ -390,9 +396,9 @@ class SSApp:
                                                       orient=tk.VERTICAL, resolution=10, length=200, command=self.on_upper_bound_change,
                                                       width=15)
         self.data_viz_upper_bound_slider.set(self.data_viz_control.upper_freq_bound.get())
-        self.data_viz_upper_bound_slider.grid(row=2, column=0, pady=5, padx=5, sticky=tk.E)
+        self.data_viz_upper_bound_slider.grid(row=2, column=0, pady=PAD_Y, padx=PAD_X, sticky=tk.E)
 
-        tk.Label(data_viz_control_frame, text="Lower \nbound (Hz):", anchor=tk.W).grid(row=3, column=0, pady=5, padx=5)
+        tk.Label(data_viz_control_frame, text="Lower \nbound (Hz):", anchor=tk.W, font=LABEL_FONT).grid(row=3, column=0, pady=5, padx=PAD_X)
 
         self.data_viz_lower_bound_slider = tk.Scale(data_viz_control_frame, from_=self.data_viz_control.upper_freq_bound.get(), 
                                                     to=self.data_viz_control.min_lower_freq_bound, 
@@ -400,47 +406,47 @@ class SSApp:
                                                     orient=tk.VERTICAL, resolution=10, length=200, command=self.on_lower_bound_change, 
                                                     width=15)
         self.data_viz_lower_bound_slider.set(self.data_viz_control.lower_freq_bound.get())
-        self.data_viz_lower_bound_slider.grid(row=4, column=0, pady=5, padx=5, sticky=tk.E)
+        self.data_viz_lower_bound_slider.grid(row=4, column=0, pady=PAD_Y, padx=PAD_X, sticky=tk.E)
 
         data_viz_v_control_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
-        data_viz_v_control_frame.grid(row=1, column=0, pady=5, padx=5, sticky=tk.W)
+        data_viz_v_control_frame.grid(row=1, column=0, pady=PAD_Y, padx=PAD_X, sticky=tk.W)
 
-        tk.Label(data_viz_v_control_frame, text="Vmin:", anchor=tk.W).grid(row=0, column=0, pady=5, padx=5)
+        tk.Label(data_viz_v_control_frame, text="Vmin:", anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y, padx=PAD_X)
 
         self.data_viz_vmin_slider = tk.Scale(data_viz_v_control_frame, from_=self.data_viz_control.min_vmin, to=self.data_viz_control.vmax.get(), variable=self.data_viz_control.vmin,
                                                 orient=tk.HORIZONTAL, resolution=5, length=200, command=self.on_vmin_change,
                                                 width=10)
         self.data_viz_vmin_slider.set(self.data_viz_control.vmin.get())
-        self.data_viz_vmin_slider.grid(row=0, column=1, pady=5, padx=5, sticky=tk.S)
+        self.data_viz_vmin_slider.grid(row=0, column=1, pady=PAD_Y, padx=PAD_X, sticky=tk.S)
 
-        tk.Label(data_viz_v_control_frame, text="Vmax:", anchor=tk.W).grid(row=0, column=2, pady=5, padx=5)
+        tk.Label(data_viz_v_control_frame, text="Vmax:", anchor=tk.W, font=LABEL_FONT).grid(row=0, column=2, pady=PAD_Y, padx=PAD_X)
 
         self.data_viz_vmax_slider = tk.Scale(data_viz_v_control_frame, from_=self.data_viz_control.vmin.get(), to=self.data_viz_control.max_vmax, variable=self.data_viz_control.vmax,
                                                 orient=tk.HORIZONTAL, resolution=5, length=200, command=self.on_vmax_change,
                                                 width=10)
         self.data_viz_vmax_slider.set(self.data_viz_control.vmax.get())
-        self.data_viz_vmax_slider.grid(row=0, column=3, pady=5, padx=5, sticky=tk.S)
+        self.data_viz_vmax_slider.grid(row=0, column=3, pady=PAD_Y, padx=PAD_X, sticky=tk.S)
 
         data_viz_sample_size_frame = tk.Frame(data_viz_frame, bd=1, relief=tk.FLAT)
-        data_viz_sample_size_frame.grid(row=2, column=0, pady=5, padx=5, sticky=tk.W)
+        data_viz_sample_size_frame.grid(row=2, column=0, pady=PAD_Y, padx=PAD_X, sticky=tk.W)
 
-        tk.Label(data_viz_sample_size_frame, text="Sample size:", anchor=tk.W).grid(row=0, column=0, pady=5, padx=5)
+        tk.Label(data_viz_sample_size_frame, text="Sample size:", anchor=tk.W, font=LABEL_FONT).grid(row=0, column=0, pady=PAD_Y, padx=PAD_X)
 
         self.data_viz_sample_size_slider = tk.Scale(data_viz_sample_size_frame, from_=self.data_viz_control.min_max_sample_size, to=self.data_viz_control.max_max_sample_size, variable=self.data_viz_control.sample_size,
                                                 orient=tk.HORIZONTAL, resolution=self.data_viz_control.sample_size_step, length=200,
                                                 width=10)
         self.data_viz_sample_size_slider.set(self.data_viz_control.sample_size.get())
-        self.data_viz_sample_size_slider.grid(row=0, column=1, pady=5, padx=5, sticky=tk.S)
+        self.data_viz_sample_size_slider.grid(row=0, column=1, pady=PAD_Y, padx=PAD_X, sticky=tk.S)
 
-        tk.Label(data_viz_sample_size_frame, text="Sample available:", anchor=tk.W).grid(row=0, column=2, pady=5, padx=5)
+        tk.Label(data_viz_sample_size_frame, text="Sample available:", anchor=tk.W, font=LABEL_FONT).grid(row=0, column=2, pady=PAD_Y, padx=PAD_X)
 
-        self.data_viz_sample_available_label = tk.Label(data_viz_sample_size_frame, text="0", anchor=tk.W)
-        self.data_viz_sample_available_label.grid(row=0, column=3, pady=5, padx=5)
+        self.data_viz_sample_available_label = tk.Label(data_viz_sample_size_frame, text="0", anchor=tk.W, font=LABEL_FONT)
+        self.data_viz_sample_available_label.grid(row=0, column=3, pady=PAD_Y, padx=PAD_X)
 
     def create_widgets(self):
         
         self.section1_frame = tk.Frame(self.root, bd=1, relief=tk.FLAT)
-        self.section1_frame.grid(row=0, column=0, padx=10, pady=10, sticky=tk.N)
+        self.section1_frame.grid(row=0, column=0, padx=PAD_X, pady=PAD_Y, sticky=tk.N)
 
         self.create_gps_widget()
         self.create_delay_widget()
