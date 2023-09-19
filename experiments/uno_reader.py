@@ -4,7 +4,7 @@ import serial
 
 # Replace 'COM3' with the actual COM port of your Arduino
 # 9600 is the default baud rate for most Arduino sketches
-ser = serial.Serial('COM8', 2000000)
+ser = serial.Serial('COM9', 2000000)
 
 message_count = 0
 start_time = time.time()

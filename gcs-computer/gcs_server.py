@@ -9,6 +9,9 @@ import websockets
 
 HEART_BEAT_INTERVAL = 1
 
+SAMPLE_FREQ_SIZE = 5
+GATHER_PERIOD = 1/4
+
 
 class Client:
     def __init__(self):
@@ -26,6 +29,9 @@ class GCSServer:
         self.data_recorder = data_recorder
         self.client = Client()
         self.spacis_server_client = spacis_server_client
+        self.current_batch_id = 0
+        self.last_few_batch_size = []
+        self.average_batch_freq = 0
 
     def setup(self, app):
         self.app = app
@@ -43,14 +49,37 @@ class GCSServer:
             # switch case for message type
             if message["type"] == "sensor_data":
                 unpacked_data = spacis_utils.unpack_sensor_data(
-                    message['data'])
-                # print(f"RECEIVED: sensor data {message['data']} with {len(unpacked_data)} samples")
+                    message['data']['sensor_read'])
+                unpacked_elapsed = spacis_utils.unpack_elapsed_time(
+                    message['data']['elapsed_time'])
+                unpacked_pps_ids = spacis_utils.unpack_pps_ids(
+                    message['data']['pps_id'])
+
+                if len(self.last_few_batch_size) >= SAMPLE_FREQ_SIZE:
+                    self.last_few_batch_size.pop(0)
+                    self.last_few_batch_size.append(len(unpacked_data))
+                else:
+                    self.last_few_batch_size.append(len(unpacked_data))
+
+                self.average_batch_freq = sum(
+                    self.last_few_batch_size) / (GATHER_PERIOD*SAMPLE_FREQ_SIZE)
+
                 self.data_recorder.record_multiple_sensor_data(
-                    unpacked_data)  # TODO better saves
+                    unpacked_data, unpacked_elapsed, unpacked_pps_ids, self.current_batch_id)
+
+                self.data_recorder.record_batch_data(
+                    self.current_batch_id, len(unpacked_data))
+
                 self.app.update_data(unpacked_data)
                 # print("RECEIVERD: unpacked data ", unpacked_data)
                 if self.spacis_server_client.connected:
-                    self.spacis_server_client.add_message(message)
+                    new_message = {
+                        "type": "sensor_data",
+                        "data": message['data']['sensor_read'],
+                    }
+                    self.spacis_server_client.add_message(new_message)
+
+                self.current_batch_id += 1
 
             elif message["type"] == "temperature_status":
                 data = message['data']
@@ -80,10 +109,17 @@ class GCSServer:
                     data['error']
                 ])
 
+            elif message["type"] == "pps_data":
+                # print("RECEIVED: pps data")
+
+                self.data_recorder.record_pps_data(message['data'])
             else:
                 print("RECEIVED: invalid type, {}".format(message["type"]))
         except json.decoder.JSONDecodeError:
             print("RECEIVED: invalid message format (not JSON)")
+        except Exception as e:
+            print(
+                "RECEIVED: error processing message: {} on message {}".format(e, message))
 
         if self.client.connected:
             # last update time as str with date
@@ -106,7 +142,7 @@ class GCSServer:
     async def periodic_heartbeat(self):
         while True:
             # Send heartbeat to client every 5 seconds
-            await asyncio.sleep(5)
+            await asyncio.sleep(HEART_BEAT_INTERVAL)
             try:
                 if self.client:
                     self.send_hearbeat()

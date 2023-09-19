@@ -3,4 +3,9 @@ cloud_server_port: 8765
 sound_station_lla: [67.8796186, 21.0618723, 473]
 balloon_target_lla: [67.878802, 21.061968, 480]
 manual_port_config: false
-manual_serial_port: "/dev/ttyACM0"
+manual_serial_port: "COM7"
+label_font: ["Helvetica", 9]
+text_font: ["Helvetica", 8]
+padx: 4
+pady: 3
+fig_size: [10, 6]
