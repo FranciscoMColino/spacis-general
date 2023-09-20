@@ -9,3 +9,23 @@ text_font: ["Helvetica", 8]
 padx: 4
 pady: 3
 fig_size: [10, 6]
+
+sub1_orientation: 355
+sub1_height: 0
+sub1_distance: 4.2
+
+sub2_orientation: 285
+sub2_height: 0
+sub2_distance: 4.2
+
+sub3_orientation: 211
+sub3_height: 0
+sub3_distance: 3.5
+
+sub4_orientation: 137
+sub4_height: 0
+sub4_distance: 4.2
+
+sub5_orientation: 75
+sub5_height: 0
+sub5_distance: 4.2
